@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { PolicyPage } from "@/components/hiren/PolicyPage";
+export const Route = createFileRoute("/privacy")({ head: () => ({ meta: [{ title: "Privacy — Hiren Kundli" }, { name: "description", content: "Privacy policy for Hiren Kundli application and booking data." }] }), component: () => <PolicyPage title="Privacy Policy" points={["We collect details needed for SPL applications, bookings, communication, and session preparation.", "Submitted phone, DOB, and answers are stored securely in the application database.", "We do not sell personal information.", "Users may contact support for reasonable data correction or deletion requests, subject to legal and operational requirements."]} /> });

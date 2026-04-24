@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { PolicyPage } from "@/components/hiren/PolicyPage";
+export const Route = createFileRoute("/refund")({ head: () => ({ meta: [{ title: "Refund Policy — Hiren Kundli" }, { name: "description", content: "Refund and cancellation policy for Hiren Kundli sessions." }] }), component: () => <PolicyPage title="Refund Policy" points={["Refunds are reviewed based on booking status and whether the session preparation has started.", "If a payment fails and no booking is confirmed, the user should retry or contact support.", "Approved refunds will be processed through the original payment method when available.", "Final timelines may depend on the payment provider and bank processing time."]} /> });

@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { PolicyPage } from "@/components/hiren/PolicyPage";
+export const Route = createFileRoute("/terms")({ head: () => ({ meta: [{ title: "Terms — Hiren Kundli" }, { name: "description", content: "Terms for using Hiren Kundli sessions and application flows." }] }), component: () => <PolicyPage title="Terms" points={["Hiren Kundli provides structured clarity sessions and does not guarantee outcomes.", "Information shared by users must be accurate to the best of their knowledge.", "Session timings, scope, and included dimensions are defined on the Sessions page.", "Payment, rescheduling, and cancellation processes will follow the active booking policy at the time of purchase."]} /> });

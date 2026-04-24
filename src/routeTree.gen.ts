@@ -10,17 +10,27 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UidLookupRouteImport } from './routes/uid-lookup'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SuccessRouteImport } from './routes/success'
 import { Route as SessionsRouteImport } from './routes/sessions'
+import { Route as RefundRouteImport } from './routes/refund'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as FailedRouteImport } from './routes/failed'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as ApplyRouteImport } from './routes/apply'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DimensionSlugRouteImport } from './routes/dimension.$slug'
 
 const UidLookupRoute = UidLookupRouteImport.update({
   id: '/uid-lookup',
   path: '/uid-lookup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SuccessRoute = SuccessRouteImport.update({
@@ -33,9 +43,24 @@ const SessionsRoute = SessionsRouteImport.update({
   path: '/sessions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RefundRoute = RefundRouteImport.update({
+  id: '/refund',
+  path: '/refund',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FailedRoute = FailedRouteImport.update({
   id: '/failed',
   path: '/failed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookRoute = BookRouteImport.update({
@@ -46,6 +71,11 @@ const BookRoute = BookRouteImport.update({
 const ApplyRoute = ApplyRouteImport.update({
   id: '/apply',
   path: '/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -61,32 +91,47 @@ const DimensionSlugRoute = DimensionSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
+  '/contact': typeof ContactRoute
   '/failed': typeof FailedRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
   '/success': typeof SuccessRoute
+  '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
   '/dimension/$slug': typeof DimensionSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
+  '/contact': typeof ContactRoute
   '/failed': typeof FailedRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
   '/success': typeof SuccessRoute
+  '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
   '/dimension/$slug': typeof DimensionSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
+  '/contact': typeof ContactRoute
   '/failed': typeof FailedRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
   '/success': typeof SuccessRoute
+  '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
   '/dimension/$slug': typeof DimensionSlugRoute
 }
@@ -94,42 +139,62 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/apply'
     | '/book'
+    | '/contact'
     | '/failed'
+    | '/privacy'
+    | '/refund'
     | '/sessions'
     | '/success'
+    | '/terms'
     | '/uid-lookup'
     | '/dimension/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/apply'
     | '/book'
+    | '/contact'
     | '/failed'
+    | '/privacy'
+    | '/refund'
     | '/sessions'
     | '/success'
+    | '/terms'
     | '/uid-lookup'
     | '/dimension/$slug'
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/apply'
     | '/book'
+    | '/contact'
     | '/failed'
+    | '/privacy'
+    | '/refund'
     | '/sessions'
     | '/success'
+    | '/terms'
     | '/uid-lookup'
     | '/dimension/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   ApplyRoute: typeof ApplyRoute
   BookRoute: typeof BookRoute
+  ContactRoute: typeof ContactRoute
   FailedRoute: typeof FailedRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RefundRoute: typeof RefundRoute
   SessionsRoute: typeof SessionsRoute
   SuccessRoute: typeof SuccessRoute
+  TermsRoute: typeof TermsRoute
   UidLookupRoute: typeof UidLookupRoute
   DimensionSlugRoute: typeof DimensionSlugRoute
 }
@@ -141,6 +206,13 @@ declare module '@tanstack/react-router' {
       path: '/uid-lookup'
       fullPath: '/uid-lookup'
       preLoaderRoute: typeof UidLookupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/success': {
@@ -157,11 +229,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SessionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/refund': {
+      id: '/refund'
+      path: '/refund'
+      fullPath: '/refund'
+      preLoaderRoute: typeof RefundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/failed': {
       id: '/failed'
       path: '/failed'
       fullPath: '/failed'
       preLoaderRoute: typeof FailedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/book': {
@@ -176,6 +269,13 @@ declare module '@tanstack/react-router' {
       path: '/apply'
       fullPath: '/apply'
       preLoaderRoute: typeof ApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -197,11 +297,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   ApplyRoute: ApplyRoute,
   BookRoute: BookRoute,
+  ContactRoute: ContactRoute,
   FailedRoute: FailedRoute,
+  PrivacyRoute: PrivacyRoute,
+  RefundRoute: RefundRoute,
   SessionsRoute: SessionsRoute,
   SuccessRoute: SuccessRoute,
+  TermsRoute: TermsRoute,
   UidLookupRoute: UidLookupRoute,
   DimensionSlugRoute: DimensionSlugRoute,
 }
