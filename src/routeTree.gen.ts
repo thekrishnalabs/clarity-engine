@@ -9,19 +9,43 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UidLookupRouteImport } from './routes/uid-lookup'
+import { Route as SuccessRouteImport } from './routes/success'
 import { Route as SessionsRouteImport } from './routes/sessions'
+import { Route as FailedRouteImport } from './routes/failed'
 import { Route as BookRouteImport } from './routes/book'
+import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DimensionSlugRouteImport } from './routes/dimension.$slug'
 
+const UidLookupRoute = UidLookupRouteImport.update({
+  id: '/uid-lookup',
+  path: '/uid-lookup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuccessRoute = SuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SessionsRoute = SessionsRouteImport.update({
   id: '/sessions',
   path: '/sessions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FailedRoute = FailedRouteImport.update({
+  id: '/failed',
+  path: '/failed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookRoute = BookRouteImport.update({
   id: '/book',
   path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplyRoute = ApplyRouteImport.update({
+  id: '/apply',
+  path: '/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,40 +61,95 @@ const DimensionSlugRoute = DimensionSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
+  '/failed': typeof FailedRoute
   '/sessions': typeof SessionsRoute
+  '/success': typeof SuccessRoute
+  '/uid-lookup': typeof UidLookupRoute
   '/dimension/$slug': typeof DimensionSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
+  '/failed': typeof FailedRoute
   '/sessions': typeof SessionsRoute
+  '/success': typeof SuccessRoute
+  '/uid-lookup': typeof UidLookupRoute
   '/dimension/$slug': typeof DimensionSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
+  '/failed': typeof FailedRoute
   '/sessions': typeof SessionsRoute
+  '/success': typeof SuccessRoute
+  '/uid-lookup': typeof UidLookupRoute
   '/dimension/$slug': typeof DimensionSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/book' | '/sessions' | '/dimension/$slug'
+  fullPaths:
+    | '/'
+    | '/apply'
+    | '/book'
+    | '/failed'
+    | '/sessions'
+    | '/success'
+    | '/uid-lookup'
+    | '/dimension/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/book' | '/sessions' | '/dimension/$slug'
-  id: '__root__' | '/' | '/book' | '/sessions' | '/dimension/$slug'
+  to:
+    | '/'
+    | '/apply'
+    | '/book'
+    | '/failed'
+    | '/sessions'
+    | '/success'
+    | '/uid-lookup'
+    | '/dimension/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/apply'
+    | '/book'
+    | '/failed'
+    | '/sessions'
+    | '/success'
+    | '/uid-lookup'
+    | '/dimension/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApplyRoute: typeof ApplyRoute
   BookRoute: typeof BookRoute
+  FailedRoute: typeof FailedRoute
   SessionsRoute: typeof SessionsRoute
+  SuccessRoute: typeof SuccessRoute
+  UidLookupRoute: typeof UidLookupRoute
   DimensionSlugRoute: typeof DimensionSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/uid-lookup': {
+      id: '/uid-lookup'
+      path: '/uid-lookup'
+      fullPath: '/uid-lookup'
+      preLoaderRoute: typeof UidLookupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/success': {
+      id: '/success'
+      path: '/success'
+      fullPath: '/success'
+      preLoaderRoute: typeof SuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sessions': {
       id: '/sessions'
       path: '/sessions'
@@ -78,11 +157,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SessionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/failed': {
+      id: '/failed'
+      path: '/failed'
+      fullPath: '/failed'
+      preLoaderRoute: typeof FailedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/book': {
       id: '/book'
       path: '/book'
       fullPath: '/book'
       preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apply': {
+      id: '/apply'
+      path: '/apply'
+      fullPath: '/apply'
+      preLoaderRoute: typeof ApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,8 +197,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApplyRoute: ApplyRoute,
   BookRoute: BookRoute,
+  FailedRoute: FailedRoute,
   SessionsRoute: SessionsRoute,
+  SuccessRoute: SuccessRoute,
+  UidLookupRoute: UidLookupRoute,
   DimensionSlugRoute: DimensionSlugRoute,
 }
 export const routeTree = rootRouteImport
