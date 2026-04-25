@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { CtaBand, PageHero } from "@/components/hiren/Section";
-import { dimensionMeta, type DimensionSlug } from "@/data/hiren";
+import { dimensionMeta, dimensionImages, type DimensionSlug } from "@/data/hiren";
 
 export const Route = createFileRoute("/dimension/$slug")({
   head: ({ params }) => {
