@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          amount: number
+          created_at: string
+          dob: string
+          email: string
+          id: string
+          name: string
+          notes: string | null
+          payment_status: string
+          phone: string
+          place: string
+          session: string
+          tob: string
+          uid: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          dob: string
+          email: string
+          id?: string
+          name: string
+          notes?: string | null
+          payment_status?: string
+          phone: string
+          place: string
+          session: string
+          tob: string
+          uid?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          dob?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          payment_status?: string
+          phone?: string
+          place?: string
+          session?: string
+          tob?: string
+          uid?: string | null
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -104,27 +152,36 @@ export type Database = {
       spl_applications: {
         Row: {
           answers: Json
+          approved_at: string | null
           created_at: string
           dob: string
+          email: string | null
           id: string
           phone: string
           status: string
+          uid: string | null
         }
         Insert: {
           answers?: Json
+          approved_at?: string | null
           created_at?: string
           dob: string
+          email?: string | null
           id?: string
           phone: string
           status?: string
+          uid?: string | null
         }
         Update: {
           answers?: Json
+          approved_at?: string | null
           created_at?: string
           dob?: string
+          email?: string | null
           id?: string
           phone?: string
           status?: string
+          uid?: string | null
         }
         Relationships: []
       }
@@ -152,11 +209,77 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_list_bookings: {
+        Args: never
+        Returns: {
+          amount: number
+          created_at: string
+          dob: string
+          email: string
+          id: string
+          name: string
+          notes: string | null
+          payment_status: string
+          phone: string
+          place: string
+          session: string
+          tob: string
+          uid: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "bookings"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_list_spl_applications: {
+        Args: never
+        Returns: {
+          answers: Json
+          approved_at: string | null
+          created_at: string
+          dob: string
+          email: string | null
+          id: string
+          phone: string
+          status: string
+          uid: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "spl_applications"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      approve_spl_application: { Args: { _id: string }; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -164,6 +287,13 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
       }
       lookup_spl_application: {
         Args: { _id: string }
@@ -190,13 +320,28 @@ export type Database = {
           read_ct: number
         }[]
       }
+      reject_spl_application: { Args: { _id: string }; Returns: Json }
+      submit_booking: {
+        Args: {
+          _amount: number
+          _dob: string
+          _email: string
+          _name: string
+          _notes?: string
+          _phone: string
+          _place: string
+          _session: string
+          _tob: string
+        }
+        Returns: Json
+      }
       submit_spl_application: {
         Args: { _answers: Json; _dob: string; _phone: string }
         Returns: Json
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -323,6 +468,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
