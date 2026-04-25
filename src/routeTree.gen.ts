@@ -16,7 +16,6 @@ import { Route as SuccessRouteImport } from './routes/success'
 import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as FailedRouteImport } from './routes/failed'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookRouteImport } from './routes/book'
@@ -65,11 +64,6 @@ const RefundRoute = RefundRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FailedRoute = FailedRouteImport.update({
@@ -154,7 +148,6 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/failed': typeof FailedRoute
-  '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
@@ -178,7 +171,6 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/failed': typeof FailedRoute
-  '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
@@ -203,7 +195,6 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/failed': typeof FailedRoute
-  '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
@@ -229,7 +220,6 @@ export interface FileRouteTypes {
     | '/book'
     | '/contact'
     | '/failed'
-    | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
@@ -253,7 +243,6 @@ export interface FileRouteTypes {
     | '/book'
     | '/contact'
     | '/failed'
-    | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
@@ -277,7 +266,6 @@ export interface FileRouteTypes {
     | '/book'
     | '/contact'
     | '/failed'
-    | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
@@ -302,7 +290,6 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
   FailedRoute: typeof FailedRoute
-  LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
   SessionsRoute: typeof SessionsRoute
@@ -367,13 +354,6 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/failed': {
@@ -495,7 +475,6 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   ContactRoute: ContactRoute,
   FailedRoute: FailedRoute,
-  LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
   SessionsRoute: SessionsRoute,
