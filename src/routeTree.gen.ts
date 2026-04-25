@@ -27,6 +27,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as DimensionSlugRouteImport } from './routes/dimension.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -122,6 +123,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -162,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/dimension/$slug': typeof DimensionSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/dimension/$slug': typeof DimensionSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/dimension/$slug': typeof DimensionSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -237,6 +246,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/uid-lookup'
     | '/unsubscribe'
+    | '/admin/dashboard'
     | '/admin/login'
     | '/dimension/$slug'
     | '/email/unsubscribe'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/uid-lookup'
     | '/unsubscribe'
+    | '/admin/dashboard'
     | '/admin/login'
     | '/dimension/$slug'
     | '/email/unsubscribe'
@@ -285,6 +296,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/uid-lookup'
     | '/unsubscribe'
+    | '/admin/dashboard'
     | '/admin/login'
     | '/dimension/$slug'
     | '/email/unsubscribe'
@@ -446,6 +458,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -478,10 +497,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
 }
 

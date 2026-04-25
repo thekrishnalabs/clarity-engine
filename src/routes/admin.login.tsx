@@ -18,7 +18,7 @@ function AdminLoginPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/admin" });
+      if (data.session) navigate({ to: "/admin/dashboard" });
     });
   }, [navigate]);
 
@@ -36,7 +36,7 @@ function AdminLoginPage() {
         if (error) throw error;
         if (data.session) {
           await supabase.rpc("claim_first_admin");
-          navigate({ to: "/admin" });
+          navigate({ to: "/admin/dashboard" });
           return;
         }
         setMessage("Account created. Check your email to confirm, then sign in. The first confirmed admin will be auto-granted access.");
@@ -45,7 +45,7 @@ function AdminLoginPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         await supabase.rpc("claim_first_admin");
-        navigate({ to: "/admin" });
+        navigate({ to: "/admin/dashboard" });
       }
     } catch (err: any) {
       setMessage(err.message ?? "Something went wrong.");

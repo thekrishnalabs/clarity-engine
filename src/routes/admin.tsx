@@ -39,7 +39,9 @@ type Booking = {
 
 function AdminPage() {
   const navigate = useNavigate();
+  const [mounted, setMounted] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   const [isAdmin, setIsAdmin] = useState(false);
   const [apps, setApps] = useState<SplApp[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -158,10 +160,10 @@ function AdminPage() {
     navigate({ to: "/admin/login" });
   }
 
-  if (!authChecked) {
+  if (!mounted || !authChecked) {
     return (
       <div className="hk-container py-20 text-muted-foreground">
-        <p>Verifying access…</p>
+        <p>Verifying access...</p>
         <div className="mt-4 flex gap-3">
           <Link to="/admin/login" className="hk-button-outline rounded-full px-4 py-2 text-sm">Go to login</Link>
           <button onClick={signOut} className="hk-button-outline rounded-full px-4 py-2 text-sm">Reset session</button>
