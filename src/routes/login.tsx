@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { lovable } from "@/integrations/lovable";
-import { Section } from "@/components/hiren/Section";
+import { PageHero } from "@/components/hiren/Section";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
