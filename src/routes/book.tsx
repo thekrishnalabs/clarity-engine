@@ -79,7 +79,7 @@ function BookPage() {
       _place: parsed.data.place,
       _session: parsed.data.session,
       _amount: priceForSession(parsed.data.session),
-      _notes: parsed.data.notes ?? null,
+      _notes: parsed.data.notes ?? undefined,
     });
 
     if (error) {
