@@ -39,7 +39,9 @@ type Booking = {
 
 function AdminPage() {
   const navigate = useNavigate();
+  const [mounted, setMounted] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   const [isAdmin, setIsAdmin] = useState(false);
   const [apps, setApps] = useState<SplApp[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
