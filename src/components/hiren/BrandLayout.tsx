@@ -56,6 +56,7 @@ export function BrandLayout() {
             <Link to="/privacy">Privacy</Link>
             <Link to="/refund">Refund</Link>
             <Link to="/contact">Contact</Link>
+            <Link to="/admin/login" className="text-xs opacity-60 hover:opacity-100">Admin</Link>
           </div>
         </div>
       </footer>
