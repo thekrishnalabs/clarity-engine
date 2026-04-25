@@ -9,15 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as UidLookupRouteImport } from './routes/uid-lookup'
 import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SuccessRouteImport } from './routes/success'
 import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as FailedRouteImport } from './routes/failed'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as ApplyRouteImport } from './routes/apply'
@@ -33,11 +30,6 @@ import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lova
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
-const UnsubscribeRoute = UnsubscribeRouteImport.update({
-  id: '/unsubscribe',
-  path: '/unsubscribe',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const UidLookupRoute = UidLookupRouteImport.update({
   id: '/uid-lookup',
   path: '/uid-lookup',
@@ -46,11 +38,6 @@ const UidLookupRoute = UidLookupRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SuccessRoute = SuccessRouteImport.update({
-  id: '/success',
-  path: '/success',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SessionsRoute = SessionsRouteImport.update({
@@ -71,11 +58,6 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FailedRoute = FailedRouteImport.update({
-  id: '/failed',
-  path: '/failed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -159,15 +141,12 @@ export interface FileRoutesByFullPath {
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
-  '/failed': typeof FailedRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
-  '/success': typeof SuccessRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
-  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/dimension/$slug': typeof DimensionSlugRoute
@@ -184,15 +163,12 @@ export interface FileRoutesByTo {
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
-  '/failed': typeof FailedRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
-  '/success': typeof SuccessRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
-  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/dimension/$slug': typeof DimensionSlugRoute
@@ -210,15 +186,12 @@ export interface FileRoutesById {
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
-  '/failed': typeof FailedRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
-  '/success': typeof SuccessRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
-  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/dimension/$slug': typeof DimensionSlugRoute
@@ -237,15 +210,12 @@ export interface FileRouteTypes {
     | '/apply'
     | '/book'
     | '/contact'
-    | '/failed'
     | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
-    | '/success'
     | '/terms'
     | '/uid-lookup'
-    | '/unsubscribe'
     | '/admin/dashboard'
     | '/admin/login'
     | '/dimension/$slug'
@@ -262,15 +232,12 @@ export interface FileRouteTypes {
     | '/apply'
     | '/book'
     | '/contact'
-    | '/failed'
     | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
-    | '/success'
     | '/terms'
     | '/uid-lookup'
-    | '/unsubscribe'
     | '/admin/dashboard'
     | '/admin/login'
     | '/dimension/$slug'
@@ -287,15 +254,12 @@ export interface FileRouteTypes {
     | '/apply'
     | '/book'
     | '/contact'
-    | '/failed'
     | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
-    | '/success'
     | '/terms'
     | '/uid-lookup'
-    | '/unsubscribe'
     | '/admin/dashboard'
     | '/admin/login'
     | '/dimension/$slug'
@@ -313,15 +277,12 @@ export interface RootRouteChildren {
   ApplyRoute: typeof ApplyRoute
   BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
-  FailedRoute: typeof FailedRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
   SessionsRoute: typeof SessionsRoute
-  SuccessRoute: typeof SuccessRoute
   TermsRoute: typeof TermsRoute
   UidLookupRoute: typeof UidLookupRoute
-  UnsubscribeRoute: typeof UnsubscribeRoute
   DimensionSlugRoute: typeof DimensionSlugRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -332,13 +293,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/unsubscribe': {
-      id: '/unsubscribe'
-      path: '/unsubscribe'
-      fullPath: '/unsubscribe'
-      preLoaderRoute: typeof UnsubscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/uid-lookup': {
       id: '/uid-lookup'
       path: '/uid-lookup'
@@ -351,13 +305,6 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/success': {
-      id: '/success'
-      path: '/success'
-      fullPath: '/success'
-      preLoaderRoute: typeof SuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sessions': {
@@ -386,13 +333,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/failed': {
-      id: '/failed'
-      path: '/failed'
-      fullPath: '/failed'
-      preLoaderRoute: typeof FailedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -515,15 +455,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApplyRoute: ApplyRoute,
   BookRoute: BookRoute,
   ContactRoute: ContactRoute,
-  FailedRoute: FailedRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
   SessionsRoute: SessionsRoute,
-  SuccessRoute: SuccessRoute,
   TermsRoute: TermsRoute,
   UidLookupRoute: UidLookupRoute,
-  UnsubscribeRoute: UnsubscribeRoute,
   DimensionSlugRoute: DimensionSlugRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
