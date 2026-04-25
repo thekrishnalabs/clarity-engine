@@ -1,3 +1,23 @@
+import experienceImg from "@/assets/dimensions/experience.jpg";
+import orientationImg from "@/assets/dimensions/orientation.jpg";
+import patternImg from "@/assets/dimensions/pattern.jpg";
+import patternDirectionImg from "@/assets/dimensions/pattern-direction.jpg";
+import relationshipRealityImg from "@/assets/dimensions/relationship-reality.jpg";
+import relationshipDirectionImg from "@/assets/dimensions/relationship-direction.jpg";
+import karmicImg from "@/assets/dimensions/karmic.jpg";
+import karmicSystemImg from "@/assets/dimensions/karmic-system.jpg";
+
+export const dimensionImages: Record<string, string> = {
+  experience: experienceImg,
+  orientation: orientationImg,
+  pattern: patternImg,
+  "pattern-direction": patternDirectionImg,
+  "relationship-reality": relationshipRealityImg,
+  "relationship-direction": relationshipDirectionImg,
+  karmic: karmicImg,
+  "karmic-system": karmicSystemImg,
+};
+
 export type SessionPlan = {
   name: string;
   price: string;

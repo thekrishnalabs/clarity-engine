@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CircleDot, Layers3, Users } from "lucide-react";
 import logo from "@/assets/hiren-kundli-logo.jpg";
 import { CtaBand } from "@/components/hiren/Section";
-import { dimensionLinks } from "@/data/hiren";
+import { dimensionLinks, dimensionImages } from "@/data/hiren";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -61,9 +61,15 @@ function Index() {
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {dimensionLinks.slice(0, 8).map((dimension) => (
-              <Link key={dimension.slug} to="/dimension/$slug" params={{ slug: dimension.slug }} className="hk-panel hk-card-hover rounded-2xl p-5">
-                <div className="hk-gold-text font-semibold">{dimension.title}</div>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{dimension.question}</p>
+              <Link key={dimension.slug} to="/dimension/$slug" params={{ slug: dimension.slug }} className="hk-panel hk-card-hover group overflow-hidden rounded-2xl">
+                <div className="relative h-32 overflow-hidden">
+                  <img src={dimensionImages[dimension.slug]} alt={`${dimension.title} dimension`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                </div>
+                <div className="p-5">
+                  <div className="hk-gold-text font-semibold">{dimension.title}</div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{dimension.question}</p>
+                </div>
               </Link>
             ))}
           </div>

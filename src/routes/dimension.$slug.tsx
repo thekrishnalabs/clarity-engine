@@ -1,16 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { CtaBand, PageHero } from "@/components/hiren/Section";
-import { dimensionMeta, type DimensionSlug } from "@/data/hiren";
+import { dimensionMeta, dimensionImages, type DimensionSlug } from "@/data/hiren";
 
 export const Route = createFileRoute("/dimension/$slug")({
   head: ({ params }) => {
     const item = dimensionMeta[params.slug as DimensionSlug];
+    const image = dimensionImages[params.slug];
     return { meta: [
       { title: `${item?.title ?? "Dimension"} — Hiren Kundli` },
       { name: "description", content: item?.question ?? "A Hiren Kundli clarity dimension." },
       { property: "og:title", content: `${item?.title ?? "Dimension"} — Hiren Kundli` },
       { property: "og:description", content: item?.question ?? "A Hiren Kundli clarity dimension." },
+      ...(image ? [{ property: "og:image", content: image }, { name: "twitter:image", content: image }] : []),
     ] };
   },
   component: DimensionPage,
@@ -35,11 +37,16 @@ function DimensionPage() {
   return (
     <>
       <PageHero eyebrow="Clarity dimension" title={item.question} body={`${item.title} is used to make one layer of your decision pattern easier to observe, name, and work with.`}>
+        <div className="hk-panel relative overflow-hidden rounded-3xl p-3">
+          <img src={dimensionImages[slug]} alt={`${item.title} — visual representation`} className="aspect-[3/4] w-full rounded-2xl object-cover" loading="lazy" />
+        </div>
+      </PageHero>
+      <section className="hk-container pb-6">
         <div className="hk-panel rounded-3xl p-7">
           <p className="hk-gold-text font-semibold">Tone</p>
           <p className="mt-3 text-lg leading-8 text-muted-foreground">{item.tone}</p>
         </div>
-      </PageHero>
+      </section>
       <section className="hk-container grid gap-5 pb-12 lg:grid-cols-3">
         <InfoPanel title="What this decodes" items={item.decodes} />
         <InfoPanel title="What this does NOT do" items={item.not} />
