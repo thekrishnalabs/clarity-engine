@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as UidLookupRouteImport } from './routes/uid-lookup'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SuccessRouteImport } from './routes/success'
@@ -20,15 +21,22 @@ import { Route as FailedRouteImport } from './routes/failed'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as ApplyRouteImport } from './routes/apply'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as DimensionSlugRouteImport } from './routes/dimension.$slug'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UidLookupRoute = UidLookupRouteImport.update({
   id: '/uid-lookup',
   path: '/uid-lookup',
@@ -84,6 +92,11 @@ const ApplyRoute = ApplyRouteImport.update({
   path: '/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -103,6 +116,11 @@ const DimensionSlugRoute = DimensionSlugRouteImport.update({
   id: '/dimension/$slug',
   path: '/dimension/$slug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
 } as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
@@ -131,6 +149,7 @@ const LovableEmailQueueProcessRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
@@ -142,6 +161,8 @@ export interface FileRoutesByFullPath {
   '/success': typeof SuccessRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
+  '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/login': typeof AdminLoginRoute
   '/dimension/$slug': typeof DimensionSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -152,6 +173,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
@@ -163,6 +185,8 @@ export interface FileRoutesByTo {
   '/success': typeof SuccessRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
+  '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/login': typeof AdminLoginRoute
   '/dimension/$slug': typeof DimensionSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -174,6 +198,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
@@ -185,6 +210,8 @@ export interface FileRoutesById {
   '/success': typeof SuccessRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
+  '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/login': typeof AdminLoginRoute
   '/dimension/$slug': typeof DimensionSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -197,6 +224,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/apply'
     | '/book'
     | '/contact'
@@ -208,6 +236,8 @@ export interface FileRouteTypes {
     | '/success'
     | '/terms'
     | '/uid-lookup'
+    | '/unsubscribe'
+    | '/admin/login'
     | '/dimension/$slug'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
@@ -218,6 +248,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/apply'
     | '/book'
     | '/contact'
@@ -229,6 +260,8 @@ export interface FileRouteTypes {
     | '/success'
     | '/terms'
     | '/uid-lookup'
+    | '/unsubscribe'
+    | '/admin/login'
     | '/dimension/$slug'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
@@ -239,6 +272,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/apply'
     | '/book'
     | '/contact'
@@ -250,6 +284,8 @@ export interface FileRouteTypes {
     | '/success'
     | '/terms'
     | '/uid-lookup'
+    | '/unsubscribe'
+    | '/admin/login'
     | '/dimension/$slug'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
@@ -261,6 +297,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   ApplyRoute: typeof ApplyRoute
   BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
@@ -272,6 +309,7 @@ export interface RootRouteChildren {
   SuccessRoute: typeof SuccessRoute
   TermsRoute: typeof TermsRoute
   UidLookupRoute: typeof UidLookupRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   DimensionSlugRoute: typeof DimensionSlugRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -282,6 +320,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/uid-lookup': {
       id: '/uid-lookup'
       path: '/uid-lookup'
@@ -359,6 +404,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -386,6 +438,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dimension/$slug'
       preLoaderRoute: typeof DimensionSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
@@ -418,9 +477,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminLoginRoute: typeof AdminLoginRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminLoginRoute: AdminLoginRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   ApplyRoute: ApplyRoute,
   BookRoute: BookRoute,
   ContactRoute: ContactRoute,
@@ -432,6 +502,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuccessRoute: SuccessRoute,
   TermsRoute: TermsRoute,
   UidLookupRoute: UidLookupRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   DimensionSlugRoute: DimensionSlugRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
@@ -442,12 +513,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
