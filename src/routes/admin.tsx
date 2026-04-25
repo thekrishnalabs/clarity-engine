@@ -58,30 +58,51 @@ function AdminPage() {
 
   useEffect(() => {
     let cancelled = false;
-    async function check() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+
+    const verify = async (userId: string | null) => {
+      if (!userId) {
+        if (cancelled) return;
+        setIsAdmin(false);
+        setAuthChecked(true);
         navigate({ to: "/admin/login" });
         return;
       }
+      // Try claiming first-admin (no-op if one already exists)
+      try { await supabase.rpc("claim_first_admin"); } catch { /* ignore */ }
       const { data: roles } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", session.user.id)
+        .eq("user_id", userId)
         .eq("role", "admin")
         .maybeSingle();
       if (cancelled) return;
-      if (!roles) {
-        setIsAdmin(false);
-        setAuthChecked(true);
-        return;
-      }
-      setIsAdmin(true);
+      const admin = !!roles;
+      setIsAdmin(admin);
       setAuthChecked(true);
-      await loadData();
-    }
-    check();
-    return () => { cancelled = true; };
+      if (admin) loadData();
+    };
+
+    // Listener first
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (cancelled) return;
+      // Defer to avoid deadlocks
+      setTimeout(() => { verify(session?.user?.id ?? null); }, 0);
+    });
+
+    // Then initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      verify(session?.user?.id ?? null);
+    }).catch(() => {
+      if (!cancelled) {
+        setAuthChecked(true);
+        navigate({ to: "/admin/login" });
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
   }, [navigate, loadData]);
 
   async function approve(app: SplApp) {
@@ -138,7 +159,15 @@ function AdminPage() {
   }
 
   if (!authChecked) {
-    return <div className="hk-container py-20 text-muted-foreground">Verifying access...</div>;
+    return (
+      <div className="hk-container py-20 text-muted-foreground">
+        <p>Verifying access…</p>
+        <div className="mt-4 flex gap-3">
+          <Link to="/admin/login" className="hk-button-outline rounded-full px-4 py-2 text-sm">Go to login</Link>
+          <button onClick={signOut} className="hk-button-outline rounded-full px-4 py-2 text-sm">Reset session</button>
+        </div>
+      </div>
+    );
   }
 
   if (!isAdmin) {
