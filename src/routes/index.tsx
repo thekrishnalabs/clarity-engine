@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CircleDot, Layers3, Users } from "lucide-react";
-import logo from "@/assets/hiren-kundli-logo.jpg";
 import { CtaBand } from "@/components/hiren/Section";
-import { dimensionLinks, dimensionImages } from "@/data/hiren";
+import { dimensionLinks } from "@/data/hiren";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -23,19 +22,13 @@ function Index() {
 
   return (
     <>
-      <section className="hk-container grid gap-10 py-14 md:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div>
-          <p className="hk-eyebrow">Decision clarity engine</p>
-          <h1 className="hk-heading mt-5 text-5xl md:text-7xl">Decode Your Patterns. <span className="hk-gold-text">Decide Your Direction.</span></h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">Hiren Kundli is a calm, structured system for reading patterns, identifying decision friction, and choosing the next direction with more clarity.</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/apply" className="hk-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition">Start with Yourself <ArrowRight className="size-4" /></Link>
-            <Link to="/sessions" className="hk-button-outline inline-flex rounded-full px-6 py-3 font-semibold transition">View Sessions</Link>
-          </div>
-        </div>
-        <div className="hk-panel relative overflow-hidden rounded-3xl p-7">
-          <div className="absolute right-8 top-8 h-40 w-40 rounded-full border border-gold/30 hk-orbit" />
-          <img src={logo} alt="Hiren Kundli pattern mark" className="relative mx-auto aspect-square w-full max-w-md rounded-3xl object-cover opacity-95" />
+      <section className="hk-container py-14 md:py-20">
+        <p className="hk-eyebrow">Decision clarity engine</p>
+        <h1 className="hk-heading mt-5 text-5xl md:text-7xl">Decode Your Patterns. <span className="hk-gold-text">Decide Your Direction.</span></h1>
+        <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">Hiren Kundli is a calm, structured system for reading patterns, identifying decision friction, and choosing the next direction with more clarity.</p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to="/apply" className="hk-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition">Start with Yourself <ArrowRight className="size-4" /></Link>
+          <Link to="/sessions" className="hk-button-outline inline-flex rounded-full px-6 py-3 font-semibold transition">View Sessions</Link>
         </div>
       </section>
 
@@ -61,16 +54,10 @@ function Index() {
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {dimensionLinks.slice(0, 8).map((dimension) => (
-              <Link key={dimension.slug} to="/dimension/$slug" params={{ slug: dimension.slug }} className="hk-panel hk-card-hover group overflow-hidden rounded-2xl">
-                <div className="relative h-32 overflow-hidden">
-                  <img src={dimensionImages[dimension.slug]} alt={`${dimension.title} dimension`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-                </div>
-                <div className="p-5">
-                  <div className="hk-gold-text font-semibold">{dimension.title}</div>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{dimension.question}</p>
-                </div>
-              </Link>
+              <div key={dimension.slug} className="hk-panel rounded-2xl p-5">
+                <div className="hk-gold-text font-semibold">{dimension.title}</div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{dimension.question}</p>
+              </div>
             ))}
           </div>
         </div>

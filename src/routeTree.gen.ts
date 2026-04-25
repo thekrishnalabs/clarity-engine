@@ -22,7 +22,6 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
-import { Route as DimensionSlugRouteImport } from './routes/dimension.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
@@ -95,11 +94,6 @@ const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DimensionSlugRoute = DimensionSlugRouteImport.update({
-  id: '/dimension/$slug',
-  path: '/dimension/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -149,7 +143,6 @@ export interface FileRoutesByFullPath {
   '/uid-lookup': typeof UidLookupRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
-  '/dimension/$slug': typeof DimensionSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -171,7 +164,6 @@ export interface FileRoutesByTo {
   '/uid-lookup': typeof UidLookupRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
-  '/dimension/$slug': typeof DimensionSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -194,7 +186,6 @@ export interface FileRoutesById {
   '/uid-lookup': typeof UidLookupRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
-  '/dimension/$slug': typeof DimensionSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -218,7 +209,6 @@ export interface FileRouteTypes {
     | '/uid-lookup'
     | '/admin/dashboard'
     | '/admin/login'
-    | '/dimension/$slug'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -240,7 +230,6 @@ export interface FileRouteTypes {
     | '/uid-lookup'
     | '/admin/dashboard'
     | '/admin/login'
-    | '/dimension/$slug'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -262,7 +251,6 @@ export interface FileRouteTypes {
     | '/uid-lookup'
     | '/admin/dashboard'
     | '/admin/login'
-    | '/dimension/$slug'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -283,7 +271,6 @@ export interface RootRouteChildren {
   SessionsRoute: typeof SessionsRoute
   TermsRoute: typeof TermsRoute
   UidLookupRoute: typeof UidLookupRoute
-  DimensionSlugRoute: typeof DimensionSlugRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -384,13 +371,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dimension/$slug': {
-      id: '/dimension/$slug'
-      path: '/dimension/$slug'
-      fullPath: '/dimension/$slug'
-      preLoaderRoute: typeof DimensionSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -461,7 +441,6 @@ const rootRouteChildren: RootRouteChildren = {
   SessionsRoute: SessionsRoute,
   TermsRoute: TermsRoute,
   UidLookupRoute: UidLookupRoute,
-  DimensionSlugRoute: DimensionSlugRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,

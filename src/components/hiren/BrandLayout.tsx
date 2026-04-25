@@ -1,5 +1,4 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import logo from "@/assets/hiren-kundli-logo.jpg";
 
 const navItems = [
   { to: "/", label: "Home" },
@@ -17,7 +16,6 @@ export function BrandLayout() {
       <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-xl">
         <div className="hk-container flex min-h-20 items-center justify-between gap-4 py-3">
           <Link to="/" className="flex items-center gap-3" aria-label="Hiren Kundli home">
-            <img src={logo} alt="Hiren Kundli logo" className="h-12 w-12 rounded-full border object-cover" />
             <div className="leading-tight">
               <div className="hk-gold-text font-serif text-xl font-bold">Hiren Kundli</div>
               <div className="text-xs text-muted-foreground">Clarity • Patterns • Decisions</div>
