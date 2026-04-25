@@ -99,6 +99,26 @@ function BookPage() {
         title="Reserve your paid clarity session."
         body="Choose a session, share the basic birth details, and we will reach out within 24 hours with payment details and the next step. For the one-time application-based Silver Prime Lite, use Apply instead."
       />
+
+      <section className="hk-container grid gap-4 pb-8 md:grid-cols-3">
+        <div className="hk-panel rounded-3xl p-5">
+          <p className="hk-eyebrow">What this is</p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">A structured clarity session — not a prediction reading. We decode patterns, surface the avoided decision, and map the next step.</p>
+        </div>
+        <div className="hk-panel rounded-3xl p-5">
+          <p className="hk-eyebrow">What you get</p>
+          <ul className="mt-3 grid gap-1 text-sm leading-6 text-muted-foreground">
+            <li>• Live structured session</li>
+            <li>• Personal UID + record</li>
+            <li>• Written next-step summary</li>
+          </ul>
+        </div>
+        <div className="hk-panel rounded-3xl p-5">
+          <p className="hk-eyebrow">Who it's for</p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">Adults facing a real decision they keep deferring. Not for entertainment, fortune-telling, or fear-based questions.</p>
+        </div>
+      </section>
+
       <section className="hk-container grid gap-6 pb-16 lg:grid-cols-[1fr_0.75fr]">
         <form onSubmit={submit} className="hk-panel rounded-3xl p-6 md:p-8">
           <div className="grid gap-5 md:grid-cols-2">
