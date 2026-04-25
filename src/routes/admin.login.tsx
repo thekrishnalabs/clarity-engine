@@ -28,17 +28,23 @@ function AdminLoginPage() {
     setMessage("");
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: `${window.location.origin}/admin` },
         });
         if (error) throw error;
-        setMessage("Account created. If this is the first admin, contact your developer to grant admin role. Then sign in.");
+        if (data.session) {
+          await supabase.rpc("claim_first_admin");
+          navigate({ to: "/admin" });
+          return;
+        }
+        setMessage("Account created. Check your email to confirm, then sign in. The first confirmed admin will be auto-granted access.");
         setMode("signin");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        await supabase.rpc("claim_first_admin");
         navigate({ to: "/admin" });
       }
     } catch (err: any) {
