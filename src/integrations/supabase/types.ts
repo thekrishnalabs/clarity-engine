@@ -297,11 +297,13 @@ export type Database = {
         Returns: boolean
       }
       lookup_spl_application: {
-        Args: { _id: string }
+        Args: { _q: string }
         Returns: {
+          approved_at: string
           created_at: string
           id: string
           status: string
+          uid: string
         }[]
       }
       move_to_dlq: {
@@ -322,6 +324,7 @@ export type Database = {
         }[]
       }
       reject_spl_application: { Args: { _id: string }; Returns: Json }
+      spl_today_status: { Args: never; Returns: Json }
       submit_booking: {
         Args: {
           _amount: number
