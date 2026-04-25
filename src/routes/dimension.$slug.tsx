@@ -6,11 +6,13 @@ import { dimensionMeta, dimensionImages, type DimensionSlug } from "@/data/hiren
 export const Route = createFileRoute("/dimension/$slug")({
   head: ({ params }) => {
     const item = dimensionMeta[params.slug as DimensionSlug];
+    const image = dimensionImages[params.slug];
     return { meta: [
       { title: `${item?.title ?? "Dimension"} — Hiren Kundli` },
       { name: "description", content: item?.question ?? "A Hiren Kundli clarity dimension." },
       { property: "og:title", content: `${item?.title ?? "Dimension"} — Hiren Kundli` },
       { property: "og:description", content: item?.question ?? "A Hiren Kundli clarity dimension." },
+      ...(image ? [{ property: "og:image", content: image }, { name: "twitter:image", content: image }] : []),
     ] };
   },
   component: DimensionPage,
