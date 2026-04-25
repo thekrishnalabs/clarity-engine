@@ -53,6 +53,7 @@ function UidLookupPage() {
             UID / Reference ID
             <input name="uid" className="hk-input rounded-xl px-4 py-3 font-mono" placeholder="HK-SPL-20260101-AB12 or reference UUID" />
           </label>
+          <p className="mt-2 text-xs text-muted-foreground">Enter the reference ID you received after submitting your SPL application (e.g. HK-SPL-20260101-AB12).</p>
           <button disabled={loading} className="hk-button-primary mt-6 rounded-full px-6 py-3 font-semibold transition disabled:opacity-60">
             {loading ? "Checking..." : "Fetch Status"}
           </button>
@@ -69,6 +70,10 @@ function UidLookupPage() {
                 <li>• <strong className="text-foreground">Rejected</strong> — this slot was not selected; you may reapply later.</li>
               </ul>
             </div>
+          )}
+
+          {loading && !result && (
+            <p className="text-sm italic text-muted-foreground">Checking...</p>
           )}
 
           {result && <StatusCard row={result} />}
