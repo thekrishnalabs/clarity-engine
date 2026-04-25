@@ -48,14 +48,26 @@ function AdminPage() {
   const [tab, setTab] = useState<"spl" | "bookings">("spl");
   const [busy, setBusy] = useState<string>("");
   const [toast, setToast] = useState<string>("");
+  const [rpcError, setRpcError] = useState<string>("");
 
   const loadData = useCallback(async () => {
+    setRpcError("");
     const [{ data: appData, error: appErr }, { data: bookData, error: bookErr }] = await Promise.all([
       supabase.rpc("admin_list_spl_applications"),
       supabase.rpc("admin_list_bookings"),
     ]);
-    if (!appErr && appData) setApps(appData as SplApp[]);
-    if (!bookErr && bookData) setBookings(bookData as Booking[]);
+    if (appErr) {
+      console.error("[admin] admin_list_spl_applications error:", appErr);
+      setRpcError(`Failed to load SPL applications: ${appErr.message}`);
+    } else if (appData) {
+      setApps(appData as SplApp[]);
+    }
+    if (bookErr) {
+      console.error("[admin] admin_list_bookings error:", bookErr);
+      setRpcError((prev) => prev ? `${prev} | Failed to load bookings: ${bookErr.message}` : `Failed to load bookings: ${bookErr.message}`);
+    } else if (bookData) {
+      setBookings(bookData as Booking[]);
+    }
   }, []);
 
   useEffect(() => {
