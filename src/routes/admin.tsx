@@ -174,24 +174,20 @@ function AdminPage() {
 
   if (!mounted || !authChecked) {
     return (
-      <div className="hk-container py-20 text-muted-foreground">
+      <div className="hk-container flex min-h-[60vh] flex-col items-center justify-center gap-4 py-20 text-muted-foreground">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-muted border-t-primary" aria-hidden />
         <p>Verifying access...</p>
-        <div className="mt-4 flex gap-3">
-          <Link to="/admin/login" className="hk-button-outline rounded-full px-4 py-2 text-sm">Go to login</Link>
-          <button onClick={signOut} className="hk-button-outline rounded-full px-4 py-2 text-sm">Reset session</button>
-        </div>
       </div>
     );
   }
 
   if (!isAdmin) {
+    // Auto-redirect: not authorized
+    navigate({ to: "/admin/login" });
     return (
-      <>
-        <PageHero eyebrow="Restricted" title="Admin role required." body="Your account does not have the admin role yet. Ask your developer to grant it." />
-        <div className="hk-container pb-16">
-          <button onClick={signOut} className="hk-button-outline rounded-full px-5 py-2 text-sm">Sign out</button>
-        </div>
-      </>
+      <div className="hk-container py-20 text-muted-foreground">
+        <p>Redirecting to admin login...</p>
+      </div>
     );
   }
 
@@ -200,11 +196,17 @@ function AdminPage() {
       <PageHero eyebrow="Admin dashboard" title="Review applications & bookings." body="Approve SPL clarity applications, generate UIDs, and view paid session bookings.">
         <div className="flex flex-wrap gap-3">
           <Link to="/" className="hk-button-outline rounded-full px-4 py-2 text-sm">Back to site</Link>
+          <button onClick={() => loadData()} className="hk-button-outline rounded-full px-4 py-2 text-sm">Refresh Data</button>
           <button onClick={signOut} className="hk-button-outline rounded-full px-4 py-2 text-sm">Sign out</button>
         </div>
       </PageHero>
 
       <section className="hk-container pb-16">
+        {rpcError && (
+          <div className="mb-5 rounded-2xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+            {rpcError}
+          </div>
+        )}
         <div className="mb-6 flex gap-2">
           <button onClick={() => setTab("spl")} className={`rounded-full border px-5 py-2 text-sm font-semibold ${tab === "spl" ? "hk-button-primary" : ""}`}>
             SPL Applications ({apps.length})
