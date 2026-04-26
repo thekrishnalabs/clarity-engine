@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -40,34 +41,39 @@
 
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.085 0.022 292);
-  --foreground: oklch(0.955 0.015 88);
-  --card: oklch(0.145 0.038 296);
-  --card-foreground: oklch(0.955 0.015 88);
-  --popover: oklch(0.13 0.034 296);
-  --popover-foreground: oklch(0.955 0.015 88);
-  --primary: oklch(0.78 0.15 84);
-  --primary-foreground: oklch(0.115 0.025 292);
-  --secondary: oklch(0.22 0.07 300);
-  --secondary-foreground: oklch(0.93 0.02 88);
-  --muted: oklch(0.18 0.038 294);
-  --muted-foreground: oklch(0.72 0.035 292);
-  --accent: oklch(0.56 0.16 304);
-  --accent-foreground: oklch(0.98 0.012 88);
+  /* #05050f near-black deep space */
+  --background: oklch(0.06 0.012 275);
+  --foreground: oklch(0.94 0.005 90);
+  /* #0d0d1a card */
+  --card: oklch(0.105 0.015 275);
+  --card-foreground: oklch(0.94 0.005 90);
+  --popover: oklch(0.09 0.012 275);
+  --popover-foreground: oklch(0.94 0.005 90);
+  /* #c9a84c gold */
+  --primary: oklch(0.745 0.135 82);
+  --primary-foreground: oklch(0.08 0.012 275);
+  --secondary: oklch(0.16 0.014 275);
+  --secondary-foreground: oklch(0.92 0.008 90);
+  --muted: oklch(0.13 0.012 275);
+  --muted-foreground: oklch(0.62 0.012 275);
+  /* accent kept neutral-gold (no purple) */
+  --accent: oklch(0.745 0.135 82);
+  --accent-foreground: oklch(0.08 0.012 275);
   --destructive: oklch(0.62 0.2 25);
   --destructive-foreground: oklch(0.98 0.006 88);
-  --border: oklch(0.32 0.08 298 / 55%);
-  --input: oklch(0.24 0.055 296 / 80%);
-  --ring: oklch(0.78 0.15 84);
-  --gold: oklch(0.78 0.15 84);
-  --gold-foreground: oklch(0.105 0.024 292);
-  --deep: oklch(0.11 0.038 295);
-  --veil: oklch(0.2 0.075 300 / 58%);
-  --chart-1: oklch(0.78 0.15 84);
-  --chart-2: oklch(0.6 0.16 304);
-  --chart-3: oklch(0.52 0.12 265);
-  --chart-4: oklch(0.68 0.1 188);
-  --chart-5: oklch(0.74 0.09 32);
+  /* #1e1e30 border */
+  --border: oklch(0.205 0.018 275);
+  --input: oklch(0.155 0.014 275);
+  --ring: oklch(0.745 0.135 82);
+  --gold: oklch(0.745 0.135 82);
+  --gold-foreground: oklch(0.08 0.012 275);
+  --deep: oklch(0.06 0.012 275);
+  --veil: oklch(0.12 0.014 275 / 70%);
+  --chart-1: oklch(0.745 0.135 82);
+  --chart-2: oklch(0.65 0.11 70);
+  --chart-3: oklch(0.5 0.06 90);
+  --chart-4: oklch(0.4 0.04 275);
+  --chart-5: oklch(0.78 0.1 60);
   --sidebar: var(--background);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
@@ -76,33 +82,33 @@
   --sidebar-accent-foreground: var(--secondary-foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
-  --shadow-luxury: 0 24px 80px -40px color-mix(in oklab, var(--gold) 45%, transparent);
+  --shadow-luxury: 0 24px 80px -40px color-mix(in oklab, var(--gold) 35%, transparent);
 }
 
 .dark {
-  --background: oklch(0.085 0.022 292);
-  --foreground: oklch(0.955 0.015 88);
-  --card: oklch(0.145 0.038 296);
-  --card-foreground: oklch(0.955 0.015 88);
-  --popover: oklch(0.13 0.034 296);
-  --popover-foreground: oklch(0.955 0.015 88);
-  --primary: oklch(0.78 0.15 84);
-  --primary-foreground: oklch(0.115 0.025 292);
-  --secondary: oklch(0.22 0.07 300);
-  --secondary-foreground: oklch(0.93 0.02 88);
-  --muted: oklch(0.18 0.038 294);
-  --muted-foreground: oklch(0.72 0.035 292);
-  --accent: oklch(0.56 0.16 304);
-  --accent-foreground: oklch(0.98 0.012 88);
+  --background: oklch(0.06 0.012 275);
+  --foreground: oklch(0.94 0.005 90);
+  --card: oklch(0.105 0.015 275);
+  --card-foreground: oklch(0.94 0.005 90);
+  --popover: oklch(0.09 0.012 275);
+  --popover-foreground: oklch(0.94 0.005 90);
+  --primary: oklch(0.745 0.135 82);
+  --primary-foreground: oklch(0.08 0.012 275);
+  --secondary: oklch(0.16 0.014 275);
+  --secondary-foreground: oklch(0.92 0.008 90);
+  --muted: oklch(0.13 0.012 275);
+  --muted-foreground: oklch(0.62 0.012 275);
+  --accent: oklch(0.745 0.135 82);
+  --accent-foreground: oklch(0.08 0.012 275);
   --destructive: oklch(0.62 0.2 25);
   --destructive-foreground: oklch(0.98 0.006 88);
-  --border: oklch(0.32 0.08 298 / 55%);
-  --input: oklch(0.24 0.055 296 / 80%);
-  --ring: oklch(0.78 0.15 84);
-  --gold: oklch(0.78 0.15 84);
-  --gold-foreground: oklch(0.105 0.024 292);
-  --deep: oklch(0.11 0.038 295);
-  --veil: oklch(0.2 0.075 300 / 58%);
+  --border: oklch(0.205 0.018 275);
+  --input: oklch(0.155 0.014 275);
+  --ring: oklch(0.745 0.135 82);
+  --gold: oklch(0.745 0.135 82);
+  --gold-foreground: oklch(0.08 0.012 275);
+  --deep: oklch(0.06 0.012 275);
+  --veil: oklch(0.12 0.014 275 / 70%);
 }
 
 @layer base {
@@ -111,9 +117,10 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     letter-spacing: 0;
   }
+  /* Subtle dark navy → near-black backdrop (no purple/teal/blue gradients) */
   body::before {
     content: "";
     position: fixed;
@@ -121,22 +128,8 @@
     pointer-events: none;
     z-index: -2;
     background:
-      radial-gradient(circle at 72% 8%, color-mix(in oklab, var(--gold) 20%, transparent), transparent 26rem),
-      radial-gradient(circle at 18% 14%, color-mix(in oklab, var(--accent) 24%, transparent), transparent 28rem),
-      linear-gradient(135deg, oklch(0.055 0.02 292), var(--background) 52%, oklch(0.115 0.04 298));
-  }
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0.28;
-    background-image:
-      radial-gradient(circle, color-mix(in oklab, var(--foreground) 70%, transparent) 0 1px, transparent 1.4px),
-      radial-gradient(circle, color-mix(in oklab, var(--gold) 80%, transparent) 0 1px, transparent 1.5px);
-    background-position: 0 0, 32px 48px;
-    background-size: 96px 96px, 142px 142px;
+      radial-gradient(circle at 75% 10%, color-mix(in oklab, var(--gold) 8%, transparent), transparent 30rem),
+      linear-gradient(160deg, oklch(0.05 0.01 275), var(--background) 60%, oklch(0.04 0.008 275));
   }
 }
 
@@ -145,39 +138,88 @@
   .hk-container { width: min(1120px, calc(100% - 2rem)); margin-inline: auto; }
   .hk-panel {
     border: 1px solid var(--color-border);
-    background: linear-gradient(145deg, color-mix(in oklab, var(--card) 92%, transparent), color-mix(in oklab, var(--veil) 78%, transparent));
+    background: color-mix(in oklab, var(--card) 92%, transparent);
     box-shadow: var(--shadow-luxury);
     backdrop-filter: blur(18px);
   }
   .hk-gold-text { color: var(--color-gold); }
   .hk-eyebrow { color: var(--color-gold); text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.75rem; font-weight: 700; }
-  .hk-heading { font-family: Georgia, "Times New Roman", serif; letter-spacing: 0; font-weight: 700; line-height: 0.98; }
+  .hk-heading,
+  h1, h2, h3 {
+    font-family: "Cinzel", "Syne", Georgia, "Times New Roman", serif;
+    letter-spacing: 0.01em;
+    font-weight: 600;
+  }
   .hk-button-primary {
-    background: linear-gradient(135deg, var(--color-gold), oklch(0.68 0.12 74));
+    background: var(--color-gold);
     color: var(--color-gold-foreground);
-    box-shadow: 0 18px 45px -24px color-mix(in oklab, var(--gold) 80%, transparent);
+    box-shadow: 0 18px 45px -24px color-mix(in oklab, var(--gold) 60%, transparent);
   }
-  .hk-button-primary:hover { transform: translateY(-1px); filter: brightness(1.04); }
+  .hk-button-primary:hover { transform: translateY(-1px); filter: brightness(1.06); }
   .hk-button-outline {
-    border: 1px solid color-mix(in oklab, var(--gold) 72%, var(--border));
+    border: 1px solid color-mix(in oklab, var(--gold) 60%, var(--border));
     color: var(--color-gold);
-    background: color-mix(in oklab, var(--card) 54%, transparent);
+    background: color-mix(in oklab, var(--card) 65%, transparent);
   }
-  .hk-button-outline:hover { background: color-mix(in oklab, var(--gold) 12%, var(--card)); transform: translateY(-1px); }
+  .hk-button-outline:hover { background: color-mix(in oklab, var(--gold) 10%, var(--card)); transform: translateY(-1px); }
   .hk-input {
     border: 1px solid var(--color-border);
-    background: color-mix(in oklab, var(--input) 75%, transparent);
+    background: color-mix(in oklab, var(--input) 80%, transparent);
     color: var(--color-foreground);
   }
-  .hk-input:focus { outline: 2px solid color-mix(in oklab, var(--ring) 72%, transparent); outline-offset: 2px; }
+  .hk-input:focus { outline: 2px solid color-mix(in oklab, var(--ring) 70%, transparent); outline-offset: 2px; }
   .hk-card-hover { transition: transform 180ms ease, border-color 180ms ease, background 180ms ease; }
-  .hk-card-hover:hover { transform: translateY(-3px); border-color: color-mix(in oklab, var(--gold) 62%, var(--border)); }
+  .hk-card-hover:hover { transform: translateY(-3px); border-color: color-mix(in oklab, var(--gold) 55%, var(--border)); }
+
+  /* Starfield — pure CSS, low-opacity scattered dots */
+  .hk-starfield {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .hk-starfield::before,
+  .hk-starfield::after {
+    content: "";
+    position: absolute;
+    inset: -10%;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.55), transparent 60%),
+      radial-gradient(1px 1px at 28% 72%, rgba(255,255,255,0.4), transparent 60%),
+      radial-gradient(1.2px 1.2px at 44% 36%, rgba(201,168,76,0.5), transparent 60%),
+      radial-gradient(1px 1px at 60% 84%, rgba(255,255,255,0.45), transparent 60%),
+      radial-gradient(1px 1px at 76% 22%, rgba(255,255,255,0.35), transparent 60%),
+      radial-gradient(1.2px 1.2px at 88% 58%, rgba(201,168,76,0.45), transparent 60%),
+      radial-gradient(1px 1px at 8% 88%, rgba(255,255,255,0.4), transparent 60%),
+      radial-gradient(1px 1px at 36% 6%, rgba(255,255,255,0.5), transparent 60%),
+      radial-gradient(1px 1px at 92% 12%, rgba(255,255,255,0.4), transparent 60%),
+      radial-gradient(1px 1px at 68% 50%, rgba(201,168,76,0.4), transparent 60%);
+    background-size: 100% 100%;
+    opacity: 0.45;
+  }
+  .hk-starfield::after {
+    background-image:
+      radial-gradient(1px 1px at 20% 40%, rgba(255,255,255,0.35), transparent 60%),
+      radial-gradient(1px 1px at 50% 12%, rgba(255,255,255,0.4), transparent 60%),
+      radial-gradient(1px 1px at 80% 70%, rgba(255,255,255,0.3), transparent 60%),
+      radial-gradient(1.5px 1.5px at 33% 60%, rgba(201,168,76,0.35), transparent 60%),
+      radial-gradient(1px 1px at 66% 30%, rgba(255,255,255,0.4), transparent 60%),
+      radial-gradient(1px 1px at 14% 64%, rgba(255,255,255,0.3), transparent 60%);
+    opacity: 0.35;
+    animation: hk-twinkle 6s ease-in-out infinite alternate;
+  }
+
   .hk-orbit { animation: hk-orbit 18s linear infinite; }
   @media (prefers-reduced-motion: reduce) {
-    .hk-orbit { animation: none; }
+    .hk-orbit, .hk-starfield::after { animation: none; }
     .hk-card-hover, .hk-button-primary, .hk-button-outline { transition: none; }
     .hk-card-hover:hover, .hk-button-primary:hover, .hk-button-outline:hover { transform: none; }
   }
 }
 
 @keyframes hk-orbit { to { transform: rotate(360deg); } }
+@keyframes hk-twinkle {
+  from { opacity: 0.2; }
+  to { opacity: 0.5; }
+}
+
