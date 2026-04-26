@@ -200,6 +200,8 @@ export interface FileRoutesById {
   '/sessions': typeof SessionsRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
+  '/dimensions': typeof DimensionsRoute
+  '/dimensions/$slug': typeof DimensionsSlugRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -223,6 +225,8 @@ export interface FileRouteTypes {
     | '/sessions'
     | '/terms'
     | '/uid-lookup'
+    | '/dimensions'
+    | '/dimensions/$slug'
     | '/admin/dashboard'
     | '/admin/login'
     | '/email/unsubscribe'
@@ -244,6 +248,8 @@ export interface FileRouteTypes {
     | '/sessions'
     | '/terms'
     | '/uid-lookup'
+    | '/dimensions'
+    | '/dimensions/$slug'
     | '/admin/dashboard'
     | '/admin/login'
     | '/email/unsubscribe'
@@ -265,6 +271,8 @@ export interface FileRouteTypes {
     | '/sessions'
     | '/terms'
     | '/uid-lookup'
+    | '/dimensions'
+    | '/dimensions/$slug'
     | '/admin/dashboard'
     | '/admin/login'
     | '/email/unsubscribe'
