@@ -295,6 +295,8 @@ export interface RootRouteChildren {
   SessionsRoute: typeof SessionsRoute
   TermsRoute: typeof TermsRoute
   UidLookupRoute: typeof UidLookupRoute
+  DimensionsRoute: typeof DimensionsRoute
+  DimensionsSlugRoute: typeof DimensionsSlugRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -309,6 +311,20 @@ declare module '@tanstack/react-router' {
       path: '/uid-lookup'
       fullPath: '/uid-lookup'
       preLoaderRoute: typeof UidLookupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dimensions': {
+      id: '/dimensions'
+      path: '/dimensions'
+      fullPath: '/dimensions'
+      preLoaderRoute: typeof DimensionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dimensions/$slug': {
+      id: '/dimensions/$slug'
+      path: '/dimensions/$slug'
+      fullPath: '/dimensions/$slug'
+      preLoaderRoute: typeof DimensionsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -465,6 +481,8 @@ const rootRouteChildren: RootRouteChildren = {
   SessionsRoute: SessionsRoute,
   TermsRoute: TermsRoute,
   UidLookupRoute: UidLookupRoute,
+  DimensionsRoute: DimensionsRoute,
+  DimensionsSlugRoute: DimensionsSlugRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
