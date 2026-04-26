@@ -22,13 +22,17 @@ function Index() {
 
   return (
     <>
-      <section className="hk-container py-14 md:py-20">
-        <p className="hk-eyebrow">Decision clarity engine</p>
-        <h1 className="hk-heading mt-5 text-5xl md:text-7xl">Decode Your Patterns. <span className="hk-gold-text">Decide Your Direction.</span></h1>
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">Hiren Kundli is a calm, structured system for reading patterns, identifying decision friction, and choosing the next direction with more clarity.</p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link to="/apply" className="hk-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition">Start with Yourself <ArrowRight className="size-4" /></Link>
-          <Link to="/sessions" className="hk-button-outline inline-flex rounded-full px-6 py-3 font-semibold transition">View Sessions</Link>
+      <section className="relative overflow-hidden">
+        <div className="hk-starfield" aria-hidden="true" />
+        <div className="hk-container relative py-14 md:py-24">
+          <p className="hk-eyebrow">Decision clarity engine</p>
+          <h1 className="hk-heading mt-5 text-5xl md:text-7xl">Decode Your Patterns. <span className="hk-gold-text">Decide Your Direction.</span></h1>
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">Hiren Kundli is a calm, structured system for reading patterns, identifying decision friction, and choosing the next direction with more clarity.</p>
+          <p className="mt-3 text-sm tracking-wider text-muted-foreground/80">Decoding Time · Karma · Decisions</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link to="/apply" className="hk-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition">Start with Yourself <ArrowRight className="size-4" /></Link>
+            <Link to="/sessions" className="hk-button-outline inline-flex rounded-full px-6 py-3 font-semibold transition">View Sessions</Link>
+          </div>
         </div>
       </section>
 
