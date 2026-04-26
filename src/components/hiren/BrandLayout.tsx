@@ -1,4 +1,5 @@
 import { Link, Outlet } from "@tanstack/react-router";
+import logoUrl from "@/assets/hiren-kundli-logo.jpg";
 
 const navItems = [
   { to: "/", label: "Home" },
@@ -17,9 +18,14 @@ export function BrandLayout() {
       <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-xl">
         <div className="hk-container flex min-h-20 items-center justify-between gap-4 py-3">
           <Link to="/" className="flex items-center gap-3" aria-label="Hiren Kundli home">
+            <img
+              src={logoUrl}
+              alt="Hiren Kundli"
+              className="h-11 w-11 rounded-full object-cover ring-1 ring-primary/40"
+            />
             <div className="leading-tight">
-              <div className="hk-gold-text font-serif text-xl font-bold">Hiren Kundli</div>
-              <div className="text-xs text-muted-foreground">Clarity • Patterns • Decisions</div>
+              <div className="hk-gold-text font-serif text-xl font-bold tracking-wide">Hiren Kundli</div>
+              <div className="text-xs text-muted-foreground">Decoding Time · Karma · Decisions</div>
             </div>
           </Link>
           <nav className="hidden items-center gap-5 text-sm text-muted-foreground lg:flex">
@@ -48,7 +54,7 @@ export function BrandLayout() {
         <div className="hk-container grid gap-6 text-sm text-muted-foreground md:grid-cols-[1fr_auto] md:items-center">
           <div>
             <div className="hk-gold-text font-serif text-xl font-bold">Hiren Kundli</div>
-            <p className="mt-2 max-w-2xl">A structured decision clarity system. No prediction language, no fear, no clichés.</p>
+            <p className="mt-2 max-w-2xl">Decoding Time · Karma · Decisions. A structured decision clarity system — no prediction language, no fear, no clichés.</p>
           </div>
           <div className="flex flex-wrap gap-4">
             <Link to="/terms">Terms</Link>
