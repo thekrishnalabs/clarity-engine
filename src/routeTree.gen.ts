@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UidLookupRouteImport } from './routes/uid-lookup'
+import { Route as DimensionsRouteImport } from './routes/dimensions'
+import { Route as DimensionsSlugRouteImport } from './routes/dimensions.$slug'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as RefundRouteImport } from './routes/refund'
@@ -32,6 +34,16 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 const UidLookupRoute = UidLookupRouteImport.update({
   id: '/uid-lookup',
   path: '/uid-lookup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DimensionsRoute = DimensionsRouteImport.update({
+  id: '/dimensions',
+  path: '/dimensions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DimensionsSlugRoute = DimensionsSlugRouteImport.update({
+  id: '/dimensions/$slug',
+  path: '/dimensions/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
