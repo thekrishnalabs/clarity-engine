@@ -10,13 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UidLookupRouteImport } from './routes/uid-lookup'
-import { Route as DimensionsRouteImport } from './routes/dimensions'
-import { Route as DimensionsSlugRouteImport } from './routes/dimensions.$slug'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DimensionsRouteImport } from './routes/dimensions'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as ApplyRouteImport } from './routes/apply'
@@ -24,6 +23,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
+import { Route as DimensionsSlugRouteImport } from './routes/dimensions.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
@@ -34,16 +34,6 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 const UidLookupRoute = UidLookupRouteImport.update({
   id: '/uid-lookup',
   path: '/uid-lookup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DimensionsRoute = DimensionsRouteImport.update({
-  id: '/dimensions',
-  path: '/dimensions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DimensionsSlugRoute = DimensionsSlugRouteImport.update({
-  id: '/dimensions/$slug',
-  path: '/dimensions/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -69,6 +59,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DimensionsRoute = DimensionsRouteImport.update({
+  id: '/dimensions',
+  path: '/dimensions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -105,6 +100,11 @@ const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DimensionsSlugRoute = DimensionsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => DimensionsRoute,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
@@ -147,16 +147,16 @@ export interface FileRoutesByFullPath {
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
+  '/dimensions': typeof DimensionsRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
-  '/dimensions': typeof DimensionsRoute
-  '/dimensions/$slug': typeof DimensionsSlugRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
+  '/dimensions/$slug': typeof DimensionsSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -170,16 +170,16 @@ export interface FileRoutesByTo {
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
+  '/dimensions': typeof DimensionsRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
-  '/dimensions': typeof DimensionsRoute
-  '/dimensions/$slug': typeof DimensionsSlugRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
+  '/dimensions/$slug': typeof DimensionsSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -194,16 +194,16 @@ export interface FileRoutesById {
   '/apply': typeof ApplyRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
+  '/dimensions': typeof DimensionsRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
-  '/dimensions': typeof DimensionsRoute
-  '/dimensions/$slug': typeof DimensionsSlugRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
+  '/dimensions/$slug': typeof DimensionsSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -219,16 +219,16 @@ export interface FileRouteTypes {
     | '/apply'
     | '/book'
     | '/contact'
+    | '/dimensions'
     | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
     | '/terms'
     | '/uid-lookup'
-    | '/dimensions'
-    | '/dimensions/$slug'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/dimensions/$slug'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -242,16 +242,16 @@ export interface FileRouteTypes {
     | '/apply'
     | '/book'
     | '/contact'
+    | '/dimensions'
     | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
     | '/terms'
     | '/uid-lookup'
-    | '/dimensions'
-    | '/dimensions/$slug'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/dimensions/$slug'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -265,16 +265,16 @@ export interface FileRouteTypes {
     | '/apply'
     | '/book'
     | '/contact'
+    | '/dimensions'
     | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
     | '/terms'
     | '/uid-lookup'
-    | '/dimensions'
-    | '/dimensions/$slug'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/dimensions/$slug'
     | '/email/unsubscribe'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -289,14 +289,13 @@ export interface RootRouteChildren {
   ApplyRoute: typeof ApplyRoute
   BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
+  DimensionsRoute: typeof DimensionsRouteWithChildren
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
   SessionsRoute: typeof SessionsRoute
   TermsRoute: typeof TermsRoute
   UidLookupRoute: typeof UidLookupRoute
-  DimensionsRoute: typeof DimensionsRoute
-  DimensionsSlugRoute: typeof DimensionsSlugRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -311,20 +310,6 @@ declare module '@tanstack/react-router' {
       path: '/uid-lookup'
       fullPath: '/uid-lookup'
       preLoaderRoute: typeof UidLookupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dimensions': {
-      id: '/dimensions'
-      path: '/dimensions'
-      fullPath: '/dimensions'
-      preLoaderRoute: typeof DimensionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dimensions/$slug': {
-      id: '/dimensions/$slug'
-      path: '/dimensions/$slug'
-      fullPath: '/dimensions/$slug'
-      preLoaderRoute: typeof DimensionsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -360,6 +345,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dimensions': {
+      id: '/dimensions'
+      path: '/dimensions'
+      fullPath: '/dimensions'
+      preLoaderRoute: typeof DimensionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -410,6 +402,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/email/unsubscribe'
       preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dimensions/$slug': {
+      id: '/dimensions/$slug'
+      path: '/$slug'
+      fullPath: '/dimensions/$slug'
+      preLoaderRoute: typeof DimensionsSlugRouteImport
+      parentRoute: typeof DimensionsRoute
     }
     '/admin/login': {
       id: '/admin/login'
@@ -468,6 +467,18 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface DimensionsRouteChildren {
+  DimensionsSlugRoute: typeof DimensionsSlugRoute
+}
+
+const DimensionsRouteChildren: DimensionsRouteChildren = {
+  DimensionsSlugRoute: DimensionsSlugRoute,
+}
+
+const DimensionsRouteWithChildren = DimensionsRoute._addFileChildren(
+  DimensionsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -475,14 +486,13 @@ const rootRouteChildren: RootRouteChildren = {
   ApplyRoute: ApplyRoute,
   BookRoute: BookRoute,
   ContactRoute: ContactRoute,
+  DimensionsRoute: DimensionsRouteWithChildren,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
   SessionsRoute: SessionsRoute,
   TermsRoute: TermsRoute,
   UidLookupRoute: UidLookupRoute,
-  DimensionsRoute: DimensionsRoute,
-  DimensionsSlugRoute: DimensionsSlugRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
