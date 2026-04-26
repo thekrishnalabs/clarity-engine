@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UidLookupRouteImport } from './routes/uid-lookup'
+import { Route as DimensionsRouteImport } from './routes/dimensions'
+import { Route as DimensionsSlugRouteImport } from './routes/dimensions.$slug'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as RefundRouteImport } from './routes/refund'
@@ -32,6 +34,16 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 const UidLookupRoute = UidLookupRouteImport.update({
   id: '/uid-lookup',
   path: '/uid-lookup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DimensionsRoute = DimensionsRouteImport.update({
+  id: '/dimensions',
+  path: '/dimensions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DimensionsSlugRoute = DimensionsSlugRouteImport.update({
+  id: '/dimensions/$slug',
+  path: '/dimensions/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -141,6 +153,8 @@ export interface FileRoutesByFullPath {
   '/sessions': typeof SessionsRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
+  '/dimensions': typeof DimensionsRoute
+  '/dimensions/$slug': typeof DimensionsSlugRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -162,6 +176,8 @@ export interface FileRoutesByTo {
   '/sessions': typeof SessionsRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
+  '/dimensions': typeof DimensionsRoute
+  '/dimensions/$slug': typeof DimensionsSlugRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -184,6 +200,8 @@ export interface FileRoutesById {
   '/sessions': typeof SessionsRoute
   '/terms': typeof TermsRoute
   '/uid-lookup': typeof UidLookupRoute
+  '/dimensions': typeof DimensionsRoute
+  '/dimensions/$slug': typeof DimensionsSlugRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -207,6 +225,8 @@ export interface FileRouteTypes {
     | '/sessions'
     | '/terms'
     | '/uid-lookup'
+    | '/dimensions'
+    | '/dimensions/$slug'
     | '/admin/dashboard'
     | '/admin/login'
     | '/email/unsubscribe'
@@ -228,6 +248,8 @@ export interface FileRouteTypes {
     | '/sessions'
     | '/terms'
     | '/uid-lookup'
+    | '/dimensions'
+    | '/dimensions/$slug'
     | '/admin/dashboard'
     | '/admin/login'
     | '/email/unsubscribe'
@@ -249,6 +271,8 @@ export interface FileRouteTypes {
     | '/sessions'
     | '/terms'
     | '/uid-lookup'
+    | '/dimensions'
+    | '/dimensions/$slug'
     | '/admin/dashboard'
     | '/admin/login'
     | '/email/unsubscribe'
@@ -271,6 +295,8 @@ export interface RootRouteChildren {
   SessionsRoute: typeof SessionsRoute
   TermsRoute: typeof TermsRoute
   UidLookupRoute: typeof UidLookupRoute
+  DimensionsRoute: typeof DimensionsRoute
+  DimensionsSlugRoute: typeof DimensionsSlugRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -285,6 +311,20 @@ declare module '@tanstack/react-router' {
       path: '/uid-lookup'
       fullPath: '/uid-lookup'
       preLoaderRoute: typeof UidLookupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dimensions': {
+      id: '/dimensions'
+      path: '/dimensions'
+      fullPath: '/dimensions'
+      preLoaderRoute: typeof DimensionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dimensions/$slug': {
+      id: '/dimensions/$slug'
+      path: '/dimensions/$slug'
+      fullPath: '/dimensions/$slug'
+      preLoaderRoute: typeof DimensionsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -441,6 +481,8 @@ const rootRouteChildren: RootRouteChildren = {
   SessionsRoute: SessionsRoute,
   TermsRoute: TermsRoute,
   UidLookupRoute: UidLookupRoute,
+  DimensionsRoute: DimensionsRoute,
+  DimensionsSlugRoute: DimensionsSlugRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
