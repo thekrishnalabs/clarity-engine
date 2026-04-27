@@ -1,12 +1,12 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/contexts/AuthContext";
 import logoUrl from "@/assets/hiren-kundli-logo.jpg";
 
 export const Route = createFileRoute("/get-started")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    redirect: typeof search.redirect === "string" && search.redirect.startsWith("/") ? search.redirect : "/app",
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
+    redirect: typeof search.redirect === "string" && search.redirect.startsWith("/") ? search.redirect : undefined,
   }),
   head: () => ({
     meta: [
@@ -18,8 +18,8 @@ export const Route = createFileRoute("/get-started")({
 });
 
 function GetStartedPage() {
-  const navigate = useNavigate();
-  const { redirect } = Route.useSearch();
+  const search = Route.useSearch();
+  const redirect = search.redirect ?? "/app";
   const { user, isLoading } = useAuth();
   const [busy, setBusy] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
