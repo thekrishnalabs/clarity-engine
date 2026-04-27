@@ -25,6 +25,14 @@ import { Route as ShyamUidSearchRouteImport } from './routes/shyam.uid-search'
 import { Route as ShyamPostsRouteImport } from './routes/shyam.posts'
 import { Route as ShyamDashboardRouteImport } from './routes/shyam.dashboard'
 import { Route as ShyamBookingsRouteImport } from './routes/shyam.bookings'
+import { Route as SessionsVipPlatinumRouteImport } from './routes/sessions.vip-platinum'
+import { Route as SessionsSilverPrimeLiteRouteImport } from './routes/sessions.silver-prime-lite'
+import { Route as SessionsSilverPrimeRouteImport } from './routes/sessions.silver-prime'
+import { Route as SessionsSilverRouteImport } from './routes/sessions.silver'
+import { Route as SessionsPlatinumRouteImport } from './routes/sessions.platinum'
+import { Route as SessionsGoldPrimeRouteImport } from './routes/sessions.gold-prime'
+import { Route as SessionsGoldRouteImport } from './routes/sessions.gold'
+import { Route as SessionsBronzeRouteImport } from './routes/sessions.bronze'
 import { Route as DimensionsSlugRouteImport } from './routes/dimensions.$slug'
 import { Route as AppVoiceRoomRouteImport } from './routes/app.voice-room'
 import { Route as AppBookRouteImport } from './routes/app.book'
@@ -110,6 +118,46 @@ const ShyamBookingsRoute = ShyamBookingsRouteImport.update({
   path: '/shyam/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SessionsVipPlatinumRoute = SessionsVipPlatinumRouteImport.update({
+  id: '/vip-platinum',
+  path: '/vip-platinum',
+  getParentRoute: () => SessionsRoute,
+} as any)
+const SessionsSilverPrimeLiteRoute = SessionsSilverPrimeLiteRouteImport.update({
+  id: '/silver-prime-lite',
+  path: '/silver-prime-lite',
+  getParentRoute: () => SessionsRoute,
+} as any)
+const SessionsSilverPrimeRoute = SessionsSilverPrimeRouteImport.update({
+  id: '/silver-prime',
+  path: '/silver-prime',
+  getParentRoute: () => SessionsRoute,
+} as any)
+const SessionsSilverRoute = SessionsSilverRouteImport.update({
+  id: '/silver',
+  path: '/silver',
+  getParentRoute: () => SessionsRoute,
+} as any)
+const SessionsPlatinumRoute = SessionsPlatinumRouteImport.update({
+  id: '/platinum',
+  path: '/platinum',
+  getParentRoute: () => SessionsRoute,
+} as any)
+const SessionsGoldPrimeRoute = SessionsGoldPrimeRouteImport.update({
+  id: '/gold-prime',
+  path: '/gold-prime',
+  getParentRoute: () => SessionsRoute,
+} as any)
+const SessionsGoldRoute = SessionsGoldRouteImport.update({
+  id: '/gold',
+  path: '/gold',
+  getParentRoute: () => SessionsRoute,
+} as any)
+const SessionsBronzeRoute = SessionsBronzeRouteImport.update({
+  id: '/bronze',
+  path: '/bronze',
+  getParentRoute: () => SessionsRoute,
+} as any)
 const DimensionsSlugRoute = DimensionsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -139,11 +187,19 @@ export interface FileRoutesByFullPath {
   '/get-started': typeof GetStartedRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
-  '/sessions': typeof SessionsRoute
+  '/sessions': typeof SessionsRouteWithChildren
   '/terms': typeof TermsRoute
   '/app/book': typeof AppBookRoute
   '/app/voice-room': typeof AppVoiceRoomRoute
   '/dimensions/$slug': typeof DimensionsSlugRoute
+  '/sessions/bronze': typeof SessionsBronzeRoute
+  '/sessions/gold': typeof SessionsGoldRoute
+  '/sessions/gold-prime': typeof SessionsGoldPrimeRoute
+  '/sessions/platinum': typeof SessionsPlatinumRoute
+  '/sessions/silver': typeof SessionsSilverRoute
+  '/sessions/silver-prime': typeof SessionsSilverPrimeRoute
+  '/sessions/silver-prime-lite': typeof SessionsSilverPrimeLiteRoute
+  '/sessions/vip-platinum': typeof SessionsVipPlatinumRoute
   '/shyam/bookings': typeof ShyamBookingsRoute
   '/shyam/dashboard': typeof ShyamDashboardRoute
   '/shyam/posts': typeof ShyamPostsRoute
@@ -161,11 +217,19 @@ export interface FileRoutesByTo {
   '/get-started': typeof GetStartedRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
-  '/sessions': typeof SessionsRoute
+  '/sessions': typeof SessionsRouteWithChildren
   '/terms': typeof TermsRoute
   '/app/book': typeof AppBookRoute
   '/app/voice-room': typeof AppVoiceRoomRoute
   '/dimensions/$slug': typeof DimensionsSlugRoute
+  '/sessions/bronze': typeof SessionsBronzeRoute
+  '/sessions/gold': typeof SessionsGoldRoute
+  '/sessions/gold-prime': typeof SessionsGoldPrimeRoute
+  '/sessions/platinum': typeof SessionsPlatinumRoute
+  '/sessions/silver': typeof SessionsSilverRoute
+  '/sessions/silver-prime': typeof SessionsSilverPrimeRoute
+  '/sessions/silver-prime-lite': typeof SessionsSilverPrimeLiteRoute
+  '/sessions/vip-platinum': typeof SessionsVipPlatinumRoute
   '/shyam/bookings': typeof ShyamBookingsRoute
   '/shyam/dashboard': typeof ShyamDashboardRoute
   '/shyam/posts': typeof ShyamPostsRoute
@@ -184,11 +248,19 @@ export interface FileRoutesById {
   '/get-started': typeof GetStartedRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
-  '/sessions': typeof SessionsRoute
+  '/sessions': typeof SessionsRouteWithChildren
   '/terms': typeof TermsRoute
   '/app/book': typeof AppBookRoute
   '/app/voice-room': typeof AppVoiceRoomRoute
   '/dimensions/$slug': typeof DimensionsSlugRoute
+  '/sessions/bronze': typeof SessionsBronzeRoute
+  '/sessions/gold': typeof SessionsGoldRoute
+  '/sessions/gold-prime': typeof SessionsGoldPrimeRoute
+  '/sessions/platinum': typeof SessionsPlatinumRoute
+  '/sessions/silver': typeof SessionsSilverRoute
+  '/sessions/silver-prime': typeof SessionsSilverPrimeRoute
+  '/sessions/silver-prime-lite': typeof SessionsSilverPrimeLiteRoute
+  '/sessions/vip-platinum': typeof SessionsVipPlatinumRoute
   '/shyam/bookings': typeof ShyamBookingsRoute
   '/shyam/dashboard': typeof ShyamDashboardRoute
   '/shyam/posts': typeof ShyamPostsRoute
@@ -213,6 +285,14 @@ export interface FileRouteTypes {
     | '/app/book'
     | '/app/voice-room'
     | '/dimensions/$slug'
+    | '/sessions/bronze'
+    | '/sessions/gold'
+    | '/sessions/gold-prime'
+    | '/sessions/platinum'
+    | '/sessions/silver'
+    | '/sessions/silver-prime'
+    | '/sessions/silver-prime-lite'
+    | '/sessions/vip-platinum'
     | '/shyam/bookings'
     | '/shyam/dashboard'
     | '/shyam/posts'
@@ -235,6 +315,14 @@ export interface FileRouteTypes {
     | '/app/book'
     | '/app/voice-room'
     | '/dimensions/$slug'
+    | '/sessions/bronze'
+    | '/sessions/gold'
+    | '/sessions/gold-prime'
+    | '/sessions/platinum'
+    | '/sessions/silver'
+    | '/sessions/silver-prime'
+    | '/sessions/silver-prime-lite'
+    | '/sessions/vip-platinum'
     | '/shyam/bookings'
     | '/shyam/dashboard'
     | '/shyam/posts'
@@ -257,6 +345,14 @@ export interface FileRouteTypes {
     | '/app/book'
     | '/app/voice-room'
     | '/dimensions/$slug'
+    | '/sessions/bronze'
+    | '/sessions/gold'
+    | '/sessions/gold-prime'
+    | '/sessions/platinum'
+    | '/sessions/silver'
+    | '/sessions/silver-prime'
+    | '/sessions/silver-prime-lite'
+    | '/sessions/vip-platinum'
     | '/shyam/bookings'
     | '/shyam/dashboard'
     | '/shyam/posts'
@@ -275,7 +371,7 @@ export interface RootRouteChildren {
   GetStartedRoute: typeof GetStartedRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
-  SessionsRoute: typeof SessionsRoute
+  SessionsRoute: typeof SessionsRouteWithChildren
   TermsRoute: typeof TermsRoute
   AppBookRoute: typeof AppBookRoute
   AppVoiceRoomRoute: typeof AppVoiceRoomRoute
@@ -403,6 +499,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShyamBookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sessions/vip-platinum': {
+      id: '/sessions/vip-platinum'
+      path: '/vip-platinum'
+      fullPath: '/sessions/vip-platinum'
+      preLoaderRoute: typeof SessionsVipPlatinumRouteImport
+      parentRoute: typeof SessionsRoute
+    }
+    '/sessions/silver-prime-lite': {
+      id: '/sessions/silver-prime-lite'
+      path: '/silver-prime-lite'
+      fullPath: '/sessions/silver-prime-lite'
+      preLoaderRoute: typeof SessionsSilverPrimeLiteRouteImport
+      parentRoute: typeof SessionsRoute
+    }
+    '/sessions/silver-prime': {
+      id: '/sessions/silver-prime'
+      path: '/silver-prime'
+      fullPath: '/sessions/silver-prime'
+      preLoaderRoute: typeof SessionsSilverPrimeRouteImport
+      parentRoute: typeof SessionsRoute
+    }
+    '/sessions/silver': {
+      id: '/sessions/silver'
+      path: '/silver'
+      fullPath: '/sessions/silver'
+      preLoaderRoute: typeof SessionsSilverRouteImport
+      parentRoute: typeof SessionsRoute
+    }
+    '/sessions/platinum': {
+      id: '/sessions/platinum'
+      path: '/platinum'
+      fullPath: '/sessions/platinum'
+      preLoaderRoute: typeof SessionsPlatinumRouteImport
+      parentRoute: typeof SessionsRoute
+    }
+    '/sessions/gold-prime': {
+      id: '/sessions/gold-prime'
+      path: '/gold-prime'
+      fullPath: '/sessions/gold-prime'
+      preLoaderRoute: typeof SessionsGoldPrimeRouteImport
+      parentRoute: typeof SessionsRoute
+    }
+    '/sessions/gold': {
+      id: '/sessions/gold'
+      path: '/gold'
+      fullPath: '/sessions/gold'
+      preLoaderRoute: typeof SessionsGoldRouteImport
+      parentRoute: typeof SessionsRoute
+    }
+    '/sessions/bronze': {
+      id: '/sessions/bronze'
+      path: '/bronze'
+      fullPath: '/sessions/bronze'
+      preLoaderRoute: typeof SessionsBronzeRouteImport
+      parentRoute: typeof SessionsRoute
+    }
     '/dimensions/$slug': {
       id: '/dimensions/$slug'
       path: '/$slug'
@@ -446,6 +598,32 @@ const DimensionsRouteWithChildren = DimensionsRoute._addFileChildren(
   DimensionsRouteChildren,
 )
 
+interface SessionsRouteChildren {
+  SessionsBronzeRoute: typeof SessionsBronzeRoute
+  SessionsGoldRoute: typeof SessionsGoldRoute
+  SessionsGoldPrimeRoute: typeof SessionsGoldPrimeRoute
+  SessionsPlatinumRoute: typeof SessionsPlatinumRoute
+  SessionsSilverRoute: typeof SessionsSilverRoute
+  SessionsSilverPrimeRoute: typeof SessionsSilverPrimeRoute
+  SessionsSilverPrimeLiteRoute: typeof SessionsSilverPrimeLiteRoute
+  SessionsVipPlatinumRoute: typeof SessionsVipPlatinumRoute
+}
+
+const SessionsRouteChildren: SessionsRouteChildren = {
+  SessionsBronzeRoute: SessionsBronzeRoute,
+  SessionsGoldRoute: SessionsGoldRoute,
+  SessionsGoldPrimeRoute: SessionsGoldPrimeRoute,
+  SessionsPlatinumRoute: SessionsPlatinumRoute,
+  SessionsSilverRoute: SessionsSilverRoute,
+  SessionsSilverPrimeRoute: SessionsSilverPrimeRoute,
+  SessionsSilverPrimeLiteRoute: SessionsSilverPrimeLiteRoute,
+  SessionsVipPlatinumRoute: SessionsVipPlatinumRoute,
+}
+
+const SessionsRouteWithChildren = SessionsRoute._addFileChildren(
+  SessionsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -454,7 +632,7 @@ const rootRouteChildren: RootRouteChildren = {
   GetStartedRoute: GetStartedRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
-  SessionsRoute: SessionsRoute,
+  SessionsRoute: SessionsRouteWithChildren,
   TermsRoute: TermsRoute,
   AppBookRoute: AppBookRoute,
   AppVoiceRoomRoute: AppVoiceRoomRoute,
