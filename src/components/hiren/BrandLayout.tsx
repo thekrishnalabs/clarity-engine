@@ -1,13 +1,11 @@
 import { Link, Outlet } from "@tanstack/react-router";
 import logoUrl from "@/assets/hiren-kundli-logo.jpg";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/sessions", label: "Sessions" },
   { to: "/dimensions", label: "Dimensions" },
-  { to: "/apply", label: "Apply" },
-  { to: "/book", label: "Book" },
-  { to: "/uid-lookup", label: "UID" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ] as const;
