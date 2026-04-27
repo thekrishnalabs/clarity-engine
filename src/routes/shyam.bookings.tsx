@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminRoute } from "@/components/auth/RouteGuards";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   attachUidToBooking,
   createUidRecord,
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/shyam/bookings")({
 });
 
 function BookingsAdmin() {
+  const { user } = useAuth();
   const [items, setItems] = useState<(SessionBooking & { id: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -30,7 +32,7 @@ function BookingsAdmin() {
   async function refresh() {
     setLoading(true);
     try {
-      setItems(await listAllBookings());
+      setItems(await listAllBookings(user?.email));
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed to load.");
     } finally {
@@ -61,8 +63,8 @@ function BookingsAdmin() {
         user_phone: b.user_phone,
         user_lovable_uid: b.user_lovable_uid ?? null,
         notes: b.notes,
-      });
-      await attachUidToBooking(b.id, uid);
+      }, user?.email);
+      await attachUidToBooking(b.id, uid, user?.email);
       await refresh();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed to generate UID.");
@@ -117,6 +119,7 @@ function BookingsAdmin() {
 }
 
 function SplApplicationsSection() {
+  const { user } = useAuth();
   const [apps, setApps] = useState<(SplApplication & { id: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -125,7 +128,7 @@ function SplApplicationsSection() {
   async function refresh() {
     setLoading(true);
     try {
-      setApps(await listSplApplications());
+      setApps(await listSplApplications(user?.email));
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed to load applications.");
     } finally {
@@ -138,7 +141,7 @@ function SplApplicationsSection() {
   async function updateStatus(id: string, status: SplApplication["status"]) {
     setBusyId(id);
     try {
-      await setSplApplicationStatus(id, status);
+      await setSplApplicationStatus(id, status, user?.email);
       await refresh();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed to update status.");

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { type FormEvent, useEffect, useState } from "react";
 import { AdminRoute } from "@/components/auth/RouteGuards";
+import { useAuth } from "@/contexts/AuthContext";
 import { createPost, listAllPosts, setPostPublished, type AdminPost } from "@/lib/firestore";
 
 export const Route = createFileRoute("/shyam/posts")({
@@ -15,13 +16,14 @@ export const Route = createFileRoute("/shyam/posts")({
 const TYPES: AdminPost["type"][] = ["announcement", "session_update", "insight", "dimension_note"];
 
 function PostsAdmin() {
+  const { user } = useAuth();
   const [posts, setPosts] = useState<(AdminPost & { id: string })[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   async function refresh() {
     try {
-      setPosts(await listAllPosts());
+      setPosts(await listAllPosts(user?.email));
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed to load posts.");
     }
@@ -41,7 +43,7 @@ function PostsAdmin() {
         content: String(fd.get("content") || "").trim(),
         type: String(fd.get("type") || "announcement") as AdminPost["type"],
         is_published: true,
-      });
+      }, user?.email);
       e.currentTarget.reset();
       await refresh();
     } catch (e) {
@@ -83,7 +85,7 @@ function PostsAdmin() {
             <div className="flex items-center justify-between gap-3">
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{p.type}</span>
               <button
-                onClick={async () => { await setPostPublished(p.id, !p.is_published); refresh(); }}
+                onClick={async () => { await setPostPublished(p.id, !p.is_published, user?.email); refresh(); }}
                 className="text-xs text-primary"
               >
                 {p.is_published ? "Unpublish" : "Publish"}

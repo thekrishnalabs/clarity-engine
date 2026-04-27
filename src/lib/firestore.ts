@@ -14,9 +14,15 @@ import {
   type DocumentData,
   type QueryConstraint,
 } from "firebase/firestore";
-import { getDb } from "./firebase";
+import { getDb, isAdminEmail } from "./firebase";
 
 export type SessionCode = "FR" | "BR" | "SI" | "SPL" | "SP" | "GD" | "GP" | "PL" | "VIP";
+
+const PAID_SESSION_CODES = ["BR", "SI", "SP", "GD", "GP", "PL", "VIP"] as const;
+
+function requireAdminEmail(adminEmail?: string | null) {
+  if (!isAdminEmail(adminEmail)) throw new Error("Admin access required.");
+}
 
 export interface UidRecord extends DocumentData {
   uid: string;
@@ -67,6 +73,10 @@ export interface VoiceRoom extends DocumentData {
 
 // ---- Bookings ----
 export async function createBooking(data: Omit<SessionBooking, "status" | "created_at">) {
+  if (!data.user_lovable_uid || !data.user_email) throw new Error("Please sign in before booking.");
+  if (!PAID_SESSION_CODES.includes(data.session_code as (typeof PAID_SESSION_CODES)[number])) {
+    throw new Error("This session cannot be booked from this form.");
+  }
   const db = getDb();
   const ref = await addDoc(collection(db, "session_bookings"), {
     ...data,
@@ -87,14 +97,16 @@ export async function listBookingsForUser(lovableUid: string): Promise<(SessionB
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SessionBooking) }));
 }
 
-export async function listAllBookings(): Promise<(SessionBooking & { id: string })[]> {
+export async function listAllBookings(adminEmail?: string | null): Promise<(SessionBooking & { id: string })[]> {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   const q = query(collection(db, "session_bookings"), orderBy("created_at", "desc"));
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SessionBooking) }));
 }
 
-export async function attachUidToBooking(bookingId: string, uid: string) {
+export async function attachUidToBooking(bookingId: string, uid: string, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   await updateDoc(doc(db, "session_bookings", bookingId), {
     generated_uid: uid,
@@ -103,7 +115,8 @@ export async function attachUidToBooking(bookingId: string, uid: string) {
 }
 
 // ---- UIDs ----
-export async function createUidRecord(rec: UidRecord) {
+export async function createUidRecord(rec: UidRecord, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   await setDoc(doc(db, "uid_records", rec.uid), {
     ...rec,
@@ -131,13 +144,15 @@ export async function listPublishedPosts(max = 20): Promise<(AdminPost & { id: s
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as AdminPost) }));
 }
 
-export async function listAllPosts(): Promise<(AdminPost & { id: string })[]> {
+export async function listAllPosts(adminEmail?: string | null): Promise<(AdminPost & { id: string })[]> {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   const snap = await getDocs(query(collection(db, "admin_posts"), orderBy("created_at", "desc")));
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as AdminPost) }));
 }
 
-export async function createPost(post: Omit<AdminPost, "created_at">) {
+export async function createPost(post: Omit<AdminPost, "created_at">, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   const ref = await addDoc(collection(db, "admin_posts"), {
     ...post,
@@ -146,7 +161,8 @@ export async function createPost(post: Omit<AdminPost, "created_at">) {
   return ref.id;
 }
 
-export async function setPostPublished(id: string, is_published: boolean) {
+export async function setPostPublished(id: string, is_published: boolean, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   await updateDoc(doc(db, "admin_posts", id), { is_published });
 }
@@ -160,13 +176,15 @@ export interface SplApplication extends DocumentData {
   submitted_at?: unknown;
 }
 
-export async function listSplApplications(): Promise<(SplApplication & { id: string })[]> {
+export async function listSplApplications(adminEmail?: string | null): Promise<(SplApplication & { id: string })[]> {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   const snap = await getDocs(query(collection(db, "spl_applications"), orderBy("submitted_at", "desc")));
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SplApplication) }));
 }
 
-export async function setSplApplicationStatus(id: string, status: SplApplication["status"]) {
+export async function setSplApplicationStatus(id: string, status: SplApplication["status"], adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   await updateDoc(doc(db, "spl_applications", id), { status });
 }
@@ -180,7 +198,8 @@ export async function getVoiceRoom(): Promise<VoiceRoom | null> {
   return snap.data() as VoiceRoom;
 }
 
-export async function setVoiceRoom(data: Omit<VoiceRoom, "created_at">) {
+export async function setVoiceRoom(data: Omit<VoiceRoom, "created_at">, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   await setDoc(
     doc(db, "voice_rooms", VOICE_ROOM_DOC),

@@ -78,7 +78,7 @@ export function SessionDetail({
           </Link>
         ) : (
           <Link
-            to="/get-started"
+            to="/app/book"
             className="hk-button-primary mt-8 inline-flex rounded-full px-8 py-3 font-semibold"
           >
             Book {name} Session →

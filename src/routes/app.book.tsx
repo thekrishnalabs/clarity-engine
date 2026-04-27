@@ -26,6 +26,7 @@ export const Route = createFileRoute("/app/book")({
 function BookForm() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [selectedCode, setSelectedCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -79,7 +80,13 @@ function BookForm() {
         <Field label="Place of Birth (City, State, Country)" name="place" required />
         <label className="grid gap-2 text-sm font-medium">
           Session
-          <select name="session_code" required className="rounded-xl border bg-background px-4 py-3">
+        <select
+          name="session_code"
+          required
+          value={selectedCode}
+          onChange={(e) => setSelectedCode(e.target.value)}
+          className="rounded-xl border bg-background px-4 py-3"
+        >
             <option value="">Select a session…</option>
             {SESSIONS.map((s) => (
               <option key={s.code} value={s.code}>
@@ -88,6 +95,11 @@ function BookForm() {
             ))}
           </select>
         </label>
+        {selectedCode && (
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 text-sm leading-6 text-muted-foreground">
+            <strong className="text-foreground">Checkout:</strong> Submit this booking first. Your request stays pending while Hiren verifies the details, then the official payment instruction is sent to your WhatsApp/email. UID is generated only after payment confirmation.
+          </div>
+        )}
         <label className="grid gap-2 text-sm font-medium">
           What do you want clarity on? (Required)
           <textarea

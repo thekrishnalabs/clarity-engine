@@ -1,10 +1,13 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/contexts/AuthContext";
 import logoUrl from "@/assets/hiren-kundli-logo.jpg";
 
 export const Route = createFileRoute("/get-started")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
+    redirect: typeof search.redirect === "string" && search.redirect.startsWith("/") ? search.redirect : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Get Started — Hiren Kundli" },
@@ -15,21 +18,22 @@ export const Route = createFileRoute("/get-started")({
 });
 
 function GetStartedPage() {
-  const navigate = useNavigate();
+  const search = Route.useSearch();
+  const redirect = search.redirect ?? "/app";
   const { user, isLoading } = useAuth();
   const [busy, setBusy] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoading && user) navigate({ to: "/app" });
-  }, [user, isLoading, navigate]);
+    if (!isLoading && user) window.location.assign(redirect);
+  }, [user, isLoading, redirect]);
 
   async function signIn(provider: "google" | "apple") {
     setError(null);
     setBusy(provider);
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: `${window.location.origin}/app`,
+        redirect_uri: `${window.location.origin}${redirect}`,
       });
       if (result.error) {
         setError(result.error.message ?? "Sign-in failed.");
@@ -37,7 +41,7 @@ function GetStartedPage() {
         return;
       }
       if (result.redirected) return;
-      navigate({ to: "/app" });
+      window.location.assign(redirect);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Sign-in failed.");
       setBusy(null);

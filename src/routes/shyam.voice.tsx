@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { type FormEvent, useEffect, useState } from "react";
 import { AdminRoute } from "@/components/auth/RouteGuards";
+import { useAuth } from "@/contexts/AuthContext";
 import { getVoiceRoom, setVoiceRoom, type VoiceRoom } from "@/lib/firestore";
 
 export const Route = createFileRoute("/shyam/voice")({
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/shyam/voice")({
 });
 
 function VoiceAdmin() {
+  const { user } = useAuth();
   const [room, setRoom] = useState<VoiceRoom | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -34,7 +36,7 @@ function VoiceAdmin() {
         max_seats: Number(fd.get("max_seats") || 10),
         is_active: fd.get("is_active") === "on",
       };
-      await setVoiceRoom(data);
+      await setVoiceRoom(data, user?.email);
       setRoom(await getVoiceRoom());
       setMsg("Saved.");
     } catch (e) {
