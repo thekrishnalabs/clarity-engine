@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/contexts/AuthContext";
+import { signInWithFirebaseGoogle } from "@/lib/firebase";
 
 export const Route = createFileRoute("/shyam/")({
   head: () => ({ meta: [{ title: "Admin — Hiren Kundli" }, { name: "robots", content: "noindex" }] }),
@@ -23,11 +23,8 @@ function ShyamSignIn() {
     setErr(null);
     setBusy(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: `${window.location.origin}/shyam/dashboard`,
-      });
-      if (result.error) setErr(result.error.message ?? "Sign-in failed.");
-      else if (!result.redirected) navigate({ to: "/shyam/dashboard" });
+      const credential = await signInWithFirebaseGoogle();
+      if (credential) navigate({ to: "/shyam/dashboard" });
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Sign-in failed.");
     } finally {

@@ -1,11 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
-import { isAdminEmail } from "@/lib/firebase";
+import { onAuthStateChanged, signOut as firebaseSignOut, type User } from "firebase/auth";
+import { getFbAuth, isAdminEmail } from "@/lib/firebase";
 
 interface AuthContextValue {
   user: User | null;
-  session: Session | null;
   isLoading: boolean;
   isAdmin: boolean;
   signOut: () => Promise<void>;
@@ -15,30 +13,24 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-    });
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
+    const unsubscribe = onAuthStateChanged(getFbAuth(), (firebaseUser) => {
+      setUser(firebaseUser);
       setIsLoading(false);
     });
-    return () => sub.subscription.unsubscribe();
+    return unsubscribe;
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await firebaseSignOut(getFbAuth());
   };
 
   const isAdmin = isAdminEmail(user?.email);
 
   return (
-    <AuthContext.Provider value={{ user, session, isLoading, isAdmin, signOut }}>
+    <AuthContext.Provider value={{ user, isLoading, isAdmin, signOut }}>
       {children}
     </AuthContext.Provider>
   );

@@ -2,6 +2,16 @@
 // NOTE: These values are PUBLISHABLE config (not secrets).
 // Real security comes from Firestore Security Rules + Lovable Cloud auth.
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
+import {
+  browserLocalPersistence,
+  getAuth,
+  GoogleAuthProvider,
+  setPersistence,
+  signInWithPopup,
+  signInWithRedirect,
+  type Auth,
+  type UserCredential,
+} from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 
@@ -16,6 +26,7 @@ const firebaseConfig = {
 };
 
 let _app: FirebaseApp | null = null;
+let _auth: Auth | null = null;
 let _db: Firestore | null = null;
 let _storage: FirebaseStorage | null = null;
 
@@ -32,6 +43,32 @@ export function getDb(): Firestore {
   if (_db) return _db;
   _db = getFirestore(getFbApp());
   return _db;
+}
+
+export function getFbAuth(): Auth {
+  if (typeof window === "undefined") {
+    throw new Error("Firebase Auth is browser-only in this app.");
+  }
+  if (_auth) return _auth;
+  _auth = getAuth(getFbApp());
+  return _auth;
+}
+
+export async function signInWithFirebaseGoogle(): Promise<UserCredential | null> {
+  const auth = getFbAuth();
+  await setPersistence(auth, browserLocalPersistence);
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  try {
+    return await signInWithPopup(auth, provider);
+  } catch (e) {
+    const code = typeof e === "object" && e !== null && "code" in e ? String((e as { code?: unknown }).code) : "";
+    if (code === "auth/popup-blocked") {
+      await signInWithRedirect(auth, provider);
+      return null;
+    }
+    throw e;
+  }
 }
 
 export function getFbStorage(): FirebaseStorage {

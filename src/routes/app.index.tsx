@@ -24,7 +24,7 @@ function AppHome() {
     if (!user) return;
     (async () => {
       try {
-        const [p, b] = await Promise.all([listPublishedPosts(20), listBookingsForUser(user.id)]);
+        const [p, b] = await Promise.all([listPublishedPosts(20), listBookingsForUser(user.uid)]);
         setPosts(p);
         setBookings(b);
       } catch (e) {
@@ -35,7 +35,7 @@ function AppHome() {
     })();
   }, [user]);
 
-  const displayName = user?.user_metadata?.full_name ?? user?.email ?? "there";
+  const displayName = user?.displayName ?? user?.email ?? "there";
 
   return (
     <section className="hk-container py-12 md:py-16">
