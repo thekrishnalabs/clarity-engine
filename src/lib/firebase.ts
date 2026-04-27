@@ -21,7 +21,7 @@ import { getStorage, type FirebaseStorage } from "firebase/storage";
 // Real security comes from Firebase Auth + Firestore Security Rules.
 const firebaseConfig = {
   apiKey: "AIzaSyBglwWFK0JFJLhV8_2M9986t2jPcFERsnk",
-  authDomain: "hirenkundli-66005.firebaseapp.com",
+  authDomain: "hirenkundli.lovable.app",
   projectId: "hirenkundli-66005",
   storageBucket: "hirenkundli-66005.firebasestorage.app",
   messagingSenderId: "270901111701",
