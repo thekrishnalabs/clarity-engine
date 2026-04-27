@@ -3,9 +3,11 @@
 // Real security comes from Firebase Auth + Firestore Security Rules.
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import {
+  AuthErrorCodes,
   browserLocalPersistence,
   getAuth,
   GoogleAuthProvider,
+  OAuthProvider,
   setPersistence,
   signInWithPopup,
   signInWithRedirect,
@@ -55,15 +57,40 @@ export function getFbAuth(): Auth {
 }
 
 export async function signInWithFirebaseGoogle(): Promise<UserCredential | null> {
-  const auth = getFbAuth();
-  await setPersistence(auth, browserLocalPersistence);
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: "select_account" });
+  return signInWithFirebaseProvider(provider);
+}
+
+export async function signInWithFirebaseApple(): Promise<UserCredential | null> {
+  const provider = new OAuthProvider("apple.com");
+  provider.addScope("email");
+  provider.addScope("name");
+  return signInWithFirebaseProvider(provider);
+}
+
+export function getFirebaseAuthErrorMessage(error: unknown): string {
+  const code = typeof error === "object" && error !== null && "code" in error ? String((error as { code?: unknown }).code) : "";
+  if (code === "auth/invalid-credential") {
+    return "Sign-in provider configuration is invalid. Please update the Firebase Google/Apple provider credentials and redeploy.";
+  }
+  if (code === "auth/unauthorized-domain") {
+    return "This domain is not authorized for Firebase sign-in.";
+  }
+  if (code === AuthErrorCodes.POPUP_CLOSED_BY_USER) {
+    return "Sign-in was cancelled.";
+  }
+  return error instanceof Error ? error.message : "Sign-in failed.";
+}
+
+async function signInWithFirebaseProvider(provider: GoogleAuthProvider | OAuthProvider): Promise<UserCredential | null> {
+  const auth = getFbAuth();
+  await setPersistence(auth, browserLocalPersistence);
   try {
     return await signInWithPopup(auth, provider);
   } catch (e) {
     const code = typeof e === "object" && e !== null && "code" in e ? String((e as { code?: unknown }).code) : "";
-    if (code === "auth/popup-blocked") {
+    if (code === "auth/popup-blocked" || code === "auth/operation-not-supported-in-this-environment") {
       await signInWithRedirect(auth, provider);
       return null;
     }

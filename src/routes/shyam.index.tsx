@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { signInWithFirebaseGoogle } from "@/lib/firebase";
+import { getFirebaseAuthErrorMessage, signInWithFirebaseApple, signInWithFirebaseGoogle } from "@/lib/firebase";
 
 export const Route = createFileRoute("/shyam/")({
   head: () => ({ meta: [{ title: "Admin — Hiren Kundli" }, { name: "robots", content: "noindex" }] }),
@@ -19,14 +19,14 @@ function ShyamSignIn() {
     if (user && isAdmin) navigate({ to: "/shyam/dashboard" });
   }, [user, isAdmin, isLoading, navigate]);
 
-  async function googleSignIn() {
+  async function signIn(provider: "google" | "apple") {
     setErr(null);
     setBusy(true);
     try {
-      const credential = await signInWithFirebaseGoogle();
+      const credential = provider === "google" ? await signInWithFirebaseGoogle() : await signInWithFirebaseApple();
       if (credential) navigate({ to: "/shyam/dashboard" });
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Sign-in failed.");
+      setErr(getFirebaseAuthErrorMessage(e));
     } finally {
       setBusy(false);
     }
@@ -41,10 +41,18 @@ function ShyamSignIn() {
 
         <button
           disabled={busy}
-          onClick={googleSignIn}
-          className="mt-8 flex w-full items-center justify-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-100 disabled:opacity-60"
+          onClick={() => signIn("google")}
+          className="mt-8 flex w-full items-center justify-center gap-3 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:brightness-105 disabled:opacity-60"
         >
           {busy ? "Connecting…" : "Sign in with Google"}
+        </button>
+
+        <button
+          disabled={busy}
+          onClick={() => signIn("apple")}
+          className="mt-3 flex w-full items-center justify-center gap-3 rounded-full border border-border bg-secondary px-5 py-3 text-sm font-semibold text-secondary-foreground transition hover:bg-muted disabled:opacity-60"
+        >
+          {busy ? "Connecting…" : "Sign in with Apple"}
         </button>
 
         {user && !isAdmin && (
