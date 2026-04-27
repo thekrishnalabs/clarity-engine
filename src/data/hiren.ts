@@ -1,21 +1,26 @@
-import experienceImg from "@/assets/dimensions/experience.jpg";
-import orientationImg from "@/assets/dimensions/orientation.jpg";
-import patternImg from "@/assets/dimensions/pattern.jpg";
-import patternDirectionImg from "@/assets/dimensions/pattern-direction.jpg";
-import relationshipRealityImg from "@/assets/dimensions/relationship-reality.jpg";
-import relationshipDirectionImg from "@/assets/dimensions/relationship-direction.jpg";
-import karmicImg from "@/assets/dimensions/karmic.jpg";
-import karmicSystemImg from "@/assets/dimensions/karmic-system.jpg";
+import experienceImg from "@/assets/dimensions/experience.jpeg";
+import orientationImg from "@/assets/dimensions/orientation.jpeg";
+import patternImg from "@/assets/dimensions/pattern.jpeg";
+import directionImg from "@/assets/dimensions/direction.jpeg";
+import relationshipRealityImg from "@/assets/dimensions/relationship-reality.jpeg";
+import relationshipDirectionImg from "@/assets/dimensions/relationship-direction.jpeg";
+import karmicImg from "@/assets/dimensions/karmic.jpeg";
+import karmicSystemsImg from "@/assets/dimensions/karmic-systems.jpeg";
+import ashraImg from "@/assets/dimensions/ashra.jpeg";
 
 export const dimensionImages: Record<string, string> = {
+  // Aligned to slugs in src/data/dimensions.ts
   experience: experienceImg,
   orientation: orientationImg,
   pattern: patternImg,
-  "pattern-direction": patternDirectionImg,
+  direction: directionImg,
+  "pattern-direction": directionImg, // legacy alias
   "relationship-reality": relationshipRealityImg,
   "relationship-direction": relationshipDirectionImg,
   karmic: karmicImg,
-  "karmic-system": karmicSystemImg,
+  "karmic-systems": karmicSystemsImg,
+  "karmic-system": karmicSystemsImg, // legacy alias
+  ashra: ashraImg,
 };
 
 export type SessionPlan = {
