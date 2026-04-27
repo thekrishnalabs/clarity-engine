@@ -36,7 +36,7 @@ let _storage: FirebaseStorage | null = null;
 
 function getFbApp(): FirebaseApp {
   if (_app) return _app;
-  assertFirebaseConfig();
+  
   _app = getApps().length ? getApp() : initializeApp(firebaseConfig);
   return _app;
 }
