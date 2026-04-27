@@ -14,10 +14,10 @@ export const Route = createFileRoute("/sessions")({
     { property: "og:title", content: "Hiren Kundli Sessions" },
     { property: "og:description", content: "Premium clarity sessions from Bronze to VIP Platinum." },
   ] }),
-  validateSearch: (search: Record<string, unknown>): { tab: TabKey } => {
+  validateSearch: (search: Record<string, unknown>): { tab?: TabKey } => {
     const raw = search.tab;
-    const tab = TAB_KEYS.includes(raw as TabKey) ? (raw as TabKey) : "individual";
-    return { tab };
+    if (TAB_KEYS.includes(raw as TabKey)) return { tab: raw as TabKey };
+    return {};
   },
   component: SessionsPage,
 });
