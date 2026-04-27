@@ -1,8 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PageHero, CtaBand } from "@/components/hiren/Section";
 import { SessionCard } from "@/components/hiren/SessionCard";
 import { sessionPlans } from "@/data/hiren";
+
+type TabKey = "individual" | "couple" | "multi";
+
+const TAB_KEYS: TabKey[] = ["individual", "couple", "multi"];
 
 export const Route = createFileRoute("/sessions")({
   head: () => ({ meta: [
@@ -11,10 +14,13 @@ export const Route = createFileRoute("/sessions")({
     { property: "og:title", content: "Hiren Kundli Sessions" },
     { property: "og:description", content: "Premium clarity sessions from Bronze to VIP Platinum." },
   ] }),
+  validateSearch: (search: Record<string, unknown>): { tab?: TabKey } => {
+    const raw = search.tab;
+    if (TAB_KEYS.includes(raw as TabKey)) return { tab: raw as TabKey };
+    return {};
+  },
   component: SessionsPage,
 });
-
-type TabKey = "individual" | "couple" | "multi";
 
 const groups: Record<TabKey, { label: string; sessions: string[] }> = {
   individual: { label: "Individual", sessions: ["Bronze", "Silver", "Silver Prime", "Silver Prime Lite"] },
@@ -25,7 +31,10 @@ const groups: Record<TabKey, { label: string; sessions: string[] }> = {
 const JOINT_NOTE = "⚠️ Important: Couple and multi-person sessions require birth details of all individuals. These sessions work because the author decodes the kundlis dimensionally interconnected — not separately. Getting separate individual sessions for each person will NOT produce the same depth of insight as a joint session.";
 
 function SessionsPage() {
-  const [tab, setTab] = useState<TabKey>("individual");
+  const search = Route.useSearch();
+  const tab: TabKey = search.tab ?? "individual";
+  const navigate = useNavigate({ from: "/sessions" });
+  const setTab = (next: TabKey) => navigate({ search: { tab: next } });
   const activeNames = groups[tab].sessions;
   const visiblePlans = sessionPlans.filter((p) => activeNames.includes(p.name));
 
