@@ -176,13 +176,15 @@ export interface SplApplication extends DocumentData {
   submitted_at?: unknown;
 }
 
-export async function listSplApplications(): Promise<(SplApplication & { id: string })[]> {
+export async function listSplApplications(adminEmail?: string | null): Promise<(SplApplication & { id: string })[]> {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   const snap = await getDocs(query(collection(db, "spl_applications"), orderBy("submitted_at", "desc")));
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SplApplication) }));
 }
 
-export async function setSplApplicationStatus(id: string, status: SplApplication["status"]) {
+export async function setSplApplicationStatus(id: string, status: SplApplication["status"], adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   await updateDoc(doc(db, "spl_applications", id), { status });
 }
@@ -196,7 +198,8 @@ export async function getVoiceRoom(): Promise<VoiceRoom | null> {
   return snap.data() as VoiceRoom;
 }
 
-export async function setVoiceRoom(data: Omit<VoiceRoom, "created_at">) {
+export async function setVoiceRoom(data: Omit<VoiceRoom, "created_at">, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   await setDoc(
     doc(db, "voice_rooms", VOICE_ROOM_DOC),
