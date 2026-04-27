@@ -45,7 +45,7 @@ export function getFbStorage(): FirebaseStorage {
 
 // Hardcoded admin allow-list (kept on client AND enforced via Firestore rules).
 export const ADMIN_EMAILS = [
-  "your-admin@email.com", // TODO: replace with real admin emails
+  "hirenkundliofficial@gmail.com",
 ];
 
 export function isAdminEmail(email: string | null | undefined): boolean {
