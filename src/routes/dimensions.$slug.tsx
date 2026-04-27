@@ -94,15 +94,6 @@ function DimensionDetail() {
         ← Dimensions
       </Link>
 
-      <header className="mt-8 max-w-3xl">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="rounded-full border border-primary/40 px-3 py-1 text-xs uppercase tracking-wider text-primary">
-            {d.level}
-          </span>
-          <span className="rounded-full border px-3 py-1 text-xs text-muted-foreground">
-            {d.session}
-          </span>
-        </div>
       {(() => {
         const imgKey = slugToImageKey[d.slug];
         const img = imgKey ? dimensionImages[imgKey] : null;
