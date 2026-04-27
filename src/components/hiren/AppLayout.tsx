@@ -21,7 +21,7 @@ export function AppLayout() {
 
   useEffect(() => {
     if (!user) return;
-    listBookingsForUser(user.id)
+    listBookingsForUser(user.uid)
       .then((bs) => {
         const withUid = bs.find((b) => b.generated_uid);
         setMyUid(withUid?.generated_uid ?? null);
