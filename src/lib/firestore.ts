@@ -115,7 +115,8 @@ export async function attachUidToBooking(bookingId: string, uid: string, adminEm
 }
 
 // ---- UIDs ----
-export async function createUidRecord(rec: UidRecord) {
+export async function createUidRecord(rec: UidRecord, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   await setDoc(doc(db, "uid_records", rec.uid), {
     ...rec,
@@ -143,13 +144,15 @@ export async function listPublishedPosts(max = 20): Promise<(AdminPost & { id: s
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as AdminPost) }));
 }
 
-export async function listAllPosts(): Promise<(AdminPost & { id: string })[]> {
+export async function listAllPosts(adminEmail?: string | null): Promise<(AdminPost & { id: string })[]> {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   const snap = await getDocs(query(collection(db, "admin_posts"), orderBy("created_at", "desc")));
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as AdminPost) }));
 }
 
-export async function createPost(post: Omit<AdminPost, "created_at">) {
+export async function createPost(post: Omit<AdminPost, "created_at">, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   const ref = await addDoc(collection(db, "admin_posts"), {
     ...post,
@@ -158,7 +161,8 @@ export async function createPost(post: Omit<AdminPost, "created_at">) {
   return ref.id;
 }
 
-export async function setPostPublished(id: string, is_published: boolean) {
+export async function setPostPublished(id: string, is_published: boolean, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   await updateDoc(doc(db, "admin_posts", id), { is_published });
 }
