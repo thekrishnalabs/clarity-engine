@@ -14,9 +14,15 @@ import {
   type DocumentData,
   type QueryConstraint,
 } from "firebase/firestore";
-import { getDb } from "./firebase";
+import { getDb, isAdminEmail } from "./firebase";
 
 export type SessionCode = "FR" | "BR" | "SI" | "SPL" | "SP" | "GD" | "GP" | "PL" | "VIP";
+
+const PAID_SESSION_CODES = ["BR", "SI", "SP", "GD", "GP", "PL", "VIP"] as const;
+
+function requireAdminEmail(adminEmail?: string | null) {
+  if (!isAdminEmail(adminEmail)) throw new Error("Admin access required.");
+}
 
 export interface UidRecord extends DocumentData {
   uid: string;
@@ -67,6 +73,10 @@ export interface VoiceRoom extends DocumentData {
 
 // ---- Bookings ----
 export async function createBooking(data: Omit<SessionBooking, "status" | "created_at">) {
+  if (!data.user_lovable_uid || !data.user_email) throw new Error("Please sign in before booking.");
+  if (!PAID_SESSION_CODES.includes(data.session_code as (typeof PAID_SESSION_CODES)[number])) {
+    throw new Error("This session cannot be booked from this form.");
+  }
   const db = getDb();
   const ref = await addDoc(collection(db, "session_bookings"), {
     ...data,
@@ -87,14 +97,16 @@ export async function listBookingsForUser(lovableUid: string): Promise<(SessionB
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SessionBooking) }));
 }
 
-export async function listAllBookings(): Promise<(SessionBooking & { id: string })[]> {
+export async function listAllBookings(adminEmail?: string | null): Promise<(SessionBooking & { id: string })[]> {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   const q = query(collection(db, "session_bookings"), orderBy("created_at", "desc"));
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SessionBooking) }));
 }
 
-export async function attachUidToBooking(bookingId: string, uid: string) {
+export async function attachUidToBooking(bookingId: string, uid: string, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
   const db = getDb();
   await updateDoc(doc(db, "session_bookings", bookingId), {
     generated_uid: uid,
