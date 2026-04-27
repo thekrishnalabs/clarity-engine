@@ -7,11 +7,10 @@ const navItems = [
   { to: "/sessions", label: "Sessions" },
   { to: "/dimensions", label: "Dimensions" },
   { to: "/about", label: "About" },
-  { to: "/contact", label: "Contact" },
 ] as const;
 
 export function BrandLayout() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   return (
     <div className="hk-shell">
       <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-xl">
@@ -36,14 +35,9 @@ export function BrandLayout() {
           </nav>
           <div className="hidden items-center gap-3 md:flex">
             {user ? (
-              <>
-                <Link to="/app" className="hk-button-outline rounded-full px-5 py-2 text-sm font-semibold">
-                  My App
-                </Link>
-                <button onClick={signOut} className="text-sm text-muted-foreground hover:text-foreground">
-                  Sign out
-                </button>
-              </>
+              <Link to="/app" className="hk-button-primary rounded-full px-5 py-2 text-sm font-semibold">
+                My Dashboard
+              </Link>
             ) : (
               <Link to="/get-started" className="hk-button-outline rounded-full px-5 py-2 text-sm font-semibold">
                 Get Started
@@ -58,7 +52,7 @@ export function BrandLayout() {
             </Link>
           ))}
           {user ? (
-            <Link to="/app" className="shrink-0 rounded-full border px-3 py-1.5">My App</Link>
+            <Link to="/app" className="shrink-0 rounded-full border border-primary/60 px-3 py-1.5 text-primary">My Dashboard</Link>
           ) : (
             <Link to="/get-started" className="shrink-0 rounded-full border px-3 py-1.5">Get Started</Link>
           )}
@@ -74,10 +68,10 @@ export function BrandLayout() {
             <p className="mt-2 max-w-2xl">Decoding Time · Karma · Decisions. A structured decision clarity system — no prediction language, no fear, no clichés.</p>
           </div>
           <div className="flex flex-wrap gap-4">
+            <Link to="/contact">Contact</Link>
             <Link to="/terms">Terms</Link>
             <Link to="/privacy">Privacy</Link>
             <Link to="/refund">Refund</Link>
-            <Link to="/contact">Contact</Link>
             <Link to="/shyam" className="text-xs opacity-60 hover:opacity-100">Admin</Link>
           </div>
         </div>

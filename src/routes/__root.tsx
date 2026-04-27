@@ -1,12 +1,17 @@
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts, useLocation } from "@tanstack/react-router";
 import { BrandLayout } from "@/components/hiren/BrandLayout";
+import { AppLayout } from "@/components/hiren/AppLayout";
 import { AuthProvider } from "@/contexts/AuthContext";
 import appCss from "../styles.css?url";
 
 function RootComponent() {
+  const { pathname } = useLocation();
+  const isApp = pathname === "/app" || pathname.startsWith("/app/");
+  const isShyam = pathname === "/shyam" || pathname.startsWith("/shyam/");
+
   return (
     <AuthProvider>
-      <BrandLayout />
+      {isApp ? <AppLayout /> : isShyam ? <Outlet /> : <BrandLayout />}
     </AuthProvider>
   );
 }
