@@ -22,6 +22,8 @@ function AppHome() {
 
   useEffect(() => {
     if (!user) return;
+    setLoading(true);
+    setErr(null);
     (async () => {
       try {
         const [p, b] = await Promise.all([listPublishedPosts(20), listBookingsForUser(user.uid)]);
@@ -68,7 +70,9 @@ function AppHome() {
         <aside className="space-y-5">
           <div className="rounded-2xl border bg-card/40 p-5">
             <h3 className="font-serif text-lg">Your Sessions</h3>
-            {bookings.length === 0 ? (
+            {loading ? (
+              <p className="mt-2 text-sm text-muted-foreground">Loading sessions…</p>
+            ) : bookings.length === 0 ? (
               <>
                 <p className="mt-2 text-sm text-muted-foreground">No bookings yet.</p>
                 <Link to="/app/book" className="hk-button-primary mt-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold">
