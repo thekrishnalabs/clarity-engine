@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { signInWithFirebaseGoogle } from "@/lib/firebase";
+import { getFirebaseAuthErrorMessage, signInWithFirebaseApple, signInWithFirebaseGoogle } from "@/lib/firebase";
 import logoUrl from "@/assets/hiren-kundli-logo.jpg";
 
 export const Route = createFileRoute("/get-started")({
@@ -28,14 +28,14 @@ function GetStartedPage() {
     if (!isLoading && user) window.location.assign(redirect);
   }, [user, isLoading, redirect]);
 
-  async function signIn() {
+  async function signIn(provider: "google" | "apple") {
     setError(null);
     setBusy(true);
     try {
-      const credential = await signInWithFirebaseGoogle();
+      const credential = provider === "google" ? await signInWithFirebaseGoogle() : await signInWithFirebaseApple();
       if (credential) window.location.assign(redirect);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Sign-in failed.");
+      setError(getFirebaseAuthErrorMessage(e));
       setBusy(false);
     }
   }
@@ -51,8 +51,8 @@ function GetStartedPage() {
 
         <button
           disabled={busy}
-          onClick={signIn}
-          className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-100 disabled:opacity-60"
+          onClick={() => signIn("google")}
+          className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:brightness-105 disabled:opacity-60"
         >
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
             <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.79 2.71v2.26h2.9c1.7-1.57 2.69-3.88 2.69-6.61z"/>
@@ -61,6 +61,17 @@ function GetStartedPage() {
             <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.34l2.58-2.58A9 9 0 0 0 9 0 9 9 0 0 0 .96 4.97L3.95 7.3C4.66 5.17 6.65 3.58 9 3.58z"/>
           </svg>
           {busy ? "Connecting…" : "Continue with Google"}
+        </button>
+
+        <button
+          disabled={busy}
+          onClick={() => signIn("apple")}
+          className="mt-3 flex w-full items-center justify-center gap-3 rounded-full border border-border bg-secondary px-5 py-3 text-sm font-semibold text-secondary-foreground transition hover:bg-muted disabled:opacity-60"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+            <path d="M16.365 1.43c0 1.14-.467 2.213-1.185 3.03-.773.88-2.047 1.56-3.08 1.47-.13-1.092.38-2.24 1.088-3.035C13.973 2.01 15.318 1.335 16.365 1.43ZM20.83 17.12c-.56 1.28-.83 1.85-1.55 2.98-1.005 1.535-2.42 3.45-4.17 3.465-1.557.015-1.958-1.015-4.073-1.005-2.112.01-2.552 1.022-4.112 1.007-1.75-.015-3.087-1.742-4.092-3.277C.03 16.005-.265 10.97 1.515 8.215c1.265-1.958 3.26-3.102 5.14-3.102 1.912 0 3.115 1.047 4.697 1.047 1.535 0 2.47-1.05 4.682-1.05 1.672 0 3.445.91 4.705 2.482-4.135 2.267-3.465 8.172.09 9.527Z" />
+          </svg>
+          {busy ? "Connecting…" : "Continue with Apple"}
         </button>
 
         {error && <p className="mt-4 rounded-xl border border-destructive/40 p-3 text-sm text-destructive">{error}</p>}
