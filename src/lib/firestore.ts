@@ -35,7 +35,6 @@ export interface UidRecord extends DocumentData {
   user_name?: string | null;
   user_phone?: string | null;
   user_firebase_uid?: string | null;
-  user_lovable_uid?: string | null;
   notes?: string | null;
   created_at?: unknown;
 }
@@ -44,7 +43,6 @@ export interface SessionBooking extends DocumentData {
   user_name: string;
   user_phone: string;
   user_firebase_uid?: string | null;
-  user_lovable_uid?: string | null;
   user_email?: string | null;
   date_of_birth: string;
   time_of_birth: string;
@@ -90,15 +88,8 @@ export async function createBooking(data: Omit<SessionBooking, "status" | "creat
 
 export async function listBookingsForUser(firebaseUid: string): Promise<(SessionBooking & { id: string })[]> {
   const db = getDb();
-  const byFirebaseUid = await getDocs(query(collection(db, "session_bookings"), where("user_firebase_uid", "==", firebaseUid)));
-  const legacyByLovableUid = await getDocs(query(collection(db, "session_bookings"), where("user_lovable_uid", "==", firebaseUid)));
-  const merged = new Map<string, SessionBooking & { id: string }>();
-  [...byFirebaseUid.docs, ...legacyByLovableUid.docs].forEach((d) => merged.set(d.id, { id: d.id, ...(d.data() as SessionBooking) }));
-  return [...merged.values()].sort((a, b) => {
-    const aMs = typeof a.created_at === "object" && a.created_at && "toMillis" in a.created_at ? (a.created_at as { toMillis: () => number }).toMillis() : 0;
-    const bMs = typeof b.created_at === "object" && b.created_at && "toMillis" in b.created_at ? (b.created_at as { toMillis: () => number }).toMillis() : 0;
-    return bMs - aMs;
-  });
+  const snap = await getDocs(query(collection(db, "session_bookings"), where("user_firebase_uid", "==", firebaseUid), orderBy("created_at", "desc")));
+  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SessionBooking) }));
 }
 
 export async function listAllBookings(adminEmail?: string | null): Promise<(SessionBooking & { id: string })[]> {
