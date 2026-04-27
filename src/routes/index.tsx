@@ -15,9 +15,9 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const entries = [
-    { icon: CircleDot, title: "For Yourself", body: "Understand the repeating personal patterns behind hesitation, effort, and confusion." },
-    { icon: Users, title: "For Your Relationship", body: "See the interaction reality clearly before making emotional or practical decisions." },
-    { icon: Layers3, title: "For Multiple People", body: "Map complex dynamics across family, work, or shared decision environments." },
+    { icon: CircleDot, title: "For Yourself", body: "Understand the repeating personal patterns behind hesitation, effort, and confusion.", tab: "individual" as const },
+    { icon: Users, title: "For Your Relationship", body: "See the interaction reality clearly before making emotional or practical decisions.", tab: "couple" as const },
+    { icon: Layers3, title: "For Multiple People", body: "Map complex dynamics across family, work, or shared decision environments.", tab: "multi" as const },
   ];
 
   return (
@@ -31,7 +31,7 @@ function Index() {
           <p className="mt-3 text-sm tracking-wider text-muted-foreground/80">Decoding Time · Karma · Decisions</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/get-started" className="hk-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition">Get Started <ArrowRight className="size-4" /></Link>
-            <Link to="/sessions" className="hk-button-outline inline-flex rounded-full px-6 py-3 font-semibold transition">View Sessions</Link>
+            <Link to="/sessions" search={{ tab: "individual" }} className="hk-button-outline inline-flex rounded-full px-6 py-3 font-semibold transition">View Sessions</Link>
           </div>
         </div>
       </section>
@@ -40,11 +40,17 @@ function Index() {
         {entries.map((entry) => {
           const Icon = entry.icon;
           return (
-            <article key={entry.title} className="hk-panel hk-card-hover rounded-3xl p-6">
+            <Link
+              key={entry.title}
+              to="/sessions"
+              search={{ tab: entry.tab }}
+              className="hk-panel hk-card-hover block rounded-3xl p-6"
+            >
               <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border text-gold"><Icon className="size-5" /></div>
               <h2 className="font-serif text-2xl font-bold">{entry.title}</h2>
               <p className="mt-3 leading-7 text-muted-foreground">{entry.body}</p>
-            </article>
+              <span className="mt-4 inline-flex items-center gap-1 text-sm text-primary">View sessions <ArrowRight className="size-3.5" /></span>
+            </Link>
           );
         })}
       </section>
