@@ -34,6 +34,7 @@ export interface UidRecord extends DocumentData {
   city_code: string;
   user_name?: string | null;
   user_phone?: string | null;
+  user_firebase_uid?: string | null;
   user_lovable_uid?: string | null;
   notes?: string | null;
   created_at?: unknown;
@@ -42,6 +43,7 @@ export interface UidRecord extends DocumentData {
 export interface SessionBooking extends DocumentData {
   user_name: string;
   user_phone: string;
+  user_firebase_uid?: string | null;
   user_lovable_uid?: string | null;
   user_email?: string | null;
   date_of_birth: string;
@@ -73,7 +75,7 @@ export interface VoiceRoom extends DocumentData {
 
 // ---- Bookings ----
 export async function createBooking(data: Omit<SessionBooking, "status" | "created_at">) {
-  if (!data.user_lovable_uid || !data.user_email) throw new Error("Please sign in before booking.");
+  if (!data.user_firebase_uid || !data.user_email) throw new Error("Please sign in with Google before booking.");
   if (!PAID_SESSION_CODES.includes(data.session_code as (typeof PAID_SESSION_CODES)[number])) {
     throw new Error("This session cannot be booked from this form.");
   }
@@ -86,15 +88,17 @@ export async function createBooking(data: Omit<SessionBooking, "status" | "creat
   return ref.id;
 }
 
-export async function listBookingsForUser(lovableUid: string): Promise<(SessionBooking & { id: string })[]> {
+export async function listBookingsForUser(firebaseUid: string): Promise<(SessionBooking & { id: string })[]> {
   const db = getDb();
-  const q = query(
-    collection(db, "session_bookings"),
-    where("user_lovable_uid", "==", lovableUid),
-    orderBy("created_at", "desc"),
-  );
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SessionBooking) }));
+  const byFirebaseUid = await getDocs(query(collection(db, "session_bookings"), where("user_firebase_uid", "==", firebaseUid)));
+  const legacyByLovableUid = await getDocs(query(collection(db, "session_bookings"), where("user_lovable_uid", "==", firebaseUid)));
+  const merged = new Map<string, SessionBooking & { id: string }>();
+  [...byFirebaseUid.docs, ...legacyByLovableUid.docs].forEach((d) => merged.set(d.id, { id: d.id, ...(d.data() as SessionBooking) }));
+  return [...merged.values()].sort((a, b) => {
+    const aMs = typeof a.created_at === "object" && a.created_at && "toMillis" in a.created_at ? (a.created_at as { toMillis: () => number }).toMillis() : 0;
+    const bMs = typeof b.created_at === "object" && b.created_at && "toMillis" in b.created_at ? (b.created_at as { toMillis: () => number }).toMillis() : 0;
+    return bMs - aMs;
+  });
 }
 
 export async function listAllBookings(adminEmail?: string | null): Promise<(SessionBooking & { id: string })[]> {
