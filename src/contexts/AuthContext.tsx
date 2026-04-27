@@ -21,6 +21,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(firebaseUser);
       setIsLoading(false);
     });
+    // Fire-and-forget: initialize Firebase Analytics on the client.
+    void getFirebaseAnalytics();
     return unsubscribe;
   }, []);
 
