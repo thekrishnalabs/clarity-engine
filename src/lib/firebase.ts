@@ -1,6 +1,6 @@
 // Firebase web SDK initialization.
 // NOTE: These values are PUBLISHABLE config (not secrets).
-// Real security comes from Firestore Security Rules + Lovable Cloud auth.
+// Real security comes from Firebase Auth + Firestore Security Rules.
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import {
   browserLocalPersistence,
@@ -80,7 +80,7 @@ export function getFbStorage(): FirebaseStorage {
   return _storage;
 }
 
-// Hardcoded admin allow-list (kept on client AND enforced via Firestore rules).
+// Admin allow-list for UI gating; keep the same email enforced in Firestore rules.
 export const ADMIN_EMAILS = [
   "hirenkundliofficial@gmail.com",
 ];

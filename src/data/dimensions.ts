@@ -16,8 +16,8 @@ export const dimensions: Dimension[] = [
     slug: "experience",
     name: "Experience",
     level: "Level 0",
-    session: "Free Trial / Silver Prime Lite",
-    sessionCode: "FR",
+    session: "Silver Prime Lite (Application Only)",
+    sessionCode: "SPL",
     purpose: "What is happening with me right now — at the surface level?",
     unlocks: [
       "Present-moment life snapshot",
@@ -45,7 +45,7 @@ export const dimensions: Dimension[] = [
     slug: "orientation",
     name: "Orientation",
     level: "Level 1",
-    session: "Bronze (₹499)",
+    session: "Bronze (₹249)",
     sessionCode: "BR",
     purpose:
       "Where exactly am I standing right now, and how did recent phases shape this?",
@@ -75,7 +75,7 @@ export const dimensions: Dimension[] = [
     slug: "pattern",
     name: "Pattern",
     level: "Level 2",
-    session: "Silver (₹999)",
+    session: "Silver (₹500)",
     sessionCode: "SI",
     purpose:
       "Why do similar situations, emotions, or blocks keep showing up in my life again and again?",
@@ -105,7 +105,7 @@ export const dimensions: Dimension[] = [
     slug: "direction",
     name: "Direction",
     level: "Level 3",
-    session: "Silver Prime (₹1999)",
+    session: "Silver Prime (₹800)",
     sessionCode: "SP",
     purpose:
       "Given what has happened and is happening — where is life moving, and what choices actually matter?",
@@ -135,7 +135,7 @@ export const dimensions: Dimension[] = [
     slug: "relationship-reality",
     name: "Relationship Reality",
     level: "Level 4",
-    session: "Gold (₹2999)",
+    session: "Gold (₹1200)",
     sessionCode: "GD",
     purpose:
       "What is actually happening between us — emotionally and practically — right now, without illusion?",
@@ -170,7 +170,7 @@ export const dimensions: Dimension[] = [
     slug: "relationship-direction",
     name: "Relationship Direction",
     level: "Level 5",
-    session: "Gold Prime (₹3999)",
+    session: "Gold Prime (₹1799)",
     sessionCode: "GP",
     purpose:
       "Where is this connection heading — and what decision actually makes sense?",
@@ -200,7 +200,7 @@ export const dimensions: Dimension[] = [
     slug: "karmic",
     name: "Karmic",
     level: "Level 6",
-    session: "Platinum (₹4499)",
+    session: "Platinum (₹2800)",
     sessionCode: "PL",
     purpose:
       "Why does this situation exist at a level that cannot be explained by current-life patterns alone?",

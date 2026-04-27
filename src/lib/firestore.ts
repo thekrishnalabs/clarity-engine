@@ -34,7 +34,7 @@ export interface UidRecord extends DocumentData {
   city_code: string;
   user_name?: string | null;
   user_phone?: string | null;
-  user_lovable_uid?: string | null;
+  user_firebase_uid?: string | null;
   notes?: string | null;
   created_at?: unknown;
 }
@@ -42,7 +42,7 @@ export interface UidRecord extends DocumentData {
 export interface SessionBooking extends DocumentData {
   user_name: string;
   user_phone: string;
-  user_lovable_uid?: string | null;
+  user_firebase_uid?: string | null;
   user_email?: string | null;
   date_of_birth: string;
   time_of_birth: string;
@@ -73,7 +73,7 @@ export interface VoiceRoom extends DocumentData {
 
 // ---- Bookings ----
 export async function createBooking(data: Omit<SessionBooking, "status" | "created_at">) {
-  if (!data.user_lovable_uid || !data.user_email) throw new Error("Please sign in before booking.");
+  if (!data.user_firebase_uid || !data.user_email) throw new Error("Please sign in with Google before booking.");
   if (!PAID_SESSION_CODES.includes(data.session_code as (typeof PAID_SESSION_CODES)[number])) {
     throw new Error("This session cannot be booked from this form.");
   }
@@ -86,14 +86,9 @@ export async function createBooking(data: Omit<SessionBooking, "status" | "creat
   return ref.id;
 }
 
-export async function listBookingsForUser(lovableUid: string): Promise<(SessionBooking & { id: string })[]> {
+export async function listBookingsForUser(firebaseUid: string): Promise<(SessionBooking & { id: string })[]> {
   const db = getDb();
-  const q = query(
-    collection(db, "session_bookings"),
-    where("user_lovable_uid", "==", lovableUid),
-    orderBy("created_at", "desc"),
-  );
-  const snap = await getDocs(q);
+  const snap = await getDocs(query(collection(db, "session_bookings"), where("user_firebase_uid", "==", firebaseUid), orderBy("created_at", "desc")));
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SessionBooking) }));
 }
 
