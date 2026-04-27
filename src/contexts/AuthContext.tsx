@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { onAuthStateChanged, signOut as firebaseSignOut, type User } from "firebase/auth";
 import { getFbAuth, isAdminEmail } from "@/lib/firebase";
+import { getFirebaseAnalytics } from "@/services/analyticsService";
 
 interface AuthContextValue {
   user: User | null;
@@ -20,6 +21,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(firebaseUser);
       setIsLoading(false);
     });
+    // Fire-and-forget: initialize Firebase Analytics on the client.
+    void getFirebaseAnalytics();
     return unsubscribe;
   }, []);
 
