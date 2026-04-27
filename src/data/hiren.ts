@@ -109,7 +109,7 @@ export const sessionPlans: SessionPlan[] = [
   { name: "Silver Prime", price: "₹800", duration: "100 min", questions: "40 questions", people: "1 person", dimensions: ["Experience", "Orientation", "Pattern", "Pattern Direction"], featured: true },
   { name: "Silver Prime Lite", price: "FREE", duration: "20 min", questions: "3 questions", people: "1 time only", dimensions: ["Experience"] },
   { name: "Gold", price: "₹1200", duration: "110 min", questions: "50 questions", people: "2 people", dimensions: ["Experience", "Orientation", "Pattern", "Relationship Reality"] },
-  { name: "Gold Prime", price: "₹1800", duration: "170 min", questions: "99 questions", people: "2 people", dimensions: ["Experience", "Pattern Direction", "Relationship Reality", "Relationship Direction"], featured: true },
+  { name: "Gold Prime", price: "₹1799", duration: "170 min", questions: "99 questions", people: "2 people", dimensions: ["Experience", "Pattern Direction", "Relationship Reality", "Relationship Direction"], featured: true },
   { name: "Platinum", price: "₹2800", duration: "220 min", people: "3 people", dimensions: ["Experience", "Relationship Direction", "Karmic"] },
   { name: "VIP Platinum", price: "₹4999", duration: "280 min", people: "4 people", dimensions: ["All dimensions", "Karmic System", "Multi-person pattern map"] },
 ];
