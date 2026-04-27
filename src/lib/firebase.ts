@@ -16,25 +16,14 @@ import { getFirestore, type Firestore } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBglwWFK0JFJLhV8_2M9986t2jPcFERsnk",
-  authDomain: "hirenkundli-66005.firebaseapp.com",
-  projectId: "hirenkundli-66005",
-  storageBucket: "hirenkundli-66005.firebasestorage.app",
-  messagingSenderId: "270901111701",
-  appId: "1:270901111701:web:fedfebfd91a7c83268649c",
-  measurementId: "G-VYCYEDVDJ9",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBglwWFK0JFJLhV8_2M9986t2jPcFERsnk",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "hirenkundli-66005.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "hirenkundli-66005",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "hirenkundli-66005.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "270901111701",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:270901111701:web:fedfebfd91a7c83268649c",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-VYCYEDVDJ9",
 };
-
-const PRODUCTION_AUTH_ORIGIN = "https://hirenkundli.lovable.app";
-
-const FIREBASE_AUTHORIZED_HOSTS = new Set([
-  "hirenkundli-66005.firebaseapp.com",
-  "hirenkundli-66005.web.app",
-  "hirenkundli.indevs.in",
-  "hirenkundli.lovable.app",
-  "hirenkundli.lovable.dev",
-  "lovable.dev",
-]);
 
 let _app: FirebaseApp | null = null;
 let _auth: Auth | null = null;
@@ -66,12 +55,6 @@ export function getFbAuth(): Auth {
 }
 
 export async function signInWithFirebaseGoogle(): Promise<UserCredential | null> {
-  if (typeof window !== "undefined" && !FIREBASE_AUTHORIZED_HOSTS.has(window.location.hostname)) {
-    const target = new URL(window.location.pathname + window.location.search + window.location.hash, PRODUCTION_AUTH_ORIGIN);
-    window.location.assign(target.toString());
-    return null;
-  }
-
   const auth = getFbAuth();
   await setPersistence(auth, browserLocalPersistence);
   const provider = new GoogleAuthProvider();
