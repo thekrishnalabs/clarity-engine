@@ -31,7 +31,8 @@ const groups: Record<TabKey, { label: string; sessions: string[] }> = {
 const JOINT_NOTE = "⚠️ Important: Couple and multi-person sessions require birth details of all individuals. These sessions work because the author decodes the kundlis dimensionally interconnected — not separately. Getting separate individual sessions for each person will NOT produce the same depth of insight as a joint session.";
 
 function SessionsPage() {
-  const { tab } = Route.useSearch();
+  const search = Route.useSearch();
+  const tab: TabKey = search.tab ?? "individual";
   const navigate = useNavigate({ from: "/sessions" });
   const setTab = (next: TabKey) => navigate({ search: { tab: next } });
   const activeNames = groups[tab].sessions;
