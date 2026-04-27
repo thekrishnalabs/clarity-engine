@@ -23,8 +23,8 @@ function ShyamSignIn() {
     setErr(null);
     setBusy(true);
     try {
-      await signInWithFirebaseGoogle();
-      navigate({ to: "/shyam/dashboard" });
+      const credential = await signInWithFirebaseGoogle();
+      if (credential) navigate({ to: "/shyam/dashboard" });
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Sign-in failed.");
     } finally {
