@@ -9,33 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UidLookupRouteImport } from './routes/uid-lookup'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as LoginRouteImport } from './routes/login'
+import { Route as GetStartedRouteImport } from './routes/get-started'
 import { Route as DimensionsRouteImport } from './routes/dimensions'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as BookRouteImport } from './routes/book'
-import { Route as ApplyRouteImport } from './routes/apply'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
+import { Route as ShyamIndexRouteImport } from './routes/shyam.index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as ShyamVoiceRouteImport } from './routes/shyam.voice'
+import { Route as ShyamUidSearchRouteImport } from './routes/shyam.uid-search'
+import { Route as ShyamPostsRouteImport } from './routes/shyam.posts'
+import { Route as ShyamDashboardRouteImport } from './routes/shyam.dashboard'
+import { Route as ShyamBookingsRouteImport } from './routes/shyam.bookings'
 import { Route as DimensionsSlugRouteImport } from './routes/dimensions.$slug'
-import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
-import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
-import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
-import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as AppVoiceRoomRouteImport } from './routes/app.voice-room'
+import { Route as AppBookRouteImport } from './routes/app.book'
+import { Route as AppUidUidRouteImport } from './routes/app.uid.$uid'
 
-const UidLookupRoute = UidLookupRouteImport.update({
-  id: '/uid-lookup',
-  path: '/uid-lookup',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -56,9 +50,9 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const GetStartedRoute = GetStartedRouteImport.update({
+  id: '/get-started',
+  path: '/get-started',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DimensionsRoute = DimensionsRouteImport.update({
@@ -71,21 +65,6 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BookRoute = BookRouteImport.update({
-  id: '/book',
-  path: '/book',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApplyRoute = ApplyRouteImport.update({
-  id: '/apply',
-  path: '/apply',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -96,9 +75,39 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
-  id: '/email/unsubscribe',
-  path: '/email/unsubscribe',
+const ShyamIndexRoute = ShyamIndexRouteImport.update({
+  id: '/shyam/',
+  path: '/shyam/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/app/',
+  path: '/app/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShyamVoiceRoute = ShyamVoiceRouteImport.update({
+  id: '/shyam/voice',
+  path: '/shyam/voice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShyamUidSearchRoute = ShyamUidSearchRouteImport.update({
+  id: '/shyam/uid-search',
+  path: '/shyam/uid-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShyamPostsRoute = ShyamPostsRouteImport.update({
+  id: '/shyam/posts',
+  path: '/shyam/posts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShyamDashboardRoute = ShyamDashboardRouteImport.update({
+  id: '/shyam/dashboard',
+  path: '/shyam/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShyamBookingsRoute = ShyamBookingsRouteImport.update({
+  id: '/shyam/bookings',
+  path: '/shyam/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DimensionsSlugRoute = DimensionsSlugRouteImport.update({
@@ -106,212 +115,182 @@ const DimensionsSlugRoute = DimensionsSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => DimensionsRoute,
 } as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminDashboardRoute = AdminDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AdminRoute,
-} as any)
-const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
-  id: '/lovable/email/suppression',
-  path: '/lovable/email/suppression',
+const AppVoiceRoomRoute = AppVoiceRoomRouteImport.update({
+  id: '/app/voice-room',
+  path: '/app/voice-room',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LovableEmailTransactionalSendRoute =
-  LovableEmailTransactionalSendRouteImport.update({
-    id: '/lovable/email/transactional/send',
-    path: '/lovable/email/transactional/send',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailTransactionalPreviewRoute =
-  LovableEmailTransactionalPreviewRouteImport.update({
-    id: '/lovable/email/transactional/preview',
-    path: '/lovable/email/transactional/preview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailQueueProcessRoute =
-  LovableEmailQueueProcessRouteImport.update({
-    id: '/lovable/email/queue/process',
-    path: '/lovable/email/queue/process',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const AppBookRoute = AppBookRouteImport.update({
+  id: '/app/book',
+  path: '/app/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppUidUidRoute = AppUidUidRouteImport.update({
+  id: '/app/uid/$uid',
+  path: '/app/uid/$uid',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/apply': typeof ApplyRoute
-  '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/dimensions': typeof DimensionsRouteWithChildren
-  '/login': typeof LoginRoute
+  '/get-started': typeof GetStartedRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
   '/terms': typeof TermsRoute
-  '/uid-lookup': typeof UidLookupRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/login': typeof AdminLoginRoute
+  '/app/book': typeof AppBookRoute
+  '/app/voice-room': typeof AppVoiceRoomRoute
   '/dimensions/$slug': typeof DimensionsSlugRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/shyam/bookings': typeof ShyamBookingsRoute
+  '/shyam/dashboard': typeof ShyamDashboardRoute
+  '/shyam/posts': typeof ShyamPostsRoute
+  '/shyam/uid-search': typeof ShyamUidSearchRoute
+  '/shyam/voice': typeof ShyamVoiceRoute
+  '/app/': typeof AppIndexRoute
+  '/shyam/': typeof ShyamIndexRoute
+  '/app/uid/$uid': typeof AppUidUidRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/apply': typeof ApplyRoute
-  '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/dimensions': typeof DimensionsRouteWithChildren
-  '/login': typeof LoginRoute
+  '/get-started': typeof GetStartedRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
   '/terms': typeof TermsRoute
-  '/uid-lookup': typeof UidLookupRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/login': typeof AdminLoginRoute
+  '/app/book': typeof AppBookRoute
+  '/app/voice-room': typeof AppVoiceRoomRoute
   '/dimensions/$slug': typeof DimensionsSlugRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/shyam/bookings': typeof ShyamBookingsRoute
+  '/shyam/dashboard': typeof ShyamDashboardRoute
+  '/shyam/posts': typeof ShyamPostsRoute
+  '/shyam/uid-search': typeof ShyamUidSearchRoute
+  '/shyam/voice': typeof ShyamVoiceRoute
+  '/app': typeof AppIndexRoute
+  '/shyam': typeof ShyamIndexRoute
+  '/app/uid/$uid': typeof AppUidUidRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/apply': typeof ApplyRoute
-  '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/dimensions': typeof DimensionsRouteWithChildren
-  '/login': typeof LoginRoute
+  '/get-started': typeof GetStartedRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRoute
   '/terms': typeof TermsRoute
-  '/uid-lookup': typeof UidLookupRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/login': typeof AdminLoginRoute
+  '/app/book': typeof AppBookRoute
+  '/app/voice-room': typeof AppVoiceRoomRoute
   '/dimensions/$slug': typeof DimensionsSlugRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/shyam/bookings': typeof ShyamBookingsRoute
+  '/shyam/dashboard': typeof ShyamDashboardRoute
+  '/shyam/posts': typeof ShyamPostsRoute
+  '/shyam/uid-search': typeof ShyamUidSearchRoute
+  '/shyam/voice': typeof ShyamVoiceRoute
+  '/app/': typeof AppIndexRoute
+  '/shyam/': typeof ShyamIndexRoute
+  '/app/uid/$uid': typeof AppUidUidRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
-    | '/admin'
-    | '/apply'
-    | '/book'
     | '/contact'
     | '/dimensions'
-    | '/login'
+    | '/get-started'
     | '/privacy'
     | '/refund'
     | '/sessions'
     | '/terms'
-    | '/uid-lookup'
-    | '/admin/dashboard'
-    | '/admin/login'
+    | '/app/book'
+    | '/app/voice-room'
     | '/dimensions/$slug'
-    | '/email/unsubscribe'
-    | '/lovable/email/suppression'
-    | '/lovable/email/queue/process'
-    | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
+    | '/shyam/bookings'
+    | '/shyam/dashboard'
+    | '/shyam/posts'
+    | '/shyam/uid-search'
+    | '/shyam/voice'
+    | '/app/'
+    | '/shyam/'
+    | '/app/uid/$uid'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/admin'
-    | '/apply'
-    | '/book'
     | '/contact'
     | '/dimensions'
-    | '/login'
+    | '/get-started'
     | '/privacy'
     | '/refund'
     | '/sessions'
     | '/terms'
-    | '/uid-lookup'
-    | '/admin/dashboard'
-    | '/admin/login'
+    | '/app/book'
+    | '/app/voice-room'
     | '/dimensions/$slug'
-    | '/email/unsubscribe'
-    | '/lovable/email/suppression'
-    | '/lovable/email/queue/process'
-    | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
+    | '/shyam/bookings'
+    | '/shyam/dashboard'
+    | '/shyam/posts'
+    | '/shyam/uid-search'
+    | '/shyam/voice'
+    | '/app'
+    | '/shyam'
+    | '/app/uid/$uid'
   id:
     | '__root__'
     | '/'
     | '/about'
-    | '/admin'
-    | '/apply'
-    | '/book'
     | '/contact'
     | '/dimensions'
-    | '/login'
+    | '/get-started'
     | '/privacy'
     | '/refund'
     | '/sessions'
     | '/terms'
-    | '/uid-lookup'
-    | '/admin/dashboard'
-    | '/admin/login'
+    | '/app/book'
+    | '/app/voice-room'
     | '/dimensions/$slug'
-    | '/email/unsubscribe'
-    | '/lovable/email/suppression'
-    | '/lovable/email/queue/process'
-    | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
+    | '/shyam/bookings'
+    | '/shyam/dashboard'
+    | '/shyam/posts'
+    | '/shyam/uid-search'
+    | '/shyam/voice'
+    | '/app/'
+    | '/shyam/'
+    | '/app/uid/$uid'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRouteWithChildren
-  ApplyRoute: typeof ApplyRoute
-  BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
   DimensionsRoute: typeof DimensionsRouteWithChildren
-  LoginRoute: typeof LoginRoute
+  GetStartedRoute: typeof GetStartedRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
   SessionsRoute: typeof SessionsRoute
   TermsRoute: typeof TermsRoute
-  UidLookupRoute: typeof UidLookupRoute
-  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
-  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
-  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
-  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
-  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
+  AppBookRoute: typeof AppBookRoute
+  AppVoiceRoomRoute: typeof AppVoiceRoomRoute
+  ShyamBookingsRoute: typeof ShyamBookingsRoute
+  ShyamDashboardRoute: typeof ShyamDashboardRoute
+  ShyamPostsRoute: typeof ShyamPostsRoute
+  ShyamUidSearchRoute: typeof ShyamUidSearchRoute
+  ShyamVoiceRoute: typeof ShyamVoiceRoute
+  AppIndexRoute: typeof AppIndexRoute
+  ShyamIndexRoute: typeof ShyamIndexRoute
+  AppUidUidRoute: typeof AppUidUidRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/uid-lookup': {
-      id: '/uid-lookup'
-      path: '/uid-lookup'
-      fullPath: '/uid-lookup'
-      preLoaderRoute: typeof UidLookupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -340,11 +319,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/get-started': {
+      id: '/get-started'
+      path: '/get-started'
+      fullPath: '/get-started'
+      preLoaderRoute: typeof GetStartedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dimensions': {
@@ -361,27 +340,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/book': {
-      id: '/book'
-      path: '/book'
-      fullPath: '/book'
-      preLoaderRoute: typeof BookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/apply': {
-      id: '/apply'
-      path: '/apply'
-      fullPath: '/apply'
-      preLoaderRoute: typeof ApplyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -396,11 +354,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/email/unsubscribe': {
-      id: '/email/unsubscribe'
-      path: '/email/unsubscribe'
-      fullPath: '/email/unsubscribe'
-      preLoaderRoute: typeof EmailUnsubscribeRouteImport
+    '/shyam/': {
+      id: '/shyam/'
+      path: '/shyam'
+      fullPath: '/shyam/'
+      preLoaderRoute: typeof ShyamIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/app'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shyam/voice': {
+      id: '/shyam/voice'
+      path: '/shyam/voice'
+      fullPath: '/shyam/voice'
+      preLoaderRoute: typeof ShyamVoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shyam/uid-search': {
+      id: '/shyam/uid-search'
+      path: '/shyam/uid-search'
+      fullPath: '/shyam/uid-search'
+      preLoaderRoute: typeof ShyamUidSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shyam/posts': {
+      id: '/shyam/posts'
+      path: '/shyam/posts'
+      fullPath: '/shyam/posts'
+      preLoaderRoute: typeof ShyamPostsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shyam/dashboard': {
+      id: '/shyam/dashboard'
+      path: '/shyam/dashboard'
+      fullPath: '/shyam/dashboard'
+      preLoaderRoute: typeof ShyamDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shyam/bookings': {
+      id: '/shyam/bookings'
+      path: '/shyam/bookings'
+      fullPath: '/shyam/bookings'
+      preLoaderRoute: typeof ShyamBookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dimensions/$slug': {
@@ -410,62 +410,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DimensionsSlugRouteImport
       parentRoute: typeof DimensionsRoute
     }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/dashboard': {
-      id: '/admin/dashboard'
-      path: '/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/lovable/email/suppression': {
-      id: '/lovable/email/suppression'
-      path: '/lovable/email/suppression'
-      fullPath: '/lovable/email/suppression'
-      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+    '/app/voice-room': {
+      id: '/app/voice-room'
+      path: '/app/voice-room'
+      fullPath: '/app/voice-room'
+      preLoaderRoute: typeof AppVoiceRoomRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/transactional/send': {
-      id: '/lovable/email/transactional/send'
-      path: '/lovable/email/transactional/send'
-      fullPath: '/lovable/email/transactional/send'
-      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
+    '/app/book': {
+      id: '/app/book'
+      path: '/app/book'
+      fullPath: '/app/book'
+      preLoaderRoute: typeof AppBookRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/transactional/preview': {
-      id: '/lovable/email/transactional/preview'
-      path: '/lovable/email/transactional/preview'
-      fullPath: '/lovable/email/transactional/preview'
-      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/queue/process': {
-      id: '/lovable/email/queue/process'
-      path: '/lovable/email/queue/process'
-      fullPath: '/lovable/email/queue/process'
-      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+    '/app/uid/$uid': {
+      id: '/app/uid/$uid'
+      path: '/app/uid/$uid'
+      fullPath: '/app/uid/$uid'
+      preLoaderRoute: typeof AppUidUidRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface AdminRouteChildren {
-  AdminDashboardRoute: typeof AdminDashboardRoute
-  AdminLoginRoute: typeof AdminLoginRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminDashboardRoute: AdminDashboardRoute,
-  AdminLoginRoute: AdminLoginRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface DimensionsRouteChildren {
   DimensionsSlugRoute: typeof DimensionsSlugRoute
@@ -482,22 +449,23 @@ const DimensionsRouteWithChildren = DimensionsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRouteWithChildren,
-  ApplyRoute: ApplyRoute,
-  BookRoute: BookRoute,
   ContactRoute: ContactRoute,
   DimensionsRoute: DimensionsRouteWithChildren,
-  LoginRoute: LoginRoute,
+  GetStartedRoute: GetStartedRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
   SessionsRoute: SessionsRoute,
   TermsRoute: TermsRoute,
-  UidLookupRoute: UidLookupRoute,
-  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
-  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
-  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
-  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
-  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
+  AppBookRoute: AppBookRoute,
+  AppVoiceRoomRoute: AppVoiceRoomRoute,
+  ShyamBookingsRoute: ShyamBookingsRoute,
+  ShyamDashboardRoute: ShyamDashboardRoute,
+  ShyamPostsRoute: ShyamPostsRoute,
+  ShyamUidSearchRoute: ShyamUidSearchRoute,
+  ShyamVoiceRoute: ShyamVoiceRoute,
+  AppIndexRoute: AppIndexRoute,
+  ShyamIndexRoute: ShyamIndexRoute,
+  AppUidUidRoute: AppUidUidRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
