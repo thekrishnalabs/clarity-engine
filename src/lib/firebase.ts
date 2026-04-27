@@ -25,6 +25,17 @@ const firebaseConfig = {
   measurementId: "G-VYCYEDVDJ9",
 };
 
+const PRODUCTION_AUTH_ORIGIN = "https://hirenkundli.lovable.app";
+
+const FIREBASE_AUTHORIZED_HOSTS = new Set([
+  "hirenkundli-66005.firebaseapp.com",
+  "hirenkundli-66005.web.app",
+  "hirenkundli.indevs.in",
+  "hirenkundli.lovable.app",
+  "hirenkundli.lovable.dev",
+  "lovable.dev",
+]);
+
 let _app: FirebaseApp | null = null;
 let _auth: Auth | null = null;
 let _db: Firestore | null = null;
@@ -55,6 +66,12 @@ export function getFbAuth(): Auth {
 }
 
 export async function signInWithFirebaseGoogle(): Promise<UserCredential | null> {
+  if (typeof window !== "undefined" && !FIREBASE_AUTHORIZED_HOSTS.has(window.location.hostname)) {
+    const target = new URL(window.location.pathname + window.location.search + window.location.hash, PRODUCTION_AUTH_ORIGIN);
+    window.location.assign(target.toString());
+    return null;
+  }
+
   const auth = getFbAuth();
   await setPersistence(auth, browserLocalPersistence);
   const provider = new GoogleAuthProvider();
