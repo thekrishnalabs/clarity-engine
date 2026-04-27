@@ -1,11 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { dimensions } from "@/data/dimensions";
 import { dimensionImages } from "@/data/hiren";
 import { DimensionDetailView } from "@/components/hiren/DimensionDetailView";
 import { Layers } from "lucide-react";
 
+const validSlugs = dimensions.map((d) => d.slug);
+
 export const Route = createFileRoute("/dimensions")({
+  validateSearch: (search: Record<string, unknown>): { open?: string } => {
+    const raw = search.open;
+    if (typeof raw === "string" && validSlugs.includes(raw)) {
+      return { open: raw };
+    }
+    return {};
+  },
   head: () => ({
     meta: [
       { title: "9 Dimensions of Clarity — Hiren Kundli" },
@@ -26,7 +35,34 @@ export const Route = createFileRoute("/dimensions")({
 });
 
 function DimensionsList() {
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  // Open dimension from URL search param (?open=slug) so deep links work
+  useEffect(() => {
+    if (search.open) {
+      const i = dimensions.findIndex((d) => d.slug === search.open);
+      if (i >= 0) setOpenIndex(i);
+    } else {
+      setOpenIndex(null);
+    }
+  }, [search.open]);
+
+  const handleOpen = (i: number) => {
+    setOpenIndex(i);
+    navigate({ search: { open: dimensions[i].slug }, replace: true });
+  };
+
+  const handleClose = () => {
+    setOpenIndex(null);
+    navigate({ search: {}, replace: true });
+  };
+
+  const handleIndexChange = (next: number) => {
+    setOpenIndex(next);
+    navigate({ search: { open: dimensions[next].slug }, replace: true });
+  };
 
   return (
     <section className="hk-container py-16 md:py-24">
@@ -50,7 +86,7 @@ function DimensionsList() {
             <button
               key={d.slug}
               type="button"
-              onClick={() => setOpenIndex(i)}
+              onClick={() => handleOpen(i)}
               className="group relative overflow-hidden rounded-2xl border bg-card/40 text-left transition hover:border-primary/50 hover:bg-card/60 focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
               {img && (
@@ -98,8 +134,8 @@ function DimensionsList() {
         open={openIndex !== null}
         dimensions={dimensions}
         index={openIndex ?? 0}
-        onClose={() => setOpenIndex(null)}
-        onIndexChange={(next) => setOpenIndex(next)}
+        onClose={handleClose}
+        onIndexChange={handleIndexChange}
       />
     </section>
   );

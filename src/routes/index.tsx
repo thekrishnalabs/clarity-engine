@@ -60,15 +60,29 @@ function Index() {
           <div>
             <p className="hk-eyebrow">Dimensions + depth</p>
             <h2 className="hk-heading mt-4 text-4xl md:text-5xl">A layered map for decisions, not predictions.</h2>
-            <p className="mt-5 text-muted-foreground leading-8">Each dimension decodes one layer: experience, orientation, patterns, relationship reality, and deeper system-level dynamics. Higher sessions include more dimensions and more time for structured questions.</p>
+            <p className="mt-5 text-muted-foreground leading-8">Each dimension decodes one layer: experience, orientation, patterns, relationship reality, and deeper system-level dynamics. Tap any dimension to enter its full visual breakdown.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            {dimensionLinks.slice(0, 8).map((dimension) => (
-              <div key={dimension.slug} className="hk-panel rounded-2xl p-5">
-                <div className="hk-gold-text font-semibold">{dimension.title}</div>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{dimension.question}</p>
-              </div>
-            ))}
+            {dimensionLinks.slice(0, 8).map((dimension) => {
+              // Map home-page slug → /dimensions slug
+              const slugMap: Record<string, string> = {
+                "pattern-direction": "direction",
+                "karmic-system": "karmic-systems",
+              };
+              const targetSlug = slugMap[dimension.slug] ?? dimension.slug;
+              return (
+                <Link
+                  key={dimension.slug}
+                  to="/dimensions"
+                  search={{ open: targetSlug }}
+                  className="hk-panel hk-card-hover block rounded-2xl p-5"
+                >
+                  <div className="hk-gold-text font-semibold">{dimension.title}</div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{dimension.question}</p>
+                  <span className="mt-3 inline-flex text-xs text-primary/80">Enter →</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
