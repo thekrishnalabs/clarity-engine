@@ -11,7 +11,7 @@ export const Route = createFileRoute("/get-started")({
   head: () => ({
     meta: [
       { title: "Get Started — Hiren Kundli" },
-      { name: "description", content: "Begin your session journey. Continue with Google or Apple." },
+      { name: "description", content: "Begin your session journey. Continue with Google." },
     ],
   }),
   component: GetStartedPage,
@@ -32,8 +32,8 @@ function GetStartedPage() {
     setError(null);
     setBusy(true);
     try {
-      await signInWithFirebaseGoogle();
-      window.location.assign(redirect);
+      const credential = await signInWithFirebaseGoogle();
+      if (credential) window.location.assign(redirect);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Sign-in failed.");
       setBusy(false);
