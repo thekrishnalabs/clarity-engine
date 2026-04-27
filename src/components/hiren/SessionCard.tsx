@@ -25,7 +25,7 @@ export function SessionCard({ plan }: { plan: SessionPlan }) {
           ))}
         </div>
       </div>
-      <Link to="/book" search={{ session: plan.name }} className="hk-button-primary mt-8 inline-flex justify-center rounded-full px-5 py-3 font-semibold transition">
+      <Link to="/get-started" className="hk-button-primary mt-8 inline-flex justify-center rounded-full px-5 py-3 font-semibold transition">
         Book Session
       </Link>
     </article>
