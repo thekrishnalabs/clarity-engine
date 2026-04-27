@@ -23,7 +23,7 @@ export function DimensionDetailView({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [showHint, setShowHint] = useState(true);
-  const touchStart = useRef<{ x: number; y: number; t: number } | null>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const d = dimensions[index];
   const content = useMemo(
@@ -74,28 +74,20 @@ export function DimensionDetailView({
 
   if (!open || !d || !content) return null;
 
-  // Swipe nav — only triggers on a clear horizontal gesture, never on vertical scroll/tap
   const onTouchStart = (e: React.TouchEvent) => {
-    const t = e.touches[0];
-    touchStart.current = { x: t.clientX, y: t.clientY, t: Date.now() };
+    touchStartX.current = e.touches[0].clientX;
   };
   const onTouchEnd = (e: React.TouchEvent) => {
-    const start = touchStart.current;
-    touchStart.current = null;
-    if (!start) return;
-    const end = e.changedTouches[0];
-    const dx = end.clientX - start.x;
-    const dy = end.clientY - start.y;
-    const elapsed = Date.now() - start.t;
-    // Require: meaningful horizontal travel, dominant over vertical, and a real swipe gesture (not a slow drag)
-    if (Math.abs(dx) < 80) return;
-    if (Math.abs(dx) < Math.abs(dy) * 1.6) return;
-    if (elapsed > 600) return;
+    if (touchStartX.current == null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) < 60) return;
     if (dx < 0 && index < dimensions.length - 1) onIndexChange(index + 1);
-    else if (dx > 0 && index > 0) onIndexChange(index - 1);
+    if (dx > 0 && index > 0) onIndexChange(index - 1);
   };
 
   const totalLayers = content.layers.length;
+  // depth filled steps based on scroll
   const filledLayers = Math.min(
     totalLayers,
     Math.max(1, Math.ceil(progress * totalLayers + 0.001)),
@@ -109,6 +101,8 @@ export function DimensionDetailView({
       role="dialog"
       aria-modal="true"
       aria-label={`${d.name} dimension`}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       {/* Sticky header */}
       <header className="absolute inset-x-0 top-0 z-20 border-b border-primary/15 bg-background/70 backdrop-blur-md">
@@ -159,12 +153,10 @@ export function DimensionDetailView({
         </div>
       </header>
 
-      {/* Scrollable content — touch handlers live here so vertical scroll is never hijacked at the dialog root */}
+      {/* Scrollable content */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
         className="absolute inset-0 overflow-y-auto pt-14"
       >
         {/* Hero visual */}
@@ -181,9 +173,11 @@ export function DimensionDetailView({
             ) : (
               <div className="h-full w-full bg-card" />
             )}
+            {/* Cinematic overlays */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/30 via-background/10 to-background" />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
 
+            {/* Title overlay */}
             <div className="absolute inset-x-0 bottom-0 px-5 pb-8 md:px-10 md:pb-14">
               <div className="hk-container px-0">
                 <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-background/40 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-primary backdrop-blur-sm">
@@ -199,6 +193,7 @@ export function DimensionDetailView({
               </div>
             </div>
 
+            {/* Scroll-to-deeper hint */}
             {showHint && (
               <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
                 <div className="flex animate-fade-in flex-col items-center gap-1 text-[10px] uppercase tracking-[0.25em] text-primary/80">
@@ -210,57 +205,47 @@ export function DimensionDetailView({
           </div>
         </div>
 
-        {/* Editorial body — minimal boxes, more typography */}
-        <article className="hk-container max-w-3xl space-y-16 pb-24 pt-12 md:space-y-20 md:pt-16">
-          {/* Core Insight — pull-quote, no box */}
-          <section className="relative">
-            <p className="hk-gold-text text-[10px] uppercase tracking-[0.4em]">
+        {/* Content body */}
+        <div className="hk-container space-y-10 pb-24 pt-10 md:space-y-14 md:pt-14">
+          {/* Core Insight */}
+          <section className="rounded-3xl border border-primary/25 bg-card/40 p-6 md:p-8">
+            <p className="hk-gold-text text-[10px] uppercase tracking-[0.3em]">
               Core Insight
             </p>
-            <div className="mt-5 flex gap-5 md:gap-7">
-              <span
-                aria-hidden
-                className="hk-gold-text shrink-0 font-serif text-5xl leading-none md:text-7xl"
-              >
-                “
-              </span>
-              <p className="font-serif text-xl italic leading-relaxed text-foreground/90 md:text-2xl">
-                {content.coreInsight}
-              </p>
-            </div>
-            <div className="mt-7 h-px w-16 bg-gradient-to-r from-primary/60 to-transparent" />
+            <p className="mt-3 font-serif text-xl italic leading-relaxed text-foreground/90 md:text-2xl">
+              "{content.coreInsight}"
+            </p>
           </section>
 
-          {/* Deep Breakdown — flowing sections separated by hairlines, not card grids */}
-          <section className="space-y-10">
-            <p className="hk-gold-text text-[10px] uppercase tracking-[0.4em]">
+          {/* Deep Breakdown */}
+          <section>
+            <p className="hk-gold-text text-[10px] uppercase tracking-[0.3em]">
               Deep Breakdown
             </p>
-            <BreakdownBlock
-              label="What it represents"
-              body={content.represents}
-            />
-            <BreakdownBlock
-              label="How it affects decisions"
-              body={content.affectsDecisions}
-            />
-            <BreakdownBlock
-              label="Real-life pattern"
-              body={content.realLifePattern}
-            />
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+              <BreakdownCard label="What it represents" body={content.represents} />
+              <BreakdownCard
+                label="How it affects decisions"
+                body={content.affectsDecisions}
+              />
+              <BreakdownCard
+                label="Real-life pattern"
+                body={content.realLifePattern}
+              />
+            </div>
           </section>
 
-          {/* Depth Layers — kept as cards because they unfold structurally */}
+          {/* Depth Layers */}
           <section>
             <div className="flex items-end justify-between gap-3">
-              <p className="hk-gold-text text-[10px] uppercase tracking-[0.4em]">
+              <p className="hk-gold-text text-[10px] uppercase tracking-[0.3em]">
                 Depth Layers
               </p>
-              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                 {filledLayers} / {totalLayers} unfolded
               </p>
             </div>
-            <div className="mt-5 space-y-3">
+            <div className="mt-4 space-y-3">
               {content.layers.map((layer, i) => {
                 const active = i < filledLayers;
                 return (
@@ -269,7 +254,7 @@ export function DimensionDetailView({
                     className={`rounded-2xl border p-5 transition-all duration-500 ${
                       active
                         ? "border-primary/40 bg-card/60 opacity-100"
-                        : "border-border/40 bg-card/15 opacity-55"
+                        : "border-border/50 bg-card/20 opacity-60"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -298,31 +283,31 @@ export function DimensionDetailView({
             </div>
           </section>
 
-          {/* Reflection Prompt — luxurious centered moment, no box */}
-          <section className="relative py-6 text-center">
-            <p className="hk-gold-text text-[10px] uppercase tracking-[0.4em]">
-              Reflection
+          {/* Reflection */}
+          <section className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card/30 to-transparent p-6 md:p-10">
+            <p className="hk-gold-text text-[10px] uppercase tracking-[0.3em]">
+              Reflection Prompt
             </p>
-            <p className="mx-auto mt-6 max-w-2xl font-serif text-2xl leading-snug text-foreground md:text-3xl">
+            <p className="mt-4 font-serif text-2xl leading-snug text-foreground md:text-3xl">
               {content.reflection}
             </p>
-            <div className="mx-auto mt-8 h-px w-24 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
           </section>
 
-          {/* Action — single elegant box (this is the only call-to-act) */}
-          <section className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card/30 to-transparent p-6 md:p-9">
-            <p className="hk-gold-text text-[10px] uppercase tracking-[0.4em]">
-              Action
+          {/* Action */}
+          <section className="rounded-3xl border border-primary/20 bg-card/40 p-6 md:p-8">
+            <p className="hk-gold-text text-[10px] uppercase tracking-[0.3em]">
+              Action Insight
             </p>
-            <p className="mt-3 font-serif text-lg leading-relaxed text-foreground/95 md:text-xl">
+            <p className="mt-3 text-base leading-relaxed text-foreground/90 md:text-lg">
               {content.action}
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <span className="text-xs text-muted-foreground">
+              <span className="rounded-full border px-3 py-1 text-xs text-muted-foreground">
                 {d.session}
               </span>
-              <span className="hk-gold-text text-xs">·</span>
-              <span className="text-xs text-primary">{d.sessionCode}</span>
+              <span className="rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs text-primary">
+                {d.sessionCode}
+              </span>
             </div>
           </section>
 
@@ -352,7 +337,7 @@ export function DimensionDetailView({
               <ChevronRight className="h-4 w-4" />
             </button>
           </nav>
-        </article>
+        </div>
       </div>
     </div>
   );
@@ -360,15 +345,13 @@ export function DimensionDetailView({
   return createPortal(node, document.body);
 }
 
-function BreakdownBlock({ label, body }: { label: string; body: string }) {
+function BreakdownCard({ label, body }: { label: string; body: string }) {
   return (
-    <div className="border-l border-primary/30 pl-5 md:pl-6">
-      <p className="text-[10px] uppercase tracking-[0.3em] text-primary/85">
+    <div className="rounded-2xl border bg-card/40 p-5">
+      <p className="text-[10px] uppercase tracking-[0.25em] text-primary/80">
         {label}
       </p>
-      <p className="mt-3 text-base leading-relaxed text-foreground/90 md:text-lg">
-        {body}
-      </p>
+      <p className="mt-3 text-sm leading-relaxed text-foreground/85">{body}</p>
     </div>
   );
 }
