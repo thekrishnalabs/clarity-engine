@@ -5,14 +5,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { createBooking } from "@/lib/firestore";
 
 const SESSIONS = [
-  { code: "FR", name: "Free Trial", price: 0 },
-  { code: "BR", name: "Bronze", price: 499 },
-  { code: "SI", name: "Silver", price: 999 },
-  { code: "SPL", name: "Silver Prime Lite", price: 1499 },
-  { code: "SP", name: "Silver Prime", price: 1999 },
-  { code: "GD", name: "Gold", price: 2999 },
-  { code: "GP", name: "Gold Prime", price: 3999 },
-  { code: "PL", name: "Platinum", price: 4499 },
+  { code: "BR", name: "Bronze", price: 249 },
+  { code: "SI", name: "Silver", price: 500 },
+  { code: "SP", name: "Silver Prime", price: 800 },
+  { code: "GD", name: "Gold", price: 1200 },
+  { code: "GP", name: "Gold Prime", price: 1799 },
+  { code: "PL", name: "Platinum", price: 2800 },
   { code: "VIP", name: "VIP Platinum", price: 4999 },
 ];
 
@@ -85,7 +83,7 @@ function BookForm() {
             <option value="">Select a session…</option>
             {SESSIONS.map((s) => (
               <option key={s.code} value={s.code}>
-                {s.name} — ₹{s.price}
+                {s.name} — ₹{s.price.toLocaleString("en-IN")}
               </option>
             ))}
           </select>
