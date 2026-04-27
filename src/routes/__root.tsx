@@ -1,6 +1,15 @@
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { BrandLayout } from "@/components/hiren/BrandLayout";
+import { AuthProvider } from "@/contexts/AuthContext";
 import appCss from "../styles.css?url";
+
+function RootComponent() {
+  return (
+    <AuthProvider>
+      <BrandLayout />
+    </AuthProvider>
+  );
+}
 
 function NotFoundComponent() {
   return (
@@ -29,7 +38,7 @@ export const Route = createRootRoute({
     links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootShell,
-  component: BrandLayout,
+  component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
 
