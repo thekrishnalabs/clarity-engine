@@ -1,5 +1,17 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getDimension, type Dimension } from "@/data/dimensions";
+import { dimensionImages } from "@/data/hiren";
+
+const slugToImageKey: Record<string, string> = {
+  experience: "experience",
+  orientation: "orientation",
+  pattern: "pattern",
+  direction: "pattern-direction",
+  "relationship-reality": "relationship-reality",
+  "relationship-direction": "relationship-direction",
+  karmic: "karmic",
+  "karmic-systems": "karmic-system",
+};
 
 export const Route = createFileRoute("/dimensions/$slug")({
   loader: ({ params }) => {
@@ -81,6 +93,21 @@ function DimensionDetail() {
       >
         ← Dimensions
       </Link>
+
+      {(() => {
+        const imgKey = slugToImageKey[d.slug];
+        const img = imgKey ? dimensionImages[imgKey] : null;
+        if (!img) return null;
+        return (
+          <div className="mt-6 w-full overflow-hidden rounded-3xl border border-primary/20">
+            <img
+              src={img}
+              alt={`${d.name} Dimension`}
+              className="h-full max-h-[320px] w-full object-cover opacity-90"
+            />
+          </div>
+        );
+      })()}
 
       <header className="mt-8 max-w-3xl">
         <div className="flex flex-wrap items-center gap-3">

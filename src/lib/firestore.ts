@@ -151,6 +151,26 @@ export async function setPostPublished(id: string, is_published: boolean) {
   await updateDoc(doc(db, "admin_posts", id), { is_published });
 }
 
+// ---- SPL Applications ----
+export interface SplApplication extends DocumentData {
+  q1: string; q2: string; q3: string; q4: string; q5: string;
+  q6: string; q7: string; q8: string; q9: string; q10?: string;
+  q11: string; q12: string; q13: string;
+  status: "pending" | "approved" | "rejected";
+  submitted_at?: unknown;
+}
+
+export async function listSplApplications(): Promise<(SplApplication & { id: string })[]> {
+  const db = getDb();
+  const snap = await getDocs(query(collection(db, "spl_applications"), orderBy("submitted_at", "desc")));
+  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SplApplication) }));
+}
+
+export async function setSplApplicationStatus(id: string, status: SplApplication["status"]) {
+  const db = getDb();
+  await updateDoc(doc(db, "spl_applications", id), { status });
+}
+
 // ---- Voice Room ----
 const VOICE_ROOM_DOC = "main";
 export async function getVoiceRoom(): Promise<VoiceRoom | null> {

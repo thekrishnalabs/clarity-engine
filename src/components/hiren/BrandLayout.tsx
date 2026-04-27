@@ -72,7 +72,6 @@ export function BrandLayout() {
             <Link to="/terms">Terms</Link>
             <Link to="/privacy">Privacy</Link>
             <Link to="/refund">Refund</Link>
-            <Link to="/shyam" className="text-xs opacity-60 hover:opacity-100">Admin</Link>
           </div>
         </div>
       </footer>
