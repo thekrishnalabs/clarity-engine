@@ -1,4 +1,4 @@
-import { Navigate } from "@tanstack/react-router";
+import { Navigate, useLocation } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -12,8 +12,9 @@ function LoadingScreen() {
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth();
+  const location = useLocation();
   if (isLoading) return <LoadingScreen />;
-  if (!user) return <Navigate to="/get-started" />;
+  if (!user) return <Navigate to="/get-started" search={{ redirect: location.href }} />;
   return <>{children}</>;
 }
 
