@@ -17,24 +17,17 @@ import {
 import { getFirestore, type Firestore } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 
+// Firebase web SDK config — these are PUBLISHABLE values (safe to commit).
+// Real security comes from Firebase Auth + Firestore Security Rules.
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyBglwWFK0JFJLhV8_2M9986t2jPcFERsnk",
+  authDomain: "hirenkundli-66005.firebaseapp.com",
+  projectId: "hirenkundli-66005",
+  storageBucket: "hirenkundli-66005.firebasestorage.app",
+  messagingSenderId: "270901111701",
+  appId: "1:270901111701:web:fedfebfd91a7c83268649c",
+  measurementId: "G-VYCYEDVDJ9",
 };
-
-function assertFirebaseConfig() {
-  const missing = Object.entries(firebaseConfig)
-    .filter(([, value]) => !value)
-    .map(([key]) => key);
-  if (missing.length > 0) {
-    throw new Error(`Firebase config is missing from this deployment: ${missing.join(", ")}. Add FIREBASE_* or VITE_FIREBASE_* environment variables and redeploy.`);
-  }
-}
 
 let _app: FirebaseApp | null = null;
 let _auth: Auth | null = null;
@@ -43,7 +36,7 @@ let _storage: FirebaseStorage | null = null;
 
 function getFbApp(): FirebaseApp {
   if (_app) return _app;
-  assertFirebaseConfig();
+  
   _app = getApps().length ? getApp() : initializeApp(firebaseConfig);
   return _app;
 }
