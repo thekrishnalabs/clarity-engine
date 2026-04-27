@@ -60,17 +60,21 @@ export function AppLayout() {
             const active = isActive(it.to);
             const Icon = it.icon;
             const disabled = it.label === "My UID" && !myUid;
+            const cls = `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
+              active
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+            } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`;
+            if (disabled) {
+              return (
+                <span key={it.label} className={cls} aria-disabled="true">
+                  <Icon className="h-4 w-4" />
+                  <span>{it.label}</span>
+                </span>
+              );
+            }
             return (
-              <Link
-                key={it.label}
-                to={it.to}
-                disabled={disabled as never}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-                  active
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-                } ${disabled ? "pointer-events-none opacity-40" : ""}`}
-              >
+              <Link key={it.label} to={it.to} className={cls}>
                 <Icon className="h-4 w-4" />
                 <span>{it.label}</span>
               </Link>
@@ -110,16 +114,19 @@ export function AppLayout() {
           const active = isActive(it.to);
           const Icon = it.icon;
           const disabled = it.label === "My UID" && !myUid;
+          const cls = `flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[10px] transition-colors ${
+            active ? "text-primary" : "text-muted-foreground"
+          } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`;
+          if (disabled) {
+            return (
+              <span key={it.label} className={cls} aria-label={it.label} aria-disabled="true">
+                <Icon className="h-5 w-5" />
+                <span className="sr-only">{it.label}</span>
+              </span>
+            );
+          }
           return (
-            <Link
-              key={it.label}
-              to={it.to}
-              disabled={disabled as never}
-              aria-label={it.label}
-              className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[10px] transition-colors ${
-                active ? "text-primary" : "text-muted-foreground"
-              } ${disabled ? "pointer-events-none opacity-40" : ""}`}
-            >
+            <Link key={it.label} to={it.to} aria-label={it.label} className={cls}>
               <Icon className="h-5 w-5" />
               <span className="sr-only">{it.label}</span>
             </Link>
