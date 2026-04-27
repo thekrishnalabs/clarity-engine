@@ -61,8 +61,7 @@ function BookingsAdmin() {
         city_code: cityCode,
         user_name: b.user_name,
         user_phone: b.user_phone,
-        user_firebase_uid: b.user_firebase_uid ?? b.user_lovable_uid ?? null,
-        user_lovable_uid: b.user_lovable_uid ?? null,
+        user_firebase_uid: b.user_firebase_uid ?? null,
         notes: b.notes,
       }, user?.email);
       await attachUidToBooking(b.id, uid, user?.email);
