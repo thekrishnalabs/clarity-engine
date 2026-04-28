@@ -430,6 +430,7 @@ function SplTab() {
           </div>
         </Modal>
       )}
+      <SessionPasswordModal {...modalProps} />
     </>
   );
 }
