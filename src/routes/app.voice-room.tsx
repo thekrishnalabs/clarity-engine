@@ -17,6 +17,8 @@ import {
   type VoiceParticipant,
   type VoiceRoom,
 } from "@/lib/firestore";
+import { executeRecaptcha } from "@/lib/recaptcha";
+import { verifyRecaptcha } from "@/server/recaptcha.functions";
 
 export const Route = createFileRoute("/app/voice-room")({
   head: () => ({ meta: [{ title: "Voice Room — Hiren Kundli" }, { name: "robots", content: "noindex" }] }),
