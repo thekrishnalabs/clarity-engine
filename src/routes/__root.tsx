@@ -45,6 +45,13 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/5cd2433f-f0cd-4bc4-99a5-cbdedf17d8b9" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
+    scripts: [
+      {
+        src: "https://www.google.com/recaptcha/enterprise.js?render=6LfcVM4sAAAAAP_7448Ck-BEc9nsCji5PJG0_fsd",
+        async: true,
+        defer: true,
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
