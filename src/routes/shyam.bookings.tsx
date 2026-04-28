@@ -107,40 +107,44 @@ function BookingsTab() {
     });
   }, [items, statusFilter, search]);
 
-  async function generate(b: SessionBooking & { id: string }) {
-    setBusyId(b.id);
-    try {
-      const cityCode = cityCodeFrom(b.place_of_birth);
-      const uid = generateUid({ sessionCode: b.session_code, dateOfBirth: b.date_of_birth, cityCode });
-      await createUidRecord({
-        uid,
-        session_code: b.session_code,
-        session_full_name: b.session_full_name,
-        date_of_birth: b.date_of_birth,
-        time_of_birth: b.time_of_birth,
-        place_of_birth: b.place_of_birth,
-        city_code: cityCode,
-        user_name: b.user_name,
-        user_phone: b.user_phone,
-        user_firebase_uid: b.user_firebase_uid ?? null,
-        notes: b.notes,
-      }, user?.email);
-      await attachUidToBooking(b.id, uid, user?.email);
-      await refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    } finally {
-      setBusyId(null);
-    }
+  function generate(b: SessionBooking & { id: string }) {
+    request(async () => {
+      setBusyId(b.id);
+      try {
+        const cityCode = cityCodeFrom(b.place_of_birth);
+        const uid = generateUid({ sessionCode: b.session_code, dateOfBirth: b.date_of_birth, cityCode });
+        await createUidRecord({
+          uid,
+          session_code: b.session_code,
+          session_full_name: b.session_full_name,
+          date_of_birth: b.date_of_birth,
+          time_of_birth: b.time_of_birth,
+          place_of_birth: b.place_of_birth,
+          city_code: cityCode,
+          user_name: b.user_name,
+          user_phone: b.user_phone,
+          user_firebase_uid: b.user_firebase_uid ?? null,
+          notes: b.notes,
+        }, user?.email);
+        await attachUidToBooking(b.id, uid, user?.email);
+        await refresh();
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      } finally {
+        setBusyId(null);
+      }
+    });
   }
 
-  async function changeStatus(id: string, status: SessionBooking["status"]) {
-    try {
-      await setBookingStatus(id, status, user?.email);
-      await refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    }
+  function changeStatus(id: string, status: SessionBooking["status"]) {
+    request(async () => {
+      try {
+        await setBookingStatus(id, status, user?.email);
+        await refresh();
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      }
+    });
   }
 
   function whatsappLink(b: SessionBooking & { id: string }) {
