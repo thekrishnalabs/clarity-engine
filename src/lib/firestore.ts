@@ -5,14 +5,17 @@ import {
   setDoc,
   getDoc,
   getDocs,
+  deleteDoc,
   query,
   where,
   orderBy,
   limit,
   serverTimestamp,
   updateDoc,
+  onSnapshot,
   type DocumentData,
   type QueryConstraint,
+  type Unsubscribe,
 } from "firebase/firestore";
 import { getDb, isAdminEmail } from "./firebase";
 
@@ -52,7 +55,7 @@ export interface SessionBooking extends DocumentData {
   notes: string;
   generated_uid?: string | null;
   status: "pending" | "confirmed" | "completed";
-  created_at?: unknown;
+  created_at?: { toDate?: () => Date } | unknown;
 }
 
 export interface AdminPost extends DocumentData {
@@ -60,7 +63,7 @@ export interface AdminPost extends DocumentData {
   content: string;
   type: "announcement" | "session_update" | "insight" | "dimension_note";
   is_published: boolean;
-  created_at?: unknown;
+  created_at?: { toDate?: () => Date } | unknown;
 }
 
 export interface VoiceRoom extends DocumentData {
@@ -69,6 +72,21 @@ export interface VoiceRoom extends DocumentData {
   max_seats: number;
   is_active: boolean;
   created_at?: unknown;
+}
+
+export interface VoiceParticipant extends DocumentData {
+  name: string;
+  initials: string;
+  isMuted: boolean;
+  joinedAt?: { toDate?: () => Date } | unknown;
+}
+
+export interface VoiceMessage extends DocumentData {
+  name: string;
+  initials: string;
+  text: string;
+  userId?: string;
+  createdAt?: { toDate?: () => Date } | unknown;
 }
 
 // ---- Bookings ----
@@ -107,6 +125,12 @@ export async function attachUidToBooking(bookingId: string, uid: string, adminEm
     generated_uid: uid,
     status: "confirmed",
   });
+}
+
+export async function setBookingStatus(bookingId: string, status: SessionBooking["status"], adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
+  const db = getDb();
+  await updateDoc(doc(db, "session_bookings", bookingId), { status });
 }
 
 // ---- UIDs ----
@@ -156,6 +180,18 @@ export async function createPost(post: Omit<AdminPost, "created_at">, adminEmail
   return ref.id;
 }
 
+export async function updatePost(id: string, post: Partial<Omit<AdminPost, "created_at">>, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
+  const db = getDb();
+  await updateDoc(doc(db, "admin_posts", id), post);
+}
+
+export async function deletePost(id: string, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
+  const db = getDb();
+  await deleteDoc(doc(db, "admin_posts", id));
+}
+
 export async function setPostPublished(id: string, is_published: boolean, adminEmail?: string | null) {
   requireAdminEmail(adminEmail);
   const db = getDb();
@@ -168,7 +204,7 @@ export interface SplApplication extends DocumentData {
   q6: string; q7: string; q8: string; q9: string; q10?: string;
   q11: string; q12: string; q13: string;
   status: "pending" | "approved" | "rejected";
-  submitted_at?: unknown;
+  submitted_at?: { toDate?: () => Date } | unknown;
 }
 
 export async function listSplApplications(adminEmail?: string | null): Promise<(SplApplication & { id: string })[]> {
@@ -185,7 +221,8 @@ export async function setSplApplicationStatus(id: string, status: SplApplication
 }
 
 // ---- Voice Room ----
-const VOICE_ROOM_DOC = "main";
+const VOICE_ROOM_DOC = "main_room";
+
 export async function getVoiceRoom(): Promise<VoiceRoom | null> {
   const db = getDb();
   const snap = await getDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC));
@@ -193,7 +230,14 @@ export async function getVoiceRoom(): Promise<VoiceRoom | null> {
   return snap.data() as VoiceRoom;
 }
 
-export async function setVoiceRoom(data: Omit<VoiceRoom, "created_at">, adminEmail?: string | null) {
+export function subscribeVoiceRoom(cb: (room: VoiceRoom | null) => void): Unsubscribe {
+  const db = getDb();
+  return onSnapshot(doc(db, "voice_rooms", VOICE_ROOM_DOC), (snap) => {
+    cb(snap.exists() ? (snap.data() as VoiceRoom) : null);
+  });
+}
+
+export async function setVoiceRoom(data: Partial<Omit<VoiceRoom, "created_at">>, adminEmail?: string | null) {
   requireAdminEmail(adminEmail);
   const db = getDb();
   await setDoc(
@@ -201,4 +245,76 @@ export async function setVoiceRoom(data: Omit<VoiceRoom, "created_at">, adminEma
     { ...data, created_at: serverTimestamp() },
     { merge: true },
   );
+}
+
+export async function setVoiceRoomActive(is_active: boolean, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
+  const db = getDb();
+  await setDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC), { is_active }, { merge: true });
+}
+
+// Participants
+export async function joinVoiceRoom(userId: string, data: { name: string; initials: string }) {
+  const db = getDb();
+  await setDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), {
+    ...data,
+    isMuted: false,
+    joinedAt: serverTimestamp(),
+  });
+}
+
+export async function leaveVoiceRoom(userId: string) {
+  const db = getDb();
+  await deleteDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId));
+}
+
+export async function setMyMuteState(userId: string, isMuted: boolean) {
+  const db = getDb();
+  await updateDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), { isMuted });
+}
+
+export function subscribeParticipants(cb: (list: (VoiceParticipant & { id: string })[]) => void): Unsubscribe {
+  const db = getDb();
+  return onSnapshot(collection(db, "voice_rooms", VOICE_ROOM_DOC, "participants"), (snap) => {
+    cb(snap.docs.map((d) => ({ id: d.id, ...(d.data() as VoiceParticipant) })));
+  });
+}
+
+// Messages
+export async function sendVoiceMessage(data: { name: string; initials: string; text: string; userId: string }) {
+  const db = getDb();
+  await addDoc(collection(db, "voice_rooms", VOICE_ROOM_DOC, "messages"), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export function subscribeMessages(cb: (list: (VoiceMessage & { id: string })[]) => void, max = 50): Unsubscribe {
+  const db = getDb();
+  const q = query(collection(db, "voice_rooms", VOICE_ROOM_DOC, "messages"), orderBy("createdAt", "desc"), limit(max));
+  return onSnapshot(q, (snap) => {
+    cb(snap.docs.map((d) => ({ id: d.id, ...(d.data() as VoiceMessage) })));
+  });
+}
+
+export async function deleteVoiceMessage(id: string, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
+  const db = getDb();
+  await deleteDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "messages", id));
+}
+
+export async function kickParticipant(userId: string, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
+  const db = getDb();
+  await deleteDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId));
+}
+
+// Helpers
+export function tsToDate(ts: unknown): Date | null {
+  if (!ts) return null;
+  if (ts instanceof Date) return ts;
+  if (typeof ts === "object" && ts !== null && "toDate" in ts && typeof (ts as { toDate: () => Date }).toDate === "function") {
+    return (ts as { toDate: () => Date }).toDate();
+  }
+  return null;
 }
