@@ -4,6 +4,8 @@ import { Check } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/RouteGuards";
 import { useAuth } from "@/contexts/AuthContext";
 import { createBooking } from "@/lib/firestore";
+import { executeRecaptcha } from "@/lib/recaptcha";
+import { verifyRecaptcha } from "@/server/recaptcha.functions";
 
 type Session = {
   code: string;
