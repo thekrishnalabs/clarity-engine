@@ -41,6 +41,26 @@ function GetStartedPage() {
     }
   }
 
+  async function signInApple() {
+    setError(null);
+    setBusy(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("apple", {
+        redirect_uri: window.location.origin + redirect,
+      });
+      if (result.error) {
+        setError(result.error.message ?? "Apple sign-in failed.");
+        setBusy(false);
+        return;
+      }
+      if (result.redirected) return; // browser is navigating
+      window.location.assign(redirect);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Apple sign-in failed.");
+      setBusy(false);
+    }
+  }
+
   return (
     <section className="hk-container flex min-h-[80vh] flex-col items-center justify-center py-16">
       <img src={logoUrl} alt="Hiren Kundli" className="h-20 w-20 rounded-full ring-1 ring-primary/40" />
