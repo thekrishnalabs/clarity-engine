@@ -218,7 +218,7 @@ function BookingsTab() {
                       <button onClick={() => copy(b.generated_uid!)} className="inline-flex items-center gap-1 font-mono text-[11px] text-primary">
                         {b.generated_uid.slice(0, 12)}… <Copy className="h-3 w-3" />
                       </button>
-                    ) : (
+                    ) : !isViewer ? (
                       <button
                         disabled={busyId === b.id}
                         onClick={() => generate(b)}
@@ -226,6 +226,8 @@ function BookingsTab() {
                       >
                         {busyId === b.id ? "…" : "Generate UID"}
                       </button>
+                    ) : (
+                      <span className="text-[11px] text-muted-foreground">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
@@ -233,15 +235,19 @@ function BookingsTab() {
                       <a href={whatsappLink(b)} target="_blank" rel="noreferrer" title="WhatsApp" className="rounded-full border p-1.5 text-muted-foreground hover:text-primary">
                         <MessageSquare className="h-3.5 w-3.5" />
                       </a>
-                      <select
-                        value={b.status}
-                        onChange={(e) => changeStatus(b.id, e.target.value as SessionBooking["status"])}
-                        className="rounded-full border bg-background px-2 py-1 text-[11px]"
-                      >
-                        <option value="pending">pending</option>
-                        <option value="confirmed">confirmed</option>
-                        <option value="completed">completed</option>
-                      </select>
+                      {!isViewer ? (
+                        <select
+                          value={b.status}
+                          onChange={(e) => changeStatus(b.id, e.target.value as SessionBooking["status"])}
+                          className="rounded-full border bg-background px-2 py-1 text-[11px]"
+                        >
+                          <option value="pending">pending</option>
+                          <option value="confirmed">confirmed</option>
+                          <option value="completed">completed</option>
+                        </select>
+                      ) : (
+                        <span className="rounded-full border bg-background px-2 py-1 text-[11px] text-muted-foreground">{b.status}</span>
+                      )}
                       <button onClick={() => setNotesItem(b)} title="Notes" className="rounded-full border p-1.5 text-muted-foreground hover:text-primary">
                         <span className="text-xs">📋</span>
                       </button>
