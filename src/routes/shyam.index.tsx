@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getFbAuth, getFirebaseAuthErrorMessage, signInWithFirebaseGoogle, signOutUser } from "@/lib/firebase";
 import { getAdminRole } from "@/lib/firestore";
+import { executeRecaptcha } from "@/lib/recaptcha";
+import { verifyRecaptcha } from "@/server/recaptcha.functions";
 
 export const Route = createFileRoute("/shyam/")({
   head: () => ({ meta: [{ title: "Admin — Hiren Kundli" }, { name: "robots", content: "noindex" }] }),
@@ -24,6 +26,10 @@ function ShyamSignIn() {
     setErr(null);
     setBusy(true);
     try {
+      const token = await executeRecaptcha("ADMIN_LOGIN");
+      if (!token) throw new Error("Security check failed. Please refresh and try again.");
+      const verdict = await verifyRecaptcha({ data: { token, action: "ADMIN_LOGIN" } });
+      if (!verdict.ok) throw new Error("Security verification failed. Please try again.");
       const credential = await signInWithFirebaseGoogle();
       const email = credential?.user.email ?? null;
       if (!email) {

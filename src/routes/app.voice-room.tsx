@@ -17,6 +17,8 @@ import {
   type VoiceParticipant,
   type VoiceRoom,
 } from "@/lib/firestore";
+import { executeRecaptcha } from "@/lib/recaptcha";
+import { verifyRecaptcha } from "@/server/recaptcha.functions";
 
 export const Route = createFileRoute("/app/voice-room")({
   head: () => ({ meta: [{ title: "Voice Room — Hiren Kundli" }, { name: "robots", content: "noindex" }] }),
@@ -72,13 +74,21 @@ function VoiceRoomPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [granted, user]);
 
-  function tryEnter(e: FormEvent) {
+  async function tryEnter(e: FormEvent) {
     e.preventDefault();
     setErr(null);
     if (!room) return;
     if (participants.length >= room.max_seats) return setErr("Room is full.");
-    if (pwd === room.room_password) setGranted(true);
-    else setErr("Wrong password.");
+    if (pwd !== room.room_password) return setErr("Wrong password.");
+    try {
+      const token = await executeRecaptcha("JOIN");
+      if (!token) return setErr("Security check failed. Please refresh and try again.");
+      const verdict = await verifyRecaptcha({ data: { token, action: "JOIN" } });
+      if (!verdict.ok) return setErr("Security verification failed. Please try again.");
+      setGranted(true);
+    } catch {
+      setErr("Security verification failed. Please try again.");
+    }
   }
 
   async function send(e: FormEvent) {

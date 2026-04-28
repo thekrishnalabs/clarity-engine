@@ -4,6 +4,8 @@ import { Check } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/RouteGuards";
 import { useAuth } from "@/contexts/AuthContext";
 import { createBooking } from "@/lib/firestore";
+import { executeRecaptcha } from "@/lib/recaptcha";
+import { verifyRecaptcha } from "@/server/recaptcha.functions";
 
 type Session = {
   code: string;
@@ -79,6 +81,10 @@ function BookFlow() {
     setSubmitting(true);
     setErr(null);
     try {
+      const token = await executeRecaptcha("BOOK");
+      if (!token) throw new Error("Security check failed. Please refresh and try again.");
+      const verdict = await verifyRecaptcha({ data: { token, action: "BOOK" } });
+      if (!verdict.ok) throw new Error("Security verification failed. Please try again.");
       const dob = `${year}-${String(MONTHS.indexOf(month) + 1).padStart(2, "0")}-${day.padStart(2, "0")}`;
       const tob = unknownTime ? "0000" : `${hour.padStart(2, "0")}${minute.padStart(2, "0")}`;
       await createBooking({
