@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getFirebaseAuthErrorMessage, signInWithFirebaseGoogle } from "@/lib/firebase";
+import { lovable } from "@/integrations/lovable";
 import logoUrl from "@/assets/hiren-kundli-logo.jpg";
 
 export const Route = createFileRoute("/get-started")({
