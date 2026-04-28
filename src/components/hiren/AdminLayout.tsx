@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { LayoutDashboard, ClipboardList, FileText, Mic, Search, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, ClipboardList, FileText, Mic, Search, LogOut, Menu, X, Shield, Crown } from "lucide-react";
 import { useState } from "react";
 import logoUrl from "@/assets/hiren-kundli-logo.jpg";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,6 +12,8 @@ const NAV = [
   { to: "/shyam/voice", label: "Voice Room", icon: Mic },
   { to: "/shyam/uid-search", label: "UID Search", icon: Search },
 ] as const;
+
+const SUPER_NAV = [{ to: "/shyam/roles", label: "Role Management", icon: Shield }] as const;
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const { user, signOut } = useAuth();
