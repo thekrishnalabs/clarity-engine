@@ -194,17 +194,21 @@ function PostsAdmin() {
                 <span className={`rounded-full border px-2.5 py-0.5 text-[10px] uppercase tracking-wider ${meta.color}`}>{meta.label}</span>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span>{d ? format(d, "MMM d, yyyy") : ""}</span>
-                  <button onClick={() => togglePublish(p)} className="text-primary">
-                    {p.is_published ? "Unpublish" : "Publish"}
-                  </button>
+                  {!isViewer && (
+                    <button onClick={() => togglePublish(p)} className="text-primary">
+                      {p.is_published ? "Unpublish" : "Publish"}
+                    </button>
+                  )}
                 </div>
               </div>
               <h3 className="hk-gold-text mt-2 font-serif text-lg">{p.title}</h3>
               <p className="mt-1 line-clamp-2 whitespace-pre-line text-sm text-foreground/80">{p.content}</p>
-              <div className="mt-3 flex gap-2">
-                <button onClick={() => openEdit(p)} className="rounded-full border px-3 py-1 text-xs hover:bg-muted/40">Edit</button>
-                <button onClick={() => setConfirmDelete(p)} className="rounded-full border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">Delete</button>
-              </div>
+              {!isViewer && (
+                <div className="mt-3 flex gap-2">
+                  <button onClick={() => openEdit(p)} className="rounded-full border px-3 py-1 text-xs hover:bg-muted/40">Edit</button>
+                  <button onClick={() => setConfirmDelete(p)} className="rounded-full border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">Delete</button>
+                </div>
+              )}
             </li>
           );
         })}
@@ -225,6 +229,7 @@ function PostsAdmin() {
           </div>
         </div>
       )}
+      <SessionPasswordModal {...modalProps} />
     </section>
   );
 }
