@@ -382,7 +382,7 @@ function SplTab() {
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
                       <button onClick={() => setViewing(a)} className="rounded-full border px-3 py-1 text-[11px]">View</button>
-                      {a.status === "pending" && (
+                      {a.status === "pending" && !isViewer && (
                         <>
                           <button disabled={busyId === a.id} onClick={() => update(a.id, "approved")} className="rounded-full bg-emerald-600/20 px-3 py-1 text-[11px] text-emerald-300 disabled:opacity-50">Approve</button>
                           <button disabled={busyId === a.id} onClick={() => update(a.id, "rejected")} className="rounded-full bg-destructive/20 px-3 py-1 text-[11px] text-destructive disabled:opacity-50">Reject</button>
