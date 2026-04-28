@@ -4,6 +4,8 @@ import { format } from "date-fns";
 import { Copy, MessageSquare, X, ExternalLink } from "lucide-react";
 import { AdminRoute } from "@/components/auth/RouteGuards";
 import { AdminLayout } from "@/components/hiren/AdminLayout";
+import { SessionPasswordModal } from "@/components/admin/SessionPasswordModal";
+import { useAdminWriteGuard } from "@/hooks/useAdminWriteGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   attachUidToBooking,
@@ -71,7 +73,8 @@ function BookingsAdmin() {
 }
 
 function BookingsTab() {
-  const { user } = useAuth();
+  const { user, isViewer } = useAuth();
+  const { request, modalProps } = useAdminWriteGuard();
   const [items, setItems] = useState<(SessionBooking & { id: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
