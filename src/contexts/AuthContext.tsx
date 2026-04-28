@@ -7,6 +7,7 @@ import { getFirebaseAnalytics } from "@/services/analyticsService";
 interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
+  roleLoading: boolean;
   adminRole: AdminRoleType | null;
   isSuperAdmin: boolean;
   isAdmin: boolean; // strictly the "admin" role (not superadmin, not viewer)
