@@ -295,7 +295,8 @@ function BookingsTab() {
 }
 
 function SplTab() {
-  const { user } = useAuth();
+  const { user, isViewer } = useAuth();
+  const { request, modalProps } = useAdminWriteGuard();
   const [apps, setApps] = useState<(SplApplication & { id: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
