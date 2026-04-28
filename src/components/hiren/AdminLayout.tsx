@@ -1,4 +1,5 @@
-import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import { LayoutDashboard, ClipboardList, FileText, Mic, Search, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 import logoUrl from "@/assets/hiren-kundli-logo.jpg";
