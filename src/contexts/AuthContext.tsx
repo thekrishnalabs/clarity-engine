@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { onAuthStateChanged, signOut as firebaseSignOut, type User } from "firebase/auth";
 import { getFbAuth, isAdminEmail } from "@/lib/firebase";
-import { getAdminRole, type AdminRoleType } from "@/lib/firestore";
+import { getAdminRole, initializeSuperAdmin, type AdminRoleType } from "@/lib/firestore";
 import { getFirebaseAnalytics } from "@/services/analyticsService";
 
 interface AuthContextValue {
