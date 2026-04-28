@@ -49,35 +49,47 @@ function VoiceAdmin() {
     return () => { u1(); u2(); u3(); };
   }, []);
 
-  async function toggle() {
+  function toggle() {
     if (!room) return;
-    setBusy(true);
-    try {
-      await setVoiceRoomActive(!room.is_active, user?.email);
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : "Failed.");
-    } finally {
-      setBusy(false);
-    }
+    request(async () => {
+      setBusy(true);
+      try {
+        await setVoiceRoomActive(!room.is_active, user?.email);
+      } catch (e) {
+        setMsg(e instanceof Error ? e.message : "Failed.");
+      } finally {
+        setBusy(false);
+      }
+    });
   }
 
-  async function onSave(e: FormEvent<HTMLFormElement>) {
+  function onSave(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setBusy(true);
-    setMsg(null);
-    try {
-      const fd = new FormData(e.currentTarget);
-      await setVoiceRoom({
-        room_name: String(fd.get("room_name") || "Hiren Voice Room"),
-        room_password: String(fd.get("room_password") || ""),
-        max_seats: Number(fd.get("max_seats") || 10),
-      }, user?.email);
-      setMsg("Saved.");
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : "Failed.");
-    } finally {
-      setBusy(false);
-    }
+    const fd = new FormData(e.currentTarget);
+    const payload = {
+      room_name: String(fd.get("room_name") || "Hiren Voice Room"),
+      room_password: String(fd.get("room_password") || ""),
+      max_seats: Number(fd.get("max_seats") || 10),
+    };
+    request(async () => {
+      setBusy(true);
+      setMsg(null);
+      try {
+        await setVoiceRoom(payload, user?.email);
+        setMsg("Saved.");
+      } catch (e) {
+        setMsg(e instanceof Error ? e.message : "Failed.");
+      } finally {
+        setBusy(false);
+      }
+    });
+  }
+
+  function guardedKick(id: string) {
+    request(() => kickParticipant(id, user?.email).catch(() => {}));
+  }
+  function guardedDeleteMsg(id: string) {
+    request(() => deleteVoiceMessage(id, user?.email).catch(() => {}));
   }
 
   return (
