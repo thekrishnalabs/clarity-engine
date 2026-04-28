@@ -315,17 +315,19 @@ function SplTab() {
   }
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, []);
 
-  async function update(id: string, status: SplApplication["status"]) {
-    setBusyId(id);
-    try {
-      await setSplApplicationStatus(id, status, user?.email);
-      await refresh();
-      if (viewing?.id === id) setViewing(null);
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    } finally {
-      setBusyId(null);
-    }
+  function update(id: string, status: SplApplication["status"]) {
+    request(async () => {
+      setBusyId(id);
+      try {
+        await setSplApplicationStatus(id, status, user?.email);
+        await refresh();
+        if (viewing?.id === id) setViewing(null);
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      } finally {
+        setBusyId(null);
+      }
+    });
   }
 
   function waLink(a: SplApplication, approved: boolean) {
