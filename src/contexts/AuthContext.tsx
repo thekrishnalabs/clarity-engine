@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { onAuthStateChanged, signOut as firebaseSignOut, type User } from "firebase/auth";
 import { getFbAuth, isAdminEmail } from "@/lib/firebase";
-import { getAdminRole, type AdminRoleType } from "@/lib/firestore";
+import { getAdminRole, initializeSuperAdmin, type AdminRoleType } from "@/lib/firestore";
 import { getFirebaseAnalytics } from "@/services/analyticsService";
 
 interface AuthContextValue {
@@ -28,6 +28,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(getFbAuth(), (firebaseUser) => {
       setUser(firebaseUser);
       setIsLoading(false);
+      if (firebaseUser) {
+        // Run once: seed superadmin / session password / voice room defaults.
+        void initializeSuperAdmin();
+      }
     });
     void getFirebaseAnalytics();
     return unsubscribe;

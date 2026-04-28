@@ -370,6 +370,70 @@ export async function restoreAdminRole(email: string) {
   await updateDoc(doc(db, "admin_roles", email.toLowerCase()), { isActive: true });
 }
 
+const SUPERADMIN_EMAIL = "hirenkundliofficial@gmail.com";
+
+let _superAdminInitPromise: Promise<void> | null = null;
+
+/**
+ * One-time bootstrap: ensures the seed superadmin doc exists in admin_roles,
+ * a default admin_session_password/config doc exists, and the voice_rooms/main_room
+ * doc exists with safe defaults. Idempotent + memoized.
+ */
+export async function initializeSuperAdmin(): Promise<void> {
+  if (_superAdminInitPromise) return _superAdminInitPromise;
+  _superAdminInitPromise = (async () => {
+    const db = getDb();
+
+    // 1) Seed superadmin role doc
+    try {
+      const ref = doc(db, "admin_roles", SUPERADMIN_EMAIL);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          email: SUPERADMIN_EMAIL,
+          role: "superadmin" as AdminRoleType,
+          displayName: "Hiren",
+          isActive: true,
+          addedAt: serverTimestamp(),
+          addedBy: "system",
+        });
+      }
+    } catch {
+      // Permissions may block when no user is signed in — safe to ignore.
+    }
+
+    // 2) Seed admin session password
+    try {
+      const ref = doc(db, "admin_session_password", "config");
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          password: "hiren2025",
+          updatedAt: serverTimestamp(),
+          updatedBy: "system",
+        });
+      }
+    } catch { /* ignore */ }
+
+    // 3) Seed voice room defaults
+    try {
+      const ref = doc(db, "voice_rooms", VOICE_ROOM_DOC);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          room_name: "Hiren Voice Room",
+          room_password: "clarity2025",
+          max_seats: 10,
+          is_active: false,
+          updated_at: serverTimestamp(),
+          updated_by: "system",
+        });
+      }
+    } catch { /* ignore */ }
+  })();
+  return _superAdminInitPromise;
+}
+
 export async function getAdminSessionPassword(): Promise<string> {
   const db = getDb();
   const snap = await getDoc(doc(db, "admin_session_password", "config"));
