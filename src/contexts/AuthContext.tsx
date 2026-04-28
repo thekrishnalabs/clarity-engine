@@ -28,6 +28,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(getFbAuth(), (firebaseUser) => {
       setUser(firebaseUser);
       setIsLoading(false);
+      if (firebaseUser) {
+        // Run once: seed superadmin / session password / voice room defaults.
+        void initializeSuperAdmin();
+      }
     });
     void getFirebaseAnalytics();
     return unsubscribe;
