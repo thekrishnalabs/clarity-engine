@@ -77,44 +77,51 @@ function PostsAdmin() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function onSave(e: FormEvent) {
+  function onSave(e: FormEvent) {
     e.preventDefault();
-    setBusy(true);
-    setErr(null);
-    try {
-      if (editing) {
-        await updatePost(editing.id, { title, content, type, is_published: published }, user?.email);
-      } else {
-        await createPost({ title, content, type, is_published: published }, user?.email);
+    request(async () => {
+      setBusy(true);
+      setErr(null);
+      try {
+        if (editing) {
+          await updatePost(editing.id, { title, content, type, is_published: published }, user?.email);
+        } else {
+          await createPost({ title, content, type, is_published: published }, user?.email);
+        }
+        setEditorOpen(false);
+        setEditing(null);
+        await refresh();
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      } finally {
+        setBusy(false);
       }
-      setEditorOpen(false);
-      setEditing(null);
-      await refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    } finally {
-      setBusy(false);
-    }
+    });
   }
 
-  async function togglePublish(p: AdminPost & { id: string }) {
-    try {
-      await setPostPublished(p.id, !p.is_published, user?.email);
-      await refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    }
+  function togglePublish(p: AdminPost & { id: string }) {
+    request(async () => {
+      try {
+        await setPostPublished(p.id, !p.is_published, user?.email);
+        await refresh();
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      }
+    });
   }
 
-  async function doDelete() {
+  function doDelete() {
     if (!confirmDelete) return;
-    try {
-      await deletePost(confirmDelete.id, user?.email);
-      setConfirmDelete(null);
-      await refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    }
+    const target = confirmDelete;
+    request(async () => {
+      try {
+        await deletePost(target.id, user?.email);
+        setConfirmDelete(null);
+        await refresh();
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      }
+    });
   }
 
   return (
