@@ -90,9 +90,17 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </Link>
         <NavList />
         <div className="border-t p-3">
-          <p className="mb-2 truncate px-2 text-[11px] text-muted-foreground" title={user?.email ?? ""}>
-            {user?.email ?? ""}
-          </p>
+          <div className="mb-2 flex items-center gap-2 px-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">
+              {(user?.displayName?.[0] ?? user?.email?.[0] ?? "?").toUpperCase()}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[11px] text-muted-foreground" title={user?.email ?? ""}>
+                {user?.email ?? ""}
+              </p>
+              <RoleBadge />
+            </div>
+          </div>
           <button
             onClick={handleSignOut}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
@@ -133,7 +141,10 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             </div>
             <NavList onClick={() => setOpen(false)} />
             <div className="border-t p-3">
-              <p className="mb-2 truncate px-2 text-[11px] text-muted-foreground">{user?.email ?? ""}</p>
+              <div className="mb-2 px-2">
+                <p className="truncate text-[11px] text-muted-foreground">{user?.email ?? ""}</p>
+                <div className="mt-1"><RoleBadge /></div>
+              </div>
               <button
                 onClick={handleSignOut}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted/40 hover:text-foreground"
