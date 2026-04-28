@@ -84,6 +84,17 @@ function GetStartedPage() {
           {busy ? "Connecting…" : "Continue with Google"}
         </button>
 
+        <button
+          disabled={busy}
+          onClick={signInApple}
+          className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition hover:brightness-110 disabled:opacity-60"
+        >
+          <svg width="16" height="18" viewBox="0 0 384 512" aria-hidden="true" fill="currentColor">
+            <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zM256.4 84.5c30.1-35.7 27.4-68.2 26.5-79.9-26.6 1.5-57.4 18.1-75 38.5-19.4 21.9-30.8 49-28.3 78.9 28.7 2.2 54.9-12.6 76.8-37.5z"/>
+          </svg>
+          {busy ? "Connecting…" : "Continue with Apple"}
+        </button>
+
         {error && <p className="mt-4 rounded-xl border border-destructive/40 p-3 text-sm text-destructive">{error}</p>}
 
         <p className="mt-6 text-center text-xs text-muted-foreground">By continuing, you agree to our terms.</p>
