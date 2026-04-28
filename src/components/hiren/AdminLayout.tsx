@@ -13,7 +13,7 @@ const NAV = [
   { to: "/shyam/uid-search", label: "UID Search", icon: Search },
 ] as const;
 
-export function AdminLayout() {
+export function AdminLayout({ children }: { children: ReactNode }) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
