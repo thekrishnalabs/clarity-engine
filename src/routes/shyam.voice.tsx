@@ -186,9 +186,11 @@ function VoiceAdmin() {
                         <p className="text-[11px] text-muted-foreground">Joined {j ? formatDistanceToNow(j, { addSuffix: true }) : "—"}</p>
                       </div>
                     </div>
-                    <button onClick={() => kickParticipant(p.id, user?.email).catch(() => {})} title="Remove" className="rounded-full border border-destructive/50 p-2 text-destructive hover:bg-destructive/10">
-                      <X className="h-3.5 w-3.5" />
-                    </button>
+                    {!isViewer && (
+                      <button onClick={() => guardedKick(p.id)} title="Remove" className="rounded-full border border-destructive/50 p-2 text-destructive hover:bg-destructive/10">
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                   </li>
                 );
               })}
@@ -208,9 +210,11 @@ function VoiceAdmin() {
                       <p className="text-xs"><span className="font-semibold text-primary">{m.name}</span>: <span className="text-foreground">{m.text}</span></p>
                       <p className="text-[10px] text-muted-foreground">{t ? formatDistanceToNow(t, { addSuffix: true }) : ""}</p>
                     </div>
-                    <button onClick={() => deleteVoiceMessage(m.id, user?.email).catch(() => {})} className="rounded-full border border-destructive/40 p-1.5 text-destructive">
-                      <Trash2 className="h-3 w-3" />
-                    </button>
+                    {!isViewer && (
+                      <button onClick={() => guardedDeleteMsg(m.id)} className="rounded-full border border-destructive/40 p-1.5 text-destructive">
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    )}
                   </li>
                 );
               })}
@@ -219,6 +223,7 @@ function VoiceAdmin() {
           </div>
         </>
       )}
+      <SessionPasswordModal {...modalProps} />
     </section>
   );
 }
