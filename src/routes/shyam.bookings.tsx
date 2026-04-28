@@ -418,8 +418,12 @@ function SplTab() {
               })}
             </div>
             <div className="flex flex-wrap gap-2 border-t pt-3">
-              <button onClick={() => update(viewing.id, "approved")} className="rounded-full bg-emerald-600/20 px-4 py-2 text-xs font-semibold text-emerald-300">Approve</button>
-              <button onClick={() => update(viewing.id, "rejected")} className="rounded-full bg-destructive/20 px-4 py-2 text-xs font-semibold text-destructive">Reject</button>
+              {!isViewer && (
+                <>
+                  <button onClick={() => update(viewing.id, "approved")} className="rounded-full bg-emerald-600/20 px-4 py-2 text-xs font-semibold text-emerald-300">Approve</button>
+                  <button onClick={() => update(viewing.id, "rejected")} className="rounded-full bg-destructive/20 px-4 py-2 text-xs font-semibold text-destructive">Reject</button>
+                </>
+              )}
               <a href={waLink(viewing, true)} target="_blank" rel="noreferrer" className="hk-button-primary rounded-full px-4 py-2 text-xs font-semibold">Message on WhatsApp</a>
               <button onClick={() => setViewing(null)} className="ml-auto rounded-full border px-4 py-2 text-xs">Close</button>
             </div>
