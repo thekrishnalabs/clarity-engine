@@ -4,6 +4,8 @@ import { formatDistanceToNow } from "date-fns";
 import { Eye, EyeOff, X, Trash2 } from "lucide-react";
 import { AdminRoute } from "@/components/auth/RouteGuards";
 import { AdminLayout } from "@/components/hiren/AdminLayout";
+import { SessionPasswordModal } from "@/components/admin/SessionPasswordModal";
+import { useAdminWriteGuard } from "@/hooks/useAdminWriteGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   deleteVoiceMessage,
@@ -31,7 +33,8 @@ export const Route = createFileRoute("/shyam/voice")({
 });
 
 function VoiceAdmin() {
-  const { user } = useAuth();
+  const { user, isViewer } = useAuth();
+  const { request, modalProps } = useAdminWriteGuard();
   const [room, setRoom] = useState<VoiceRoom | null>(null);
   const [participants, setParticipants] = useState<(VoiceParticipant & { id: string })[]>([]);
   const [messages, setMessages] = useState<(VoiceMessage & { id: string })[]>([]);
