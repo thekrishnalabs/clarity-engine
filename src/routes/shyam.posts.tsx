@@ -4,6 +4,8 @@ import { format } from "date-fns";
 import { Plus, X } from "lucide-react";
 import { AdminRoute } from "@/components/auth/RouteGuards";
 import { AdminLayout } from "@/components/hiren/AdminLayout";
+import { SessionPasswordModal } from "@/components/admin/SessionPasswordModal";
+import { useAdminWriteGuard } from "@/hooks/useAdminWriteGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   createPost,
@@ -34,7 +36,8 @@ const TYPES: { value: AdminPost["type"]; label: string; color: string }[] = [
 ];
 
 function PostsAdmin() {
-  const { user } = useAuth();
+  const { user, isViewer } = useAuth();
+  const { request, modalProps } = useAdminWriteGuard();
   const [posts, setPosts] = useState<(AdminPost & { id: string })[]>([]);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<(AdminPost & { id: string }) | null>(null);
