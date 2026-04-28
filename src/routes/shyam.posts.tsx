@@ -128,7 +128,7 @@ function PostsAdmin() {
     <section className="hk-container py-10 md:py-12">
       <div className="flex items-center justify-between">
         <h1 className="hk-gold-text font-serif text-3xl md:text-4xl">Posts</h1>
-        {!editorOpen && (
+        {!editorOpen && !isViewer && (
           <button onClick={openNew} className="hk-button-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold">
             <Plus className="h-4 w-4" /> New Post
           </button>
