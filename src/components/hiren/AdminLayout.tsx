@@ -120,9 +120,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       )}
 
       {/* Main */}
-      <main className="md:pl-60">
-        <Outlet />
-      </main>
+      <main className="md:pl-60">{children}</main>
     </div>
   );
 }
