@@ -108,20 +108,23 @@ function VoiceAdmin() {
             <p className="hk-gold-text font-serif text-2xl">{room?.is_active ? "ROOM IS LIVE" : "Room is Closed"}</p>
           </div>
         </div>
-        <button
-          disabled={busy || !room}
-          onClick={toggle}
-          className={`rounded-full px-6 py-3 text-sm font-semibold transition disabled:opacity-50 ${
-            room?.is_active
-              ? "bg-destructive text-destructive-foreground hover:brightness-110"
-              : "hk-button-primary"
-          }`}
-        >
-          {room?.is_active ? "Close Room" : "Open Room"}
-        </button>
+        {!isViewer && (
+          <button
+            disabled={busy || !room}
+            onClick={toggle}
+            className={`rounded-full px-6 py-3 text-sm font-semibold transition disabled:opacity-50 ${
+              room?.is_active
+                ? "bg-destructive text-destructive-foreground hover:brightness-110"
+                : "hk-button-primary"
+            }`}
+          >
+            {room?.is_active ? "Close Room" : "Open Room"}
+          </button>
+        )}
       </div>
 
       {/* Settings */}
+      {!isViewer && (
       <form onSubmit={onSave} className="mt-8 grid max-w-xl gap-4 rounded-3xl border bg-card/40 p-6">
         <h2 className="font-serif text-lg">Settings</h2>
         <label className="grid gap-2 text-sm font-medium">
@@ -166,6 +169,7 @@ function VoiceAdmin() {
         </button>
         {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
       </form>
+      )}
 
       {room?.is_active && (
         <>
