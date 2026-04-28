@@ -1,13 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { type FormEvent, useState } from "react";
 import { AdminRoute } from "@/components/auth/RouteGuards";
+import { AdminLayout } from "@/components/hiren/AdminLayout";
 import { lookupUid, type UidRecord } from "@/lib/firestore";
 
 export const Route = createFileRoute("/shyam/uid-search")({
   head: () => ({ meta: [{ title: "Admin UID Search — Hiren Kundli" }, { name: "robots", content: "noindex" }] }),
   component: () => (
     <AdminRoute>
-      <UidSearch />
+      <AdminLayout>
+        <UidSearch />
+      </AdminLayout>
     </AdminRoute>
   ),
 });
