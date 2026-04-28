@@ -289,6 +289,7 @@ function BookingsTab() {
           </div>
         </Modal>
       )}
+      <SessionPasswordModal {...modalProps} />
     </>
   );
 }
