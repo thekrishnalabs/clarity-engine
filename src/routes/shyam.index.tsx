@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { getFirebaseAuthErrorMessage, signInWithFirebaseApple, signInWithFirebaseGoogle } from "@/lib/firebase";
+import { getFbAuth, getFirebaseAuthErrorMessage, signInWithFirebaseGoogle, signOutUser } from "@/lib/firebase";
+import { getAdminRole } from "@/lib/firestore";
 
 export const Route = createFileRoute("/shyam/")({
   head: () => ({ meta: [{ title: "Admin — Hiren Kundli" }, { name: "robots", content: "noindex" }] }),
@@ -10,27 +11,41 @@ export const Route = createFileRoute("/shyam/")({
 
 function ShyamSignIn() {
   const navigate = useNavigate();
-  const { user, isAdmin, isLoading } = useAuth();
+  const { user, isAnyAdmin, isLoading, roleLoading } = useAuth();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isLoading) return;
-    if (user && isAdmin) navigate({ to: "/shyam/dashboard" });
-  }, [user, isAdmin, isLoading, navigate]);
+    if (isLoading || roleLoading) return;
+    if (user && isAnyAdmin) navigate({ to: "/shyam/dashboard" });
+  }, [user, isAnyAdmin, isLoading, roleLoading, navigate]);
 
-  async function signIn(provider: "google" | "apple") {
+  async function signIn() {
     setErr(null);
     setBusy(true);
     try {
-      const credential = provider === "google" ? await signInWithFirebaseGoogle() : await signInWithFirebaseApple();
-      if (credential) navigate({ to: "/shyam/dashboard" });
+      const credential = await signInWithFirebaseGoogle();
+      const email = credential?.user.email ?? null;
+      if (!email) {
+        setBusy(false);
+        return;
+      }
+      const { role, isActive } = await getAdminRole(email);
+      // Allow seed superadmin email even if Firestore doc not yet created
+      const seedSuper = email.toLowerCase() === "hirenkundliofficial@gmail.com";
+      if ((!role || !isActive) && !seedSuper) {
+        await signOutUser().catch(() => {});
+        setErr("Access denied. You are not an authorized admin.");
+        setBusy(false);
+        return;
+      }
+      navigate({ to: "/shyam/dashboard" });
     } catch (e) {
       setErr(getFirebaseAuthErrorMessage(e));
-    } finally {
       setBusy(false);
     }
   }
+  void getFbAuth;
 
   return (
     <section className="hk-container flex min-h-[70vh] flex-col items-center justify-center py-16">
@@ -41,21 +56,13 @@ function ShyamSignIn() {
 
         <button
           disabled={busy}
-          onClick={() => signIn("google")}
+          onClick={signIn}
           className="mt-8 flex w-full items-center justify-center gap-3 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:brightness-105 disabled:opacity-60"
         >
           {busy ? "Connecting…" : "Sign in with Google"}
         </button>
 
-        <button
-          disabled={busy}
-          onClick={() => signIn("apple")}
-          className="mt-3 flex w-full items-center justify-center gap-3 rounded-full border border-border bg-secondary px-5 py-3 text-sm font-semibold text-secondary-foreground transition hover:bg-muted disabled:opacity-60"
-        >
-          {busy ? "Connecting…" : "Sign in with Apple"}
-        </button>
-
-        {user && !isAdmin && (
+        {user && !isAnyAdmin && !isLoading && !roleLoading && (
           <p className="mt-5 rounded-xl border border-destructive/40 p-3 text-sm text-destructive">
             Access denied. Not an authorized admin.
           </p>

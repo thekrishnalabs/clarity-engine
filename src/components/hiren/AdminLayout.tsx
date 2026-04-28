@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { LayoutDashboard, ClipboardList, FileText, Mic, Search, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, ClipboardList, FileText, Mic, Search, LogOut, Menu, X, Shield, Crown } from "lucide-react";
 import { useState } from "react";
 import logoUrl from "@/assets/hiren-kundli-logo.jpg";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,8 +13,10 @@ const NAV = [
   { to: "/shyam/uid-search", label: "UID Search", icon: Search },
 ] as const;
 
+const SUPER_NAV = [{ to: "/shyam/roles", label: "Role Management", icon: Shield }] as const;
+
 export function AdminLayout({ children }: { children: ReactNode }) {
-  const { user, signOut } = useAuth();
+  const { user, signOut, adminRole, isSuperAdmin, isViewer } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
@@ -26,29 +28,54 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     navigate({ to: "/shyam" });
   };
 
+  const renderItem = (it: { to: string; label: string; icon: typeof LayoutDashboard }, onClick?: () => void) => {
+    const active = isActive(it.to);
+    const Icon = it.icon;
+    return (
+      <Link
+        key={it.to}
+        to={it.to}
+        onClick={onClick}
+        className={`flex items-center gap-3 rounded-r-lg border-l-[3px] px-4 py-2.5 text-sm transition-colors ${
+          active
+            ? "border-primary bg-primary/10 text-primary"
+            : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+        }`}
+      >
+        <Icon className="h-4 w-4" />
+        <span>{it.label}</span>
+      </Link>
+    );
+  };
+
   const NavList = ({ onClick }: { onClick?: () => void }) => (
     <nav className="flex-1 space-y-1 p-3">
-      {NAV.map((it) => {
-        const active = isActive(it.to);
-        const Icon = it.icon;
-        return (
-          <Link
-            key={it.to}
-            to={it.to}
-            onClick={onClick}
-            className={`flex items-center gap-3 rounded-r-lg border-l-[3px] px-4 py-2.5 text-sm transition-colors ${
-              active
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-            }`}
-          >
-            <Icon className="h-4 w-4" />
-            <span>{it.label}</span>
-          </Link>
-        );
-      })}
+      {NAV.map((it) => renderItem(it, onClick))}
+      {isSuperAdmin && SUPER_NAV.map((it) => renderItem(it, onClick))}
     </nav>
   );
+
+  const RoleBadge = () => {
+    if (!adminRole) return null;
+    if (adminRole === "superadmin")
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full border border-primary/50 bg-primary/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
+          <Crown className="h-3 w-3" /> Superadmin
+        </span>
+      );
+    if (adminRole === "viewer")
+      return (
+        <span className="inline-flex rounded-full border border-border bg-muted/40 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+          Viewer
+        </span>
+      );
+    return (
+      <span className="inline-flex rounded-full border border-blue-400/50 bg-blue-400/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-blue-300">
+        Admin
+      </span>
+    );
+  };
+  void isViewer;
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,9 +90,17 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </Link>
         <NavList />
         <div className="border-t p-3">
-          <p className="mb-2 truncate px-2 text-[11px] text-muted-foreground" title={user?.email ?? ""}>
-            {user?.email ?? ""}
-          </p>
+          <div className="mb-2 flex items-center gap-2 px-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">
+              {(user?.displayName?.[0] ?? user?.email?.[0] ?? "?").toUpperCase()}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[11px] text-muted-foreground" title={user?.email ?? ""}>
+                {user?.email ?? ""}
+              </p>
+              <RoleBadge />
+            </div>
+          </div>
           <button
             onClick={handleSignOut}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
@@ -106,7 +141,10 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             </div>
             <NavList onClick={() => setOpen(false)} />
             <div className="border-t p-3">
-              <p className="mb-2 truncate px-2 text-[11px] text-muted-foreground">{user?.email ?? ""}</p>
+              <div className="mb-2 px-2">
+                <p className="truncate text-[11px] text-muted-foreground">{user?.email ?? ""}</p>
+                <div className="mt-1"><RoleBadge /></div>
+              </div>
               <button
                 onClick={handleSignOut}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted/40 hover:text-foreground"

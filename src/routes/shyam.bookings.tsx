@@ -4,6 +4,8 @@ import { format } from "date-fns";
 import { Copy, MessageSquare, X, ExternalLink } from "lucide-react";
 import { AdminRoute } from "@/components/auth/RouteGuards";
 import { AdminLayout } from "@/components/hiren/AdminLayout";
+import { SessionPasswordModal } from "@/components/admin/SessionPasswordModal";
+import { useAdminWriteGuard } from "@/hooks/useAdminWriteGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   attachUidToBooking,
@@ -71,7 +73,8 @@ function BookingsAdmin() {
 }
 
 function BookingsTab() {
-  const { user } = useAuth();
+  const { user, isViewer } = useAuth();
+  const { request, modalProps } = useAdminWriteGuard();
   const [items, setItems] = useState<(SessionBooking & { id: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -104,40 +107,44 @@ function BookingsTab() {
     });
   }, [items, statusFilter, search]);
 
-  async function generate(b: SessionBooking & { id: string }) {
-    setBusyId(b.id);
-    try {
-      const cityCode = cityCodeFrom(b.place_of_birth);
-      const uid = generateUid({ sessionCode: b.session_code, dateOfBirth: b.date_of_birth, cityCode });
-      await createUidRecord({
-        uid,
-        session_code: b.session_code,
-        session_full_name: b.session_full_name,
-        date_of_birth: b.date_of_birth,
-        time_of_birth: b.time_of_birth,
-        place_of_birth: b.place_of_birth,
-        city_code: cityCode,
-        user_name: b.user_name,
-        user_phone: b.user_phone,
-        user_firebase_uid: b.user_firebase_uid ?? null,
-        notes: b.notes,
-      }, user?.email);
-      await attachUidToBooking(b.id, uid, user?.email);
-      await refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    } finally {
-      setBusyId(null);
-    }
+  function generate(b: SessionBooking & { id: string }) {
+    request(async () => {
+      setBusyId(b.id);
+      try {
+        const cityCode = cityCodeFrom(b.place_of_birth);
+        const uid = generateUid({ sessionCode: b.session_code, dateOfBirth: b.date_of_birth, cityCode });
+        await createUidRecord({
+          uid,
+          session_code: b.session_code,
+          session_full_name: b.session_full_name,
+          date_of_birth: b.date_of_birth,
+          time_of_birth: b.time_of_birth,
+          place_of_birth: b.place_of_birth,
+          city_code: cityCode,
+          user_name: b.user_name,
+          user_phone: b.user_phone,
+          user_firebase_uid: b.user_firebase_uid ?? null,
+          notes: b.notes,
+        }, user?.email);
+        await attachUidToBooking(b.id, uid, user?.email);
+        await refresh();
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      } finally {
+        setBusyId(null);
+      }
+    });
   }
 
-  async function changeStatus(id: string, status: SessionBooking["status"]) {
-    try {
-      await setBookingStatus(id, status, user?.email);
-      await refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    }
+  function changeStatus(id: string, status: SessionBooking["status"]) {
+    request(async () => {
+      try {
+        await setBookingStatus(id, status, user?.email);
+        await refresh();
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      }
+    });
   }
 
   function whatsappLink(b: SessionBooking & { id: string }) {
@@ -211,7 +218,7 @@ function BookingsTab() {
                       <button onClick={() => copy(b.generated_uid!)} className="inline-flex items-center gap-1 font-mono text-[11px] text-primary">
                         {b.generated_uid.slice(0, 12)}… <Copy className="h-3 w-3" />
                       </button>
-                    ) : (
+                    ) : !isViewer ? (
                       <button
                         disabled={busyId === b.id}
                         onClick={() => generate(b)}
@@ -219,6 +226,8 @@ function BookingsTab() {
                       >
                         {busyId === b.id ? "…" : "Generate UID"}
                       </button>
+                    ) : (
+                      <span className="text-[11px] text-muted-foreground">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
@@ -226,15 +235,19 @@ function BookingsTab() {
                       <a href={whatsappLink(b)} target="_blank" rel="noreferrer" title="WhatsApp" className="rounded-full border p-1.5 text-muted-foreground hover:text-primary">
                         <MessageSquare className="h-3.5 w-3.5" />
                       </a>
-                      <select
-                        value={b.status}
-                        onChange={(e) => changeStatus(b.id, e.target.value as SessionBooking["status"])}
-                        className="rounded-full border bg-background px-2 py-1 text-[11px]"
-                      >
-                        <option value="pending">pending</option>
-                        <option value="confirmed">confirmed</option>
-                        <option value="completed">completed</option>
-                      </select>
+                      {!isViewer ? (
+                        <select
+                          value={b.status}
+                          onChange={(e) => changeStatus(b.id, e.target.value as SessionBooking["status"])}
+                          className="rounded-full border bg-background px-2 py-1 text-[11px]"
+                        >
+                          <option value="pending">pending</option>
+                          <option value="confirmed">confirmed</option>
+                          <option value="completed">completed</option>
+                        </select>
+                      ) : (
+                        <span className="rounded-full border bg-background px-2 py-1 text-[11px] text-muted-foreground">{b.status}</span>
+                      )}
                       <button onClick={() => setNotesItem(b)} title="Notes" className="rounded-full border p-1.5 text-muted-foreground hover:text-primary">
                         <span className="text-xs">📋</span>
                       </button>
@@ -276,12 +289,14 @@ function BookingsTab() {
           </div>
         </Modal>
       )}
+      <SessionPasswordModal {...modalProps} />
     </>
   );
 }
 
 function SplTab() {
-  const { user } = useAuth();
+  const { user, isViewer } = useAuth();
+  const { request, modalProps } = useAdminWriteGuard();
   const [apps, setApps] = useState<(SplApplication & { id: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -300,17 +315,19 @@ function SplTab() {
   }
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, []);
 
-  async function update(id: string, status: SplApplication["status"]) {
-    setBusyId(id);
-    try {
-      await setSplApplicationStatus(id, status, user?.email);
-      await refresh();
-      if (viewing?.id === id) setViewing(null);
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    } finally {
-      setBusyId(null);
-    }
+  function update(id: string, status: SplApplication["status"]) {
+    request(async () => {
+      setBusyId(id);
+      try {
+        await setSplApplicationStatus(id, status, user?.email);
+        await refresh();
+        if (viewing?.id === id) setViewing(null);
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      } finally {
+        setBusyId(null);
+      }
+    });
   }
 
   function waLink(a: SplApplication, approved: boolean) {
@@ -365,7 +382,7 @@ function SplTab() {
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
                       <button onClick={() => setViewing(a)} className="rounded-full border px-3 py-1 text-[11px]">View</button>
-                      {a.status === "pending" && (
+                      {a.status === "pending" && !isViewer && (
                         <>
                           <button disabled={busyId === a.id} onClick={() => update(a.id, "approved")} className="rounded-full bg-emerald-600/20 px-3 py-1 text-[11px] text-emerald-300 disabled:opacity-50">Approve</button>
                           <button disabled={busyId === a.id} onClick={() => update(a.id, "rejected")} className="rounded-full bg-destructive/20 px-3 py-1 text-[11px] text-destructive disabled:opacity-50">Reject</button>
@@ -401,14 +418,19 @@ function SplTab() {
               })}
             </div>
             <div className="flex flex-wrap gap-2 border-t pt-3">
-              <button onClick={() => update(viewing.id, "approved")} className="rounded-full bg-emerald-600/20 px-4 py-2 text-xs font-semibold text-emerald-300">Approve</button>
-              <button onClick={() => update(viewing.id, "rejected")} className="rounded-full bg-destructive/20 px-4 py-2 text-xs font-semibold text-destructive">Reject</button>
+              {!isViewer && (
+                <>
+                  <button onClick={() => update(viewing.id, "approved")} className="rounded-full bg-emerald-600/20 px-4 py-2 text-xs font-semibold text-emerald-300">Approve</button>
+                  <button onClick={() => update(viewing.id, "rejected")} className="rounded-full bg-destructive/20 px-4 py-2 text-xs font-semibold text-destructive">Reject</button>
+                </>
+              )}
               <a href={waLink(viewing, true)} target="_blank" rel="noreferrer" className="hk-button-primary rounded-full px-4 py-2 text-xs font-semibold">Message on WhatsApp</a>
               <button onClick={() => setViewing(null)} className="ml-auto rounded-full border px-4 py-2 text-xs">Close</button>
             </div>
           </div>
         </Modal>
       )}
+      <SessionPasswordModal {...modalProps} />
     </>
   );
 }

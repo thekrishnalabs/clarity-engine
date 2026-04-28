@@ -309,6 +309,82 @@ export async function kickParticipant(userId: string, adminEmail?: string | null
   await deleteDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId));
 }
 
+// ---- Admin Roles ----
+export type AdminRoleType = "superadmin" | "admin" | "viewer";
+
+export interface AdminRoleRecord extends DocumentData {
+  email: string;
+  role: AdminRoleType;
+  displayName: string;
+  isActive: boolean;
+  addedAt?: unknown;
+  addedBy?: string;
+}
+
+export async function getAdminRole(email: string): Promise<{
+  role: AdminRoleType | null;
+  displayName: string;
+  isActive: boolean;
+}> {
+  const db = getDb();
+  const snap = await getDoc(doc(db, "admin_roles", email.toLowerCase()));
+  if (!snap.exists()) return { role: null, displayName: "", isActive: false };
+  const d = snap.data() as AdminRoleRecord;
+  return {
+    role: d.isActive ? d.role : null,
+    displayName: d.displayName ?? "",
+    isActive: d.isActive ?? false,
+  };
+}
+
+export async function listAdminRoles(): Promise<(AdminRoleRecord & { id: string })[]> {
+  const db = getDb();
+  const snap = await getDocs(collection(db, "admin_roles"));
+  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as AdminRoleRecord) }));
+}
+
+export async function setAdminRole(
+  email: string,
+  role: "admin" | "viewer",
+  displayName: string,
+  byEmail: string,
+) {
+  const db = getDb();
+  await setDoc(doc(db, "admin_roles", email.toLowerCase()), {
+    email: email.toLowerCase(),
+    role,
+    displayName,
+    addedAt: serverTimestamp(),
+    addedBy: byEmail,
+    isActive: true,
+  });
+}
+
+export async function revokeAdminRole(email: string) {
+  const db = getDb();
+  await updateDoc(doc(db, "admin_roles", email.toLowerCase()), { isActive: false });
+}
+
+export async function restoreAdminRole(email: string) {
+  const db = getDb();
+  await updateDoc(doc(db, "admin_roles", email.toLowerCase()), { isActive: true });
+}
+
+export async function getAdminSessionPassword(): Promise<string> {
+  const db = getDb();
+  const snap = await getDoc(doc(db, "admin_session_password", "config"));
+  return snap.exists() ? ((snap.data().password as string) ?? "hiren2025") : "hiren2025";
+}
+
+export async function updateAdminSessionPassword(newPassword: string, byEmail: string) {
+  const db = getDb();
+  await setDoc(doc(db, "admin_session_password", "config"), {
+    password: newPassword,
+    updatedAt: serverTimestamp(),
+    updatedBy: byEmail,
+  });
+}
+
 // Helpers
 export function tsToDate(ts: unknown): Date | null {
   if (!ts) return null;

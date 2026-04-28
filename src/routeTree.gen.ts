@@ -23,6 +23,7 @@ import { Route as ShyamIndexRouteImport } from './routes/shyam.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as ShyamVoiceRouteImport } from './routes/shyam.voice'
 import { Route as ShyamUidSearchRouteImport } from './routes/shyam.uid-search'
+import { Route as ShyamRolesRouteImport } from './routes/shyam.roles'
 import { Route as ShyamPostsRouteImport } from './routes/shyam.posts'
 import { Route as ShyamDashboardRouteImport } from './routes/shyam.dashboard'
 import { Route as ShyamBookingsRouteImport } from './routes/shyam.bookings'
@@ -107,6 +108,11 @@ const ShyamVoiceRoute = ShyamVoiceRouteImport.update({
 const ShyamUidSearchRoute = ShyamUidSearchRouteImport.update({
   id: '/shyam/uid-search',
   path: '/shyam/uid-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShyamRolesRoute = ShyamRolesRouteImport.update({
+  id: '/shyam/roles',
+  path: '/shyam/roles',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShyamPostsRoute = ShyamPostsRouteImport.update({
@@ -210,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/shyam/bookings': typeof ShyamBookingsRoute
   '/shyam/dashboard': typeof ShyamDashboardRoute
   '/shyam/posts': typeof ShyamPostsRoute
+  '/shyam/roles': typeof ShyamRolesRoute
   '/shyam/uid-search': typeof ShyamUidSearchRoute
   '/shyam/voice': typeof ShyamVoiceRoute
   '/app/': typeof AppIndexRoute
@@ -241,6 +248,7 @@ export interface FileRoutesByTo {
   '/shyam/bookings': typeof ShyamBookingsRoute
   '/shyam/dashboard': typeof ShyamDashboardRoute
   '/shyam/posts': typeof ShyamPostsRoute
+  '/shyam/roles': typeof ShyamRolesRoute
   '/shyam/uid-search': typeof ShyamUidSearchRoute
   '/shyam/voice': typeof ShyamVoiceRoute
   '/app': typeof AppIndexRoute
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/shyam/bookings': typeof ShyamBookingsRoute
   '/shyam/dashboard': typeof ShyamDashboardRoute
   '/shyam/posts': typeof ShyamPostsRoute
+  '/shyam/roles': typeof ShyamRolesRoute
   '/shyam/uid-search': typeof ShyamUidSearchRoute
   '/shyam/voice': typeof ShyamVoiceRoute
   '/app/': typeof AppIndexRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/shyam/bookings'
     | '/shyam/dashboard'
     | '/shyam/posts'
+    | '/shyam/roles'
     | '/shyam/uid-search'
     | '/shyam/voice'
     | '/app/'
@@ -337,6 +347,7 @@ export interface FileRouteTypes {
     | '/shyam/bookings'
     | '/shyam/dashboard'
     | '/shyam/posts'
+    | '/shyam/roles'
     | '/shyam/uid-search'
     | '/shyam/voice'
     | '/app'
@@ -368,6 +379,7 @@ export interface FileRouteTypes {
     | '/shyam/bookings'
     | '/shyam/dashboard'
     | '/shyam/posts'
+    | '/shyam/roles'
     | '/shyam/uid-search'
     | '/shyam/voice'
     | '/app/'
@@ -391,6 +403,7 @@ export interface RootRouteChildren {
   ShyamBookingsRoute: typeof ShyamBookingsRoute
   ShyamDashboardRoute: typeof ShyamDashboardRoute
   ShyamPostsRoute: typeof ShyamPostsRoute
+  ShyamRolesRoute: typeof ShyamRolesRoute
   ShyamUidSearchRoute: typeof ShyamUidSearchRoute
   ShyamVoiceRoute: typeof ShyamVoiceRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -496,6 +509,13 @@ declare module '@tanstack/react-router' {
       path: '/shyam/uid-search'
       fullPath: '/shyam/uid-search'
       preLoaderRoute: typeof ShyamUidSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shyam/roles': {
+      id: '/shyam/roles'
+      path: '/shyam/roles'
+      fullPath: '/shyam/roles'
+      preLoaderRoute: typeof ShyamRolesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shyam/posts': {
@@ -660,6 +680,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShyamBookingsRoute: ShyamBookingsRoute,
   ShyamDashboardRoute: ShyamDashboardRoute,
   ShyamPostsRoute: ShyamPostsRoute,
+  ShyamRolesRoute: ShyamRolesRoute,
   ShyamUidSearchRoute: ShyamUidSearchRoute,
   ShyamVoiceRoute: ShyamVoiceRoute,
   AppIndexRoute: AppIndexRoute,

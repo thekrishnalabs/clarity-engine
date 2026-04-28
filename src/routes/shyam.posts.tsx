@@ -4,6 +4,8 @@ import { format } from "date-fns";
 import { Plus, X } from "lucide-react";
 import { AdminRoute } from "@/components/auth/RouteGuards";
 import { AdminLayout } from "@/components/hiren/AdminLayout";
+import { SessionPasswordModal } from "@/components/admin/SessionPasswordModal";
+import { useAdminWriteGuard } from "@/hooks/useAdminWriteGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   createPost,
@@ -34,7 +36,8 @@ const TYPES: { value: AdminPost["type"]; label: string; color: string }[] = [
 ];
 
 function PostsAdmin() {
-  const { user } = useAuth();
+  const { user, isViewer } = useAuth();
+  const { request, modalProps } = useAdminWriteGuard();
   const [posts, setPosts] = useState<(AdminPost & { id: string })[]>([]);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<(AdminPost & { id: string }) | null>(null);
@@ -74,51 +77,58 @@ function PostsAdmin() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function onSave(e: FormEvent) {
+  function onSave(e: FormEvent) {
     e.preventDefault();
-    setBusy(true);
-    setErr(null);
-    try {
-      if (editing) {
-        await updatePost(editing.id, { title, content, type, is_published: published }, user?.email);
-      } else {
-        await createPost({ title, content, type, is_published: published }, user?.email);
+    request(async () => {
+      setBusy(true);
+      setErr(null);
+      try {
+        if (editing) {
+          await updatePost(editing.id, { title, content, type, is_published: published }, user?.email);
+        } else {
+          await createPost({ title, content, type, is_published: published }, user?.email);
+        }
+        setEditorOpen(false);
+        setEditing(null);
+        await refresh();
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      } finally {
+        setBusy(false);
       }
-      setEditorOpen(false);
-      setEditing(null);
-      await refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    } finally {
-      setBusy(false);
-    }
+    });
   }
 
-  async function togglePublish(p: AdminPost & { id: string }) {
-    try {
-      await setPostPublished(p.id, !p.is_published, user?.email);
-      await refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    }
+  function togglePublish(p: AdminPost & { id: string }) {
+    request(async () => {
+      try {
+        await setPostPublished(p.id, !p.is_published, user?.email);
+        await refresh();
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      }
+    });
   }
 
-  async function doDelete() {
+  function doDelete() {
     if (!confirmDelete) return;
-    try {
-      await deletePost(confirmDelete.id, user?.email);
-      setConfirmDelete(null);
-      await refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed.");
-    }
+    const target = confirmDelete;
+    request(async () => {
+      try {
+        await deletePost(target.id, user?.email);
+        setConfirmDelete(null);
+        await refresh();
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed.");
+      }
+    });
   }
 
   return (
     <section className="hk-container py-10 md:py-12">
       <div className="flex items-center justify-between">
         <h1 className="hk-gold-text font-serif text-3xl md:text-4xl">Posts</h1>
-        {!editorOpen && (
+        {!editorOpen && !isViewer && (
           <button onClick={openNew} className="hk-button-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold">
             <Plus className="h-4 w-4" /> New Post
           </button>
@@ -184,17 +194,21 @@ function PostsAdmin() {
                 <span className={`rounded-full border px-2.5 py-0.5 text-[10px] uppercase tracking-wider ${meta.color}`}>{meta.label}</span>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span>{d ? format(d, "MMM d, yyyy") : ""}</span>
-                  <button onClick={() => togglePublish(p)} className="text-primary">
-                    {p.is_published ? "Unpublish" : "Publish"}
-                  </button>
+                  {!isViewer && (
+                    <button onClick={() => togglePublish(p)} className="text-primary">
+                      {p.is_published ? "Unpublish" : "Publish"}
+                    </button>
+                  )}
                 </div>
               </div>
               <h3 className="hk-gold-text mt-2 font-serif text-lg">{p.title}</h3>
               <p className="mt-1 line-clamp-2 whitespace-pre-line text-sm text-foreground/80">{p.content}</p>
-              <div className="mt-3 flex gap-2">
-                <button onClick={() => openEdit(p)} className="rounded-full border px-3 py-1 text-xs hover:bg-muted/40">Edit</button>
-                <button onClick={() => setConfirmDelete(p)} className="rounded-full border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">Delete</button>
-              </div>
+              {!isViewer && (
+                <div className="mt-3 flex gap-2">
+                  <button onClick={() => openEdit(p)} className="rounded-full border px-3 py-1 text-xs hover:bg-muted/40">Edit</button>
+                  <button onClick={() => setConfirmDelete(p)} className="rounded-full border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">Delete</button>
+                </div>
+              )}
             </li>
           );
         })}
@@ -215,6 +229,7 @@ function PostsAdmin() {
           </div>
         </div>
       )}
+      <SessionPasswordModal {...modalProps} />
     </section>
   );
 }

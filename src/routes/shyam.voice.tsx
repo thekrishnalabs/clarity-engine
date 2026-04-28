@@ -4,6 +4,8 @@ import { formatDistanceToNow } from "date-fns";
 import { Eye, EyeOff, X, Trash2 } from "lucide-react";
 import { AdminRoute } from "@/components/auth/RouteGuards";
 import { AdminLayout } from "@/components/hiren/AdminLayout";
+import { SessionPasswordModal } from "@/components/admin/SessionPasswordModal";
+import { useAdminWriteGuard } from "@/hooks/useAdminWriteGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   deleteVoiceMessage,
@@ -31,7 +33,8 @@ export const Route = createFileRoute("/shyam/voice")({
 });
 
 function VoiceAdmin() {
-  const { user } = useAuth();
+  const { user, isViewer } = useAuth();
+  const { request, modalProps } = useAdminWriteGuard();
   const [room, setRoom] = useState<VoiceRoom | null>(null);
   const [participants, setParticipants] = useState<(VoiceParticipant & { id: string })[]>([]);
   const [messages, setMessages] = useState<(VoiceMessage & { id: string })[]>([]);
@@ -46,35 +49,47 @@ function VoiceAdmin() {
     return () => { u1(); u2(); u3(); };
   }, []);
 
-  async function toggle() {
+  function toggle() {
     if (!room) return;
-    setBusy(true);
-    try {
-      await setVoiceRoomActive(!room.is_active, user?.email);
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : "Failed.");
-    } finally {
-      setBusy(false);
-    }
+    request(async () => {
+      setBusy(true);
+      try {
+        await setVoiceRoomActive(!room.is_active, user?.email);
+      } catch (e) {
+        setMsg(e instanceof Error ? e.message : "Failed.");
+      } finally {
+        setBusy(false);
+      }
+    });
   }
 
-  async function onSave(e: FormEvent<HTMLFormElement>) {
+  function onSave(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setBusy(true);
-    setMsg(null);
-    try {
-      const fd = new FormData(e.currentTarget);
-      await setVoiceRoom({
-        room_name: String(fd.get("room_name") || "Hiren Voice Room"),
-        room_password: String(fd.get("room_password") || ""),
-        max_seats: Number(fd.get("max_seats") || 10),
-      }, user?.email);
-      setMsg("Saved.");
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : "Failed.");
-    } finally {
-      setBusy(false);
-    }
+    const fd = new FormData(e.currentTarget);
+    const payload = {
+      room_name: String(fd.get("room_name") || "Hiren Voice Room"),
+      room_password: String(fd.get("room_password") || ""),
+      max_seats: Number(fd.get("max_seats") || 10),
+    };
+    request(async () => {
+      setBusy(true);
+      setMsg(null);
+      try {
+        await setVoiceRoom(payload, user?.email);
+        setMsg("Saved.");
+      } catch (e) {
+        setMsg(e instanceof Error ? e.message : "Failed.");
+      } finally {
+        setBusy(false);
+      }
+    });
+  }
+
+  function guardedKick(id: string) {
+    request(() => kickParticipant(id, user?.email).catch(() => {}));
+  }
+  function guardedDeleteMsg(id: string) {
+    request(() => deleteVoiceMessage(id, user?.email).catch(() => {}));
   }
 
   return (
@@ -93,20 +108,23 @@ function VoiceAdmin() {
             <p className="hk-gold-text font-serif text-2xl">{room?.is_active ? "ROOM IS LIVE" : "Room is Closed"}</p>
           </div>
         </div>
-        <button
-          disabled={busy || !room}
-          onClick={toggle}
-          className={`rounded-full px-6 py-3 text-sm font-semibold transition disabled:opacity-50 ${
-            room?.is_active
-              ? "bg-destructive text-destructive-foreground hover:brightness-110"
-              : "hk-button-primary"
-          }`}
-        >
-          {room?.is_active ? "Close Room" : "Open Room"}
-        </button>
+        {!isViewer && (
+          <button
+            disabled={busy || !room}
+            onClick={toggle}
+            className={`rounded-full px-6 py-3 text-sm font-semibold transition disabled:opacity-50 ${
+              room?.is_active
+                ? "bg-destructive text-destructive-foreground hover:brightness-110"
+                : "hk-button-primary"
+            }`}
+          >
+            {room?.is_active ? "Close Room" : "Open Room"}
+          </button>
+        )}
       </div>
 
       {/* Settings */}
+      {!isViewer && (
       <form onSubmit={onSave} className="mt-8 grid max-w-xl gap-4 rounded-3xl border bg-card/40 p-6">
         <h2 className="font-serif text-lg">Settings</h2>
         <label className="grid gap-2 text-sm font-medium">
@@ -151,6 +169,7 @@ function VoiceAdmin() {
         </button>
         {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
       </form>
+      )}
 
       {room?.is_active && (
         <>
@@ -171,9 +190,11 @@ function VoiceAdmin() {
                         <p className="text-[11px] text-muted-foreground">Joined {j ? formatDistanceToNow(j, { addSuffix: true }) : "—"}</p>
                       </div>
                     </div>
-                    <button onClick={() => kickParticipant(p.id, user?.email).catch(() => {})} title="Remove" className="rounded-full border border-destructive/50 p-2 text-destructive hover:bg-destructive/10">
-                      <X className="h-3.5 w-3.5" />
-                    </button>
+                    {!isViewer && (
+                      <button onClick={() => guardedKick(p.id)} title="Remove" className="rounded-full border border-destructive/50 p-2 text-destructive hover:bg-destructive/10">
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                   </li>
                 );
               })}
@@ -193,9 +214,11 @@ function VoiceAdmin() {
                       <p className="text-xs"><span className="font-semibold text-primary">{m.name}</span>: <span className="text-foreground">{m.text}</span></p>
                       <p className="text-[10px] text-muted-foreground">{t ? formatDistanceToNow(t, { addSuffix: true }) : ""}</p>
                     </div>
-                    <button onClick={() => deleteVoiceMessage(m.id, user?.email).catch(() => {})} className="rounded-full border border-destructive/40 p-1.5 text-destructive">
-                      <Trash2 className="h-3 w-3" />
-                    </button>
+                    {!isViewer && (
+                      <button onClick={() => guardedDeleteMsg(m.id)} className="rounded-full border border-destructive/40 p-1.5 text-destructive">
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    )}
                   </li>
                 );
               })}
@@ -204,6 +227,7 @@ function VoiceAdmin() {
           </div>
         </>
       )}
+      <SessionPasswordModal {...modalProps} />
     </section>
   );
 }
