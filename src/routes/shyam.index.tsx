@@ -26,6 +26,10 @@ function ShyamSignIn() {
     setErr(null);
     setBusy(true);
     try {
+      const token = await executeRecaptcha("ADMIN_LOGIN");
+      if (!token) throw new Error("Security check failed. Please refresh and try again.");
+      const verdict = await verifyRecaptcha({ data: { token, action: "ADMIN_LOGIN" } });
+      if (!verdict.ok) throw new Error("Security verification failed. Please try again.");
       const credential = await signInWithFirebaseGoogle();
       const email = credential?.user.email ?? null;
       if (!email) {
