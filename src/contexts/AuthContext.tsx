@@ -69,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         isLoading,
+        roleLoading,
         adminRole,
         isSuperAdmin,
         isAdmin,
