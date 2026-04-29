@@ -78,7 +78,18 @@ export interface VoiceParticipant extends DocumentData {
   name: string;
   initials: string;
   isMuted: boolean;
+  isSpeaking?: boolean;
+  role?: "host" | "speaker" | "listener";
+  photoURL?: string | null;
   joinedAt?: { toDate?: () => Date } | unknown;
+}
+
+export interface AppUser extends DocumentData {
+  name: string;
+  email?: string | null;
+  photoURL?: string | null;
+  createdAt?: unknown;
+  lastSeenAt?: unknown;
 }
 
 export interface VoiceMessage extends DocumentData {
