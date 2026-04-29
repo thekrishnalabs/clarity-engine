@@ -265,46 +265,68 @@ export async function setVoiceRoomActive(is_active: boolean, adminEmail?: string
 }
 
 // Participants
-export async function joinVoiceRoom(userId: string, data: { name: string; initials: string }) {
+export async function joinVoiceRoom(
+  userId: string,
+  data: { name: string; initials: string; photoURL?: string | null; role?: "host" | "speaker" | "listener" },
+) {
   const db = getDb();
+  const role = data.role ?? (isAdminEmail(undefined) ? "host" : "listener");
   await setDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), {
-    ...data,
-    isMuted: false,
+    name: data.name,
+    initials: data.initials,
+    photoURL: data.photoURL ?? null,
+    role,
+    isMuted: true,
+    isSpeaking: false,
     joinedAt: serverTimestamp(),
   });
+  console.log("[firestore] joinVoiceRoom write OK", userId);
 }
 
 export async function leaveVoiceRoom(userId: string) {
   const db = getDb();
   await deleteDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId));
+  console.log("[firestore] leaveVoiceRoom write OK", userId);
 }
 
 export async function setMyMuteState(userId: string, isMuted: boolean) {
   const db = getDb();
   await updateDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), { isMuted });
+  console.log("[firestore] mute state →", isMuted);
+}
+
+export async function setMySpeakingState(userId: string, isSpeaking: boolean) {
+  const db = getDb();
+  await updateDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), { isSpeaking });
 }
 
 export function subscribeParticipants(cb: (list: (VoiceParticipant & { id: string })[]) => void): Unsubscribe {
   const db = getDb();
   return onSnapshot(collection(db, "voice_rooms", VOICE_ROOM_DOC, "participants"), (snap) => {
-    cb(snap.docs.map((d) => ({ id: d.id, ...(d.data() as VoiceParticipant) })));
+    const list = snap.docs.map((d) => ({ id: d.id, ...(d.data() as VoiceParticipant) }));
+    console.log("[firestore] participants snapshot", list.length);
+    cb(list);
   });
 }
 
 // Messages
-export async function sendVoiceMessage(data: { name: string; initials: string; text: string; userId: string }) {
+export async function sendVoiceMessage(data: { name: string; initials: string; text: string; userId: string; photoURL?: string | null }) {
   const db = getDb();
   await addDoc(collection(db, "voice_rooms", VOICE_ROOM_DOC, "messages"), {
     ...data,
+    photoURL: data.photoURL ?? null,
     createdAt: serverTimestamp(),
   });
+  console.log("[firestore] sendVoiceMessage write OK");
 }
 
 export function subscribeMessages(cb: (list: (VoiceMessage & { id: string })[]) => void, max = 50): Unsubscribe {
   const db = getDb();
   const q = query(collection(db, "voice_rooms", VOICE_ROOM_DOC, "messages"), orderBy("createdAt", "desc"), limit(max));
   return onSnapshot(q, (snap) => {
-    cb(snap.docs.map((d) => ({ id: d.id, ...(d.data() as VoiceMessage) })));
+    const list = snap.docs.map((d) => ({ id: d.id, ...(d.data() as VoiceMessage) }));
+    console.log("[firestore] messages snapshot", list.length);
+    cb(list);
   });
 }
 
@@ -318,6 +340,23 @@ export async function kickParticipant(userId: string, adminEmail?: string | null
   requireAdminEmail(adminEmail);
   const db = getDb();
   await deleteDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId));
+}
+
+// ---- Users ----
+export async function upsertAppUser(userId: string, data: { name: string; email?: string | null; photoURL?: string | null }) {
+  const db = getDb();
+  await setDoc(
+    doc(db, "users", userId),
+    {
+      name: data.name,
+      email: data.email ?? null,
+      photoURL: data.photoURL ?? null,
+      lastSeenAt: serverTimestamp(),
+      createdAt: serverTimestamp(),
+    },
+    { merge: true },
+  );
+  console.log("[firestore] upsertAppUser OK", userId);
 }
 
 // ---- Admin Roles ----
