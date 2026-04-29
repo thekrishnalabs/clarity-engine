@@ -4,6 +4,7 @@ import logoUrl from "@/assets/hiren-kundli-logo.jpg";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { listBookingsForUser } from "@/lib/firestore";
+import { ProtectedRoute } from "@/components/auth/RouteGuards";
 
 type NavItem = { to: string; label: string; icon: typeof Home; dynamic?: boolean };
 
@@ -14,6 +15,14 @@ const baseItems: NavItem[] = [
 ];
 
 export function AppLayout() {
+  return (
+    <ProtectedRoute>
+      <AppLayoutInner />
+    </ProtectedRoute>
+  );
+}
+
+function AppLayoutInner() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
