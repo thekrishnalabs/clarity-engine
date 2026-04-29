@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { onAuthStateChanged, signOut as firebaseSignOut, type User } from "firebase/auth";
 import { getFbAuth, isAdminEmail } from "@/lib/firebase";
-import { getAdminRole, initializeSuperAdmin, type AdminRoleType } from "@/lib/firestore";
+import { getAdminRole, initializeSuperAdmin, upsertAppUser, type AdminRoleType } from "@/lib/firestore";
 import { getFirebaseAnalytics } from "@/services/analyticsService";
 
 interface AuthContextValue {
@@ -31,6 +31,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (firebaseUser) {
         // Run once: seed superadmin / session password / voice room defaults.
         void initializeSuperAdmin();
+        // Persist user doc in Firestore (single source of truth).
+        void upsertAppUser(firebaseUser.uid, {
+          name: firebaseUser.displayName ?? firebaseUser.email ?? "User",
+          email: firebaseUser.email,
+          photoURL: firebaseUser.photoURL,
+        }).catch((e) => console.error("[firestore] upsertAppUser failed", e));
       }
     });
     void getFirebaseAnalytics();
