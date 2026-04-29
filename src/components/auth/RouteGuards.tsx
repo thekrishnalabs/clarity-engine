@@ -17,7 +17,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth();
   const location = useLocation();
   if (isLoading) return <FullScreenLoader />;
-  if (!user) return <Navigate to="/get-started" search={{ redirect: location.pathname }} replace />;
+  if (!user) return <Navigate to="/login" search={{ redirect: location.pathname }} replace />;
   return <>{children}</>;
 }
 
