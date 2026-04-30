@@ -71,6 +71,9 @@ export interface VoiceRoom extends DocumentData {
   room_password: string;
   max_seats: number;
   is_active: boolean;
+  free_join?: boolean; // when true, anyone can take an unlocked seat
+  is_private?: boolean;
+  locked_seats?: number[]; // seat indices locked by host
   created_at?: unknown;
 }
 
@@ -81,6 +84,9 @@ export interface VoiceParticipant extends DocumentData {
   isSpeaking?: boolean;
   role?: "host" | "speaker" | "listener";
   photoURL?: string | null;
+  seatIndex?: number | null; // 0..max_seats-1, null = no seat (lobby)
+  handRaised?: boolean;
+  reaction?: { emoji: string; at: number } | null;
   joinedAt?: { toDate?: () => Date } | unknown;
 }
 
