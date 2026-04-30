@@ -13,6 +13,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as GetStartedRouteImport } from './routes/get-started'
 import { Route as DimensionsRouteImport } from './routes/dimensions'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -58,6 +59,11 @@ const RefundRoute = RefundRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GetStartedRoute = GetStartedRouteImport.update({
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/dimensions': typeof DimensionsRouteWithChildren
   '/get-started': typeof GetStartedRoute
+  '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRouteWithChildren
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/dimensions': typeof DimensionsRouteWithChildren
   '/get-started': typeof GetStartedRoute
+  '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRouteWithChildren
@@ -263,6 +271,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/dimensions': typeof DimensionsRouteWithChildren
   '/get-started': typeof GetStartedRoute
+  '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/sessions': typeof SessionsRouteWithChildren
@@ -297,6 +306,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dimensions'
     | '/get-started'
+    | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
@@ -329,6 +339,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dimensions'
     | '/get-started'
+    | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
@@ -361,6 +372,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dimensions'
     | '/get-started'
+    | '/login'
     | '/privacy'
     | '/refund'
     | '/sessions'
@@ -394,6 +406,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DimensionsRoute: typeof DimensionsRouteWithChildren
   GetStartedRoute: typeof GetStartedRoute
+  LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
   SessionsRoute: typeof SessionsRouteWithChildren
@@ -439,6 +452,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/get-started': {
@@ -671,6 +691,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DimensionsRoute: DimensionsRouteWithChildren,
   GetStartedRoute: GetStartedRoute,
+  LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
   SessionsRoute: SessionsRouteWithChildren,
