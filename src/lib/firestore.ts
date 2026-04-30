@@ -551,7 +551,10 @@ export async function initializeSuperAdmin(): Promise<void> {
         await setDoc(ref, {
           room_name: "Hiren Voice Room",
           room_password: "clarity2025",
-          max_seats: 10,
+          max_seats: 12,
+          free_join: true,
+          is_private: false,
+          locked_seats: [],
           is_active: false,
           updated_at: serverTimestamp(),
           updated_by: "system",
