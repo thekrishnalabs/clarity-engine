@@ -9,7 +9,7 @@ import { ProtectedRoute } from "@/components/auth/RouteGuards";
 type NavItem = { to: string; label: string; icon: typeof Home; dynamic?: boolean };
 
 const baseItems: NavItem[] = [
-  { to: "/app", label: "Home", icon: Home },
+  { to: "/app", label: "Dashboard", icon: Home },
   { to: "/app/book", label: "Book Session", icon: CalendarPlus },
   { to: "/app/voice-room", label: "Voice Room", icon: Mic },
 ];
