@@ -123,21 +123,21 @@ function AppLayoutInner() {
           const active = isActive(it.to);
           const Icon = it.icon;
           const disabled = it.label === "My UID" && !myUid;
-          const cls = `flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[10px] transition-colors ${
+          const cls = `flex flex-1 flex-col items-center justify-center gap-1 py-2 text-[10px] font-medium transition-colors ${
             active ? "text-primary" : "text-muted-foreground"
           } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`;
           if (disabled) {
             return (
               <span key={it.label} className={cls} aria-label={it.label} aria-disabled="true">
                 <Icon className="h-5 w-5" />
-                <span className="sr-only">{it.label}</span>
+                <span>{it.label}</span>
               </span>
             );
           }
           return (
             <Link key={it.label} to={it.to} aria-label={it.label} className={cls}>
               <Icon className="h-5 w-5" />
-              <span className="sr-only">{it.label}</span>
+              <span>{it.label}</span>
             </Link>
           );
         })}
