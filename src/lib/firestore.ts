@@ -123,8 +123,15 @@ export async function createBooking(data: Omit<SessionBooking, "status" | "creat
 
 export async function listBookingsForUser(firebaseUid: string): Promise<(SessionBooking & { id: string })[]> {
   const db = getDb();
-  const snap = await getDocs(query(collection(db, "session_bookings"), where("user_firebase_uid", "==", firebaseUid), orderBy("created_at", "desc")));
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as SessionBooking) }));
+  // Avoid composite index requirement: filter only, sort client-side.
+  const snap = await getDocs(query(collection(db, "session_bookings"), where("user_firebase_uid", "==", firebaseUid)));
+  const list = snap.docs.map((d) => ({ id: d.id, ...(d.data() as SessionBooking) }));
+  list.sort((a, b) => {
+    const ad = tsToDate(a.created_at)?.getTime() ?? 0;
+    const bd = tsToDate(b.created_at)?.getTime() ?? 0;
+    return bd - ad;
+  });
+  return list;
 }
 
 export async function listAllBookings(adminEmail?: string | null): Promise<(SessionBooking & { id: string })[]> {
@@ -171,13 +178,14 @@ export async function lookupUid(uid: string): Promise<(UidRecord & { id: string 
 // ---- Posts ----
 export async function listPublishedPosts(max = 20): Promise<(AdminPost & { id: string })[]> {
   const db = getDb();
-  const constraints: QueryConstraint[] = [
-    where("is_published", "==", true),
-    orderBy("created_at", "desc"),
-    limit(max),
-  ];
-  const snap = await getDocs(query(collection(db, "admin_posts"), ...constraints));
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as AdminPost) }));
+  // Avoid composite-index requirement (where + orderBy on different fields).
+  // Order by created_at only, then filter + slice client-side.
+  const snap = await getDocs(query(collection(db, "admin_posts"), orderBy("created_at", "desc"), limit(max * 2)));
+  const list = snap.docs
+    .map((d) => ({ id: d.id, ...(d.data() as AdminPost) }))
+    .filter((p) => p.is_published === true)
+    .slice(0, max);
+  return list;
 }
 
 export async function listAllPosts(adminEmail?: string | null): Promise<(AdminPost & { id: string })[]> {
