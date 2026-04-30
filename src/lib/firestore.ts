@@ -284,9 +284,81 @@ export async function joinVoiceRoom(
     role,
     isMuted: true,
     isSpeaking: false,
+    seatIndex: null,
+    handRaised: false,
+    reaction: null,
     joinedAt: serverTimestamp(),
   });
   console.log("[firestore] joinVoiceRoom write OK", userId);
+}
+
+// Seat allocation — returns true on success, false if seat taken/locked.
+export async function takeSeat(userId: string, seatIndex: number): Promise<boolean> {
+  const db = getDb();
+  // Check room locked seats
+  const roomSnap = await getDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC));
+  const locked: number[] = (roomSnap.data()?.locked_seats as number[] | undefined) ?? [];
+  if (locked.includes(seatIndex)) return false;
+  // Check no other participant has this seat
+  const partsSnap = await getDocs(collection(db, "voice_rooms", VOICE_ROOM_DOC, "participants"));
+  const taken = partsSnap.docs.some((d) => d.id !== userId && (d.data() as VoiceParticipant).seatIndex === seatIndex);
+  if (taken) return false;
+  await updateDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), { seatIndex });
+  console.log("[firestore] takeSeat OK", userId, seatIndex);
+  return true;
+}
+
+export async function leaveSeat(userId: string) {
+  const db = getDb();
+  await updateDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), {
+    seatIndex: null,
+    isMuted: true,
+  });
+}
+
+export async function setHandRaised(userId: string, handRaised: boolean) {
+  const db = getDb();
+  await updateDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), { handRaised });
+}
+
+export async function sendReaction(userId: string, emoji: string) {
+  const db = getDb();
+  await updateDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), {
+    reaction: { emoji, at: Date.now() },
+  });
+}
+
+export async function toggleSeatLock(seatIndex: number, lock: boolean, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
+  const db = getDb();
+  const ref = doc(db, "voice_rooms", VOICE_ROOM_DOC);
+  const snap = await getDoc(ref);
+  const locked: number[] = (snap.data()?.locked_seats as number[] | undefined) ?? [];
+  const next = lock
+    ? Array.from(new Set([...locked, seatIndex]))
+    : locked.filter((i) => i !== seatIndex);
+  await setDoc(ref, { locked_seats: next }, { merge: true });
+  // If locking and someone is in that seat, evict them.
+  if (lock) {
+    const partsSnap = await getDocs(collection(db, "voice_rooms", VOICE_ROOM_DOC, "participants"));
+    for (const d of partsSnap.docs) {
+      if ((d.data() as VoiceParticipant).seatIndex === seatIndex) {
+        await updateDoc(d.ref, { seatIndex: null, isMuted: true });
+      }
+    }
+  }
+}
+
+export async function setRoomFreeJoin(free: boolean, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
+  const db = getDb();
+  await setDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC), { free_join: free }, { merge: true });
+}
+
+export async function setRoomPrivacy(is_private: boolean, adminEmail?: string | null) {
+  requireAdminEmail(adminEmail);
+  const db = getDb();
+  await setDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC), { is_private }, { merge: true });
 }
 
 export async function leaveVoiceRoom(userId: string) {
