@@ -196,6 +196,10 @@ function VoiceRoomPage() {
             el.style.display = "none";
             document.body.appendChild(el);
             audioElsRef.current.push(el);
+            // Try to play immediately; browser may block until user gesture
+            void el.play().catch(() => {
+              console.log("[livekit] audio autoplay blocked, will resume on tap");
+            });
           }
         });
         lkRoom.on(RoomEvent.TrackUnsubscribed, (track) => {
@@ -268,56 +272,89 @@ function VoiceRoomPage() {
     setText("");
   }
 
-  async function ensureAudioUnlocked() {
-    setAudioReady(true);
-    await lkRoomRef.current?.startAudio().catch((e) => {
-      console.warn("[livekit] startAudio failed", e);
-    });
+  // Resume any blocked remote audio elements (must be called from a user gesture).
+  function resumeBlockedAudio() {
     audioElsRef.current.forEach((el) => {
+      el.muted = !speakerOn;
       void el.play().catch(() => {});
     });
   }
 
-  async function requestMicAccess() {
-    await ensureAudioUnlocked();
-    if (!navigator.mediaDevices?.getUserMedia) throw new Error("Microphone is not supported in this browser.");
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-      video: false,
-    });
-    stream.getTracks().forEach((track) => track.stop());
-  }
-
+  /**
+   * Single-gesture mic toggle.
+   * IMPORTANT: This MUST be invoked directly from a click/touch handler.
+   * Do NOT await anything before calling LiveKit's setMicrophoneEnabled —
+   * mobile browsers (Android Chrome, iOS Safari) reject getUserMedia if
+   * the gesture chain is broken by an await on a non-media promise.
+   */
   async function toggleMute() {
     if (!user || !lkRoomRef.current) return;
-    let seatedNow = false;
-    if (mySeat == null) {
-      const firstFree = Array.from({ length: TOTAL_SEATS }, (_, idx) => idx).find((idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
-      if (firstFree == null) {
-        setInfo("All seats are full right now.");
-        return;
-      }
-      const seated = await takeSeat(user.uid, firstFree);
-      if (!seated) {
-        setInfo("Take a seat first to speak.");
-        return;
-      }
-      seatedNow = true;
-      setInfo(`Seat ${firstFree + 1} joined.`);
-    }
     if (micBusy) return;
+    const lkRoom = lkRoomRef.current;
     setMicBusy(true);
     setErr(null);
-    const lp = lkRoomRef.current.localParticipant;
+
     try {
-      await requestMicAccess();
-      const nextMuted = seatedNow ? false : !isMuted;
-      await lp.setMicrophoneEnabled(!nextMuted);
-      await setMyMuteState(user.uid, nextMuted);
-      console.log("[livekit] mic state", nextMuted ? "muted" : "unmuted");
+      // 1) Unlock audio playback context (synchronous-ish, part of gesture).
+      void lkRoom.startAudio().catch(() => {});
+      resumeBlockedAudio();
+
+      // 2) Pre-flight permission check (does not consume the gesture on most browsers).
+      if (typeof navigator !== "undefined" && navigator.permissions?.query) {
+        try {
+          const status = await navigator.permissions.query({ name: "microphone" as PermissionName });
+          if (status.state === "denied") {
+            setErr("Microphone is blocked. Open browser site settings and allow the mic, then reload.");
+            return;
+          }
+        } catch {
+          /* permissions API not available — proceed */
+        }
+      }
+
+      // 3) Decide target state based on current state (before any seat changes).
+      const currentlyEnabled = lkRoom.localParticipant.isMicrophoneEnabled;
+      const enableMic = !currentlyEnabled;
+
+      // 4) Take seat if needed — but DO NOT await before getUserMedia call.
+      //    We let LiveKit publish first; seat write happens in parallel.
+      let seatPromise: Promise<unknown> = Promise.resolve();
+      if (enableMic && mySeat == null) {
+        const firstFree = Array.from({ length: TOTAL_SEATS }, (_, idx) => idx)
+          .find((idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
+        if (firstFree == null) {
+          setInfo("All seats are full right now.");
+          return;
+        }
+        seatPromise = takeSeat(user.uid, firstFree).then((ok) => {
+          if (ok) setInfo(`Seat ${firstFree + 1} joined.`);
+        });
+      }
+
+      // 5) THE CRITICAL CALL — directly inside the gesture chain.
+      //    LiveKit will call getUserMedia internally. Any await before this
+      //    on a non-media promise breaks mobile browsers.
+      await lkRoom.localParticipant.setMicrophoneEnabled(enableMic, {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      });
+
+      // 6) Now safe to await seat + Firestore writes.
+      await seatPromise;
+      await setMyMuteState(user.uid, !enableMic);
+      setAudioReady(true);
+      console.log("[livekit] mic", enableMic ? "ON" : "OFF",
+        "track?", !!lkRoom.localParticipant.getTrackPublication(Track.Source.Microphone));
     } catch (e) {
-      console.warn("[livekit] mic toggle failed", e);
-      setErr(e instanceof Error ? e.message : "Microphone permission denied. Allow mic access in your browser.");
+      const err = e as DOMException & { name?: string; message?: string };
+      console.warn("[livekit] mic toggle failed", err);
+      let msg = err?.message || "Could not enable microphone.";
+      if (err?.name === "NotAllowedError") msg = "Mic permission denied. Allow microphone access for this site.";
+      else if (err?.name === "NotFoundError") msg = "No microphone found on this device.";
+      else if (err?.name === "NotReadableError") msg = "Microphone is already in use by another app.";
+      else if (err?.name === "SecurityError") msg = "Mic blocked — site must be served over HTTPS.";
+      setErr(msg);
     } finally {
       setMicBusy(false);
     }
@@ -325,6 +362,10 @@ function VoiceRoomPage() {
 
   async function speakNow() {
     if (!user) return;
+    // Same gesture path — ensures audio unlocks even if user only taps "Join audio".
+    void lkRoomRef.current?.startAudio().catch(() => {});
+    resumeBlockedAudio();
+    setAudioReady(true);
     await toggleMute();
   }
 
