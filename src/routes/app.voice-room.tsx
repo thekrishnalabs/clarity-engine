@@ -288,6 +288,7 @@ function VoiceRoomPage() {
 
   async function toggleMute() {
     if (!user || !lkRoomRef.current) return;
+    let seatedNow = false;
     if (mySeat == null) {
       const firstFree = Array.from({ length: TOTAL_SEATS }, (_, idx) => idx).find((idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
       if (firstFree == null) {
@@ -299,8 +300,8 @@ function VoiceRoomPage() {
         setInfo("Take a seat first to speak.");
         return;
       }
-      setInfo(`Seat ${firstFree + 1} joined. Tap mic again if needed.`);
-      return;
+      seatedNow = true;
+      setInfo(`Seat ${firstFree + 1} joined.`);
     }
     if (micBusy) return;
     setMicBusy(true);
@@ -308,7 +309,7 @@ function VoiceRoomPage() {
     const lp = lkRoomRef.current.localParticipant;
     try {
       await requestMicAccess();
-      const nextMuted = !isMuted;
+      const nextMuted = seatedNow ? false : !isMuted;
       await lp.setMicrophoneEnabled(!nextMuted);
       await setMyMuteState(user.uid, nextMuted);
       console.log("[livekit] mic state", nextMuted ? "muted" : "unmuted");
@@ -322,20 +323,7 @@ function VoiceRoomPage() {
 
   async function speakNow() {
     if (!user) return;
-    if (mySeat == null) {
-      const firstFree = Array.from({ length: TOTAL_SEATS }, (_, idx) => idx).find((idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
-      if (firstFree == null) {
-        setInfo("All seats are full right now.");
-        return;
-      }
-      const ok = await takeSeat(user.uid, firstFree);
-      if (!ok) {
-        setInfo("Seat just got taken — try another.");
-        return;
-      }
-    }
-    if (isMuted) await toggleMute();
-    else await ensureAudioUnlocked();
+    await toggleMute();
   }
 
   async function leave() {
