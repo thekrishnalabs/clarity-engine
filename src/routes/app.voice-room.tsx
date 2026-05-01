@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import cosmicBg from "@/assets/cosmic-bg.png";
 import { formatDistanceToNow } from "date-fns";
 import {
   Mic,
@@ -530,13 +531,29 @@ function VoiceRoomPage() {
 function CosmicShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#0a0418]">
-      <div className="hk-starfield absolute inset-0 -z-10" />
+      {/* Cosmic nebula background image */}
       <div
-        className="absolute inset-0 -z-10 opacity-80"
+        className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${cosmicBg})` }}
+        aria-hidden
+      />
+      {/* Dark veil so UI stays legible */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(ellipse at 30% 0%, color-mix(in oklab, var(--gold) 18%, transparent), transparent 50%), radial-gradient(ellipse at 80% 100%, color-mix(in oklab, var(--gold) 12%, transparent), transparent 55%), radial-gradient(ellipse at 50% 50%, rgba(80,30,140,0.35), transparent 70%)",
+            "radial-gradient(ellipse at 50% 30%, rgba(10,4,24,0.35), rgba(10,4,24,0.78) 70%, rgba(5,2,14,0.92) 100%)",
         }}
+        aria-hidden
+      />
+      {/* Gold glow accents */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 opacity-70 mix-blend-screen"
+        style={{
+          background:
+            "radial-gradient(ellipse at 20% 0%, color-mix(in oklab, var(--gold) 22%, transparent), transparent 45%), radial-gradient(ellipse at 85% 95%, color-mix(in oklab, var(--gold) 16%, transparent), transparent 50%)",
+        }}
+        aria-hidden
       />
       {children}
     </div>
