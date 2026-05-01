@@ -23,11 +23,15 @@ import {
   UserMinus,
   ShieldOff,
   ShieldCheck,
+  Wifi,
+  Zap,
 } from "lucide-react";
 import {
   Room,
   RoomEvent,
   Track,
+  ConnectionState,
+  AudioPresets,
   type RemoteParticipant,
   type RemoteTrackPublication,
 } from "livekit-client";
@@ -87,9 +91,13 @@ function VoiceRoomPage() {
   const [info, setInfo] = useState<string | null>(null);
   const [reactionsOpen, setReactionsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
+  const [micBusy, setMicBusy] = useState(false);
+  const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.Disconnected);
   const lkRoomRef = useRef<Room | null>(null);
   const joinedRef = useRef(false);
   const chatScrollRef = useRef<HTMLUListElement | null>(null);
+  const audioElsRef = useRef<HTMLAudioElement[]>([]);
 
   const initials = useMemo(() => {
     const src = (user?.displayName || user?.email || "U").trim();
@@ -156,30 +164,58 @@ function VoiceRoomPage() {
           setErr(tokenRes.error);
           return;
         }
-        const lkRoom = new Room({ adaptiveStream: true, dynacast: true });
+        const lkRoom = new Room({
+          adaptiveStream: true,
+          dynacast: true,
+          publishDefaults: { audioPreset: AudioPresets.speech },
+          audioCaptureDefaults: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
+        });
         lkRoomRef.current = lkRoom;
+        setConnectionState(lkRoom.state);
 
         lkRoom.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
           const ids = new Set(speakers.map((s) => s.identity));
           setMySpeakingState(user.uid, ids.has(user.uid)).catch(() => {});
         });
+        lkRoom.on(RoomEvent.ConnectionStateChanged, (state) => {
+          console.log("[livekit] connection state", state);
+          setConnectionState(state);
+        });
+        lkRoom.on(RoomEvent.SignalReconnecting, () => setInfo("Reconnecting audio…"));
+        lkRoom.on(RoomEvent.Reconnected, () => setInfo("Audio reconnected."));
         lkRoom.on(RoomEvent.TrackSubscribed, (track, _pub: RemoteTrackPublication, _p: RemoteParticipant) => {
           if (track.kind === Track.Kind.Audio) {
             const el = track.attach() as HTMLAudioElement;
             el.autoplay = true;
+            el.setAttribute("playsinline", "true");
+            el.muted = !speakerOn;
             el.style.display = "none";
             document.body.appendChild(el);
+            audioElsRef.current.push(el);
+            // Try to play immediately; browser may block until user gesture
+            void el.play().catch(() => {
+              console.log("[livekit] audio autoplay blocked, will resume on tap");
+            });
           }
         });
         lkRoom.on(RoomEvent.TrackUnsubscribed, (track) => {
-          track.detach().forEach((el) => el.remove());
+          track.detach().forEach((el) => {
+            audioElsRef.current = audioElsRef.current.filter((node) => node !== el);
+            el.remove();
+          });
         });
         lkRoom.on(RoomEvent.Disconnected, () => {
           console.log("[livekit] disconnected — attempt rejoin");
+          setConnectionState(ConnectionState.Disconnected);
         });
 
         await lkRoom.connect(tokenRes.url, tokenRes.token);
         console.log("[livekit] connected");
+        setConnectionState(lkRoom.state);
       } catch (e) {
         console.error("[voice-room] join failed", e);
         setErr(e instanceof Error ? e.message : "Failed to join the room.");
@@ -195,6 +231,8 @@ function VoiceRoomPage() {
       } catch {
         /* noop */
       }
+      audioElsRef.current.forEach((el) => el.remove());
+      audioElsRef.current = [];
       await leaveVoiceRoom(user.uid).catch(() => {});
       joinedRef.current = false;
     };
@@ -234,25 +272,101 @@ function VoiceRoomPage() {
     setText("");
   }
 
+  // Resume any blocked remote audio elements (must be called from a user gesture).
+  function resumeBlockedAudio() {
+    audioElsRef.current.forEach((el) => {
+      el.muted = !speakerOn;
+      void el.play().catch(() => {});
+    });
+  }
+
+  /**
+   * Single-gesture mic toggle.
+   * IMPORTANT: This MUST be invoked directly from a click/touch handler.
+   * Do NOT await anything before calling LiveKit's setMicrophoneEnabled —
+   * mobile browsers (Android Chrome, iOS Safari) reject getUserMedia if
+   * the gesture chain is broken by an await on a non-media promise.
+   */
   async function toggleMute() {
     if (!user || !lkRoomRef.current) return;
-    if (mySeat == null) {
-      setInfo("Take a seat first to speak.");
-      return;
-    }
-    const lp = lkRoomRef.current.localParticipant;
+    if (micBusy) return;
+    const lkRoom = lkRoomRef.current;
+    setMicBusy(true);
+    setErr(null);
+
     try {
-      if (isMuted) {
-        await lp.setMicrophoneEnabled(true);
-        await setMyMuteState(user.uid, false);
-      } else {
-        await lp.setMicrophoneEnabled(false);
-        await setMyMuteState(user.uid, true);
+      // 1) Unlock audio playback context (synchronous-ish, part of gesture).
+      void lkRoom.startAudio().catch(() => {});
+      resumeBlockedAudio();
+
+      // 2) Pre-flight permission check (does not consume the gesture on most browsers).
+      if (typeof navigator !== "undefined" && navigator.permissions?.query) {
+        try {
+          const status = await navigator.permissions.query({ name: "microphone" as PermissionName });
+          if (status.state === "denied") {
+            setErr("Microphone is blocked. Open browser site settings and allow the mic, then reload.");
+            return;
+          }
+        } catch {
+          /* permissions API not available — proceed */
+        }
       }
+
+      // 3) Decide target state based on current state (before any seat changes).
+      const currentlyEnabled = lkRoom.localParticipant.isMicrophoneEnabled;
+      const enableMic = !currentlyEnabled;
+
+      // 4) Take seat if needed — but DO NOT await before getUserMedia call.
+      //    We let LiveKit publish first; seat write happens in parallel.
+      let seatPromise: Promise<unknown> = Promise.resolve();
+      if (enableMic && mySeat == null) {
+        const firstFree = Array.from({ length: TOTAL_SEATS }, (_, idx) => idx)
+          .find((idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
+        if (firstFree == null) {
+          setInfo("All seats are full right now.");
+          return;
+        }
+        seatPromise = takeSeat(user.uid, firstFree).then((ok) => {
+          if (ok) setInfo(`Seat ${firstFree + 1} joined.`);
+        });
+      }
+
+      // 5) THE CRITICAL CALL — directly inside the gesture chain.
+      //    LiveKit will call getUserMedia internally. Any await before this
+      //    on a non-media promise breaks mobile browsers.
+      await lkRoom.localParticipant.setMicrophoneEnabled(enableMic, {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      });
+
+      // 6) Now safe to await seat + Firestore writes.
+      await seatPromise;
+      await setMyMuteState(user.uid, !enableMic);
+      setAudioReady(true);
+      console.log("[livekit] mic", enableMic ? "ON" : "OFF",
+        "track?", !!lkRoom.localParticipant.getTrackPublication(Track.Source.Microphone));
     } catch (e) {
-      console.warn("[livekit] mic toggle failed", e);
-      setErr("Microphone permission denied. Allow mic access in your browser.");
+      const err = e as DOMException & { name?: string; message?: string };
+      console.warn("[livekit] mic toggle failed", err);
+      let msg = err?.message || "Could not enable microphone.";
+      if (err?.name === "NotAllowedError") msg = "Mic permission denied. Allow microphone access for this site.";
+      else if (err?.name === "NotFoundError") msg = "No microphone found on this device.";
+      else if (err?.name === "NotReadableError") msg = "Microphone is already in use by another app.";
+      else if (err?.name === "SecurityError") msg = "Mic blocked — site must be served over HTTPS.";
+      setErr(msg);
+    } finally {
+      setMicBusy(false);
     }
+  }
+
+  async function speakNow() {
+    if (!user) return;
+    // Same gesture path — ensures audio unlocks even if user only taps "Join audio".
+    void lkRoomRef.current?.startAudio().catch(() => {});
+    resumeBlockedAudio();
+    setAudioReady(true);
+    await toggleMute();
   }
 
   async function leave() {
@@ -334,10 +448,12 @@ function VoiceRoomPage() {
 
   const roomTitle = room?.room_name || "Voice Chat Room";
   const roomShortId = ROOM_ID.slice(0, 6).toUpperCase();
+  const connected = connectionState === ConnectionState.Connected;
+  const audioStatus = connected ? (audioReady ? "Audio ready" : "Tap mic") : "Connecting";
 
   return (
     <CosmicShell>
-      <section className="hk-container relative pb-44 pt-4 md:pt-8">
+      <section className="hk-container relative pb-48 pt-4 md:pt-8">
         {/* Top bar */}
         <header className="flex items-center justify-between gap-2 rounded-3xl border border-primary/20 bg-card/40 px-3 py-2.5 backdrop-blur-xl md:px-5 md:py-3">
           <div className="flex min-w-0 items-center gap-3">
@@ -357,6 +473,8 @@ function VoiceRoomPage() {
                 <span>ID {roomShortId}</span>
                 <span className="opacity-50">·</span>
                 <Users className="h-3 w-3" /> {participants.length}
+                <span className="opacity-50">·</span>
+                <Wifi className="h-3 w-3" /> {audioStatus}
               </p>
             </div>
           </div>
@@ -392,6 +510,14 @@ function VoiceRoomPage() {
           <p className="mt-3 rounded-xl border border-primary/30 bg-primary/10 p-2.5 text-center text-xs text-primary">
             {info}
           </p>
+        )}
+        {!audioReady && connected && (
+          <button
+            onClick={speakNow}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-3xl border border-primary/35 bg-primary/15 px-4 py-3 text-sm font-semibold text-primary shadow-luxury backdrop-blur-xl hover:bg-primary/25"
+          >
+            <Zap className="h-4 w-4" /> Join audio and speak
+          </button>
         )}
 
         {/* Seat grid */}
@@ -457,7 +583,7 @@ function VoiceRoomPage() {
         {/* Floating control bar */}
         <div className="fixed inset-x-0 bottom-3 z-30 flex justify-center px-3 md:left-64">
           <div className="relative flex items-center gap-1.5 rounded-full border border-primary/25 bg-background/80 px-2.5 py-2 shadow-[0_20px_60px_-20px] shadow-primary/40 backdrop-blur-xl">
-            <ControlButton onClick={toggleMute} active={!isMuted} label={isMuted ? "Unmute" : "Mute"} disabled={mySeat == null}>
+            <ControlButton onClick={toggleMute} active={!isMuted} label={isMuted ? "Unmute" : "Mute"} disabled={micBusy || !connected}>
               {isMuted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
             </ControlButton>
             <ControlButton onClick={toggleSpeaker} active={speakerOn} label={speakerOn ? "Speaker on" : "Speaker off"}>
