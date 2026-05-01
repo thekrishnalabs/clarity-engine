@@ -23,11 +23,14 @@ import {
   UserMinus,
   ShieldOff,
   ShieldCheck,
+  Wifi,
+  Zap,
 } from "lucide-react";
 import {
   Room,
   RoomEvent,
   Track,
+  ConnectionState,
   type RemoteParticipant,
   type RemoteTrackPublication,
 } from "livekit-client";
@@ -87,9 +90,13 @@ function VoiceRoomPage() {
   const [info, setInfo] = useState<string | null>(null);
   const [reactionsOpen, setReactionsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
+  const [micBusy, setMicBusy] = useState(false);
+  const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.Disconnected);
   const lkRoomRef = useRef<Room | null>(null);
   const joinedRef = useRef(false);
   const chatScrollRef = useRef<HTMLUListElement | null>(null);
+  const audioElsRef = useRef<HTMLAudioElement[]>([]);
 
   const initials = useMemo(() => {
     const src = (user?.displayName || user?.email || "U").trim();
