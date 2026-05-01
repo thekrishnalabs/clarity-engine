@@ -227,6 +227,8 @@ function VoiceRoomPage() {
       } catch {
         /* noop */
       }
+      audioElsRef.current.forEach((el) => el.remove());
+      audioElsRef.current = [];
       await leaveVoiceRoom(user.uid).catch(() => {});
       joinedRef.current = false;
     };
