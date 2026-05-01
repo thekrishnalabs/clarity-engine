@@ -289,7 +289,7 @@ function VoiceRoomPage() {
   async function toggleMute() {
     if (!user || !lkRoomRef.current) return;
     if (mySeat == null) {
-      const firstFree = Array.from({ length: TOTAL_SEATS }).find((_, idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
+      const firstFree = Array.from({ length: TOTAL_SEATS }, (_, idx) => idx).find((idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
       if (firstFree == null) {
         setInfo("All seats are full right now.");
         return;
@@ -323,7 +323,7 @@ function VoiceRoomPage() {
   async function speakNow() {
     if (!user) return;
     if (mySeat == null) {
-      const firstFree = Array.from({ length: TOTAL_SEATS }).find((_, idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
+      const firstFree = Array.from({ length: TOTAL_SEATS }, (_, idx) => idx).find((idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
       if (firstFree == null) {
         setInfo("All seats are full right now.");
         return;
