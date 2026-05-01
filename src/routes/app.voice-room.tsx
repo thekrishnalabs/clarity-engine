@@ -31,6 +31,7 @@ import {
   RoomEvent,
   Track,
   ConnectionState,
+  AudioPresets,
   type RemoteParticipant,
   type RemoteTrackPublication,
 } from "livekit-client";
@@ -166,7 +167,7 @@ function VoiceRoomPage() {
         const lkRoom = new Room({
           adaptiveStream: true,
           dynacast: true,
-          publishDefaults: { audioPreset: "speech" },
+          publishDefaults: { audioPreset: AudioPresets.speech },
           audioCaptureDefaults: {
             echoCancellation: true,
             noiseSuppression: true,
@@ -185,12 +186,12 @@ function VoiceRoomPage() {
           setConnectionState(state);
         });
         lkRoom.on(RoomEvent.SignalReconnecting, () => setInfo("Reconnecting audio…"));
-        lkRoom.on(RoomEvent.SignalReconnected, () => setInfo("Audio reconnected."));
+        lkRoom.on(RoomEvent.Reconnected, () => setInfo("Audio reconnected."));
         lkRoom.on(RoomEvent.TrackSubscribed, (track, _pub: RemoteTrackPublication, _p: RemoteParticipant) => {
           if (track.kind === Track.Kind.Audio) {
             const el = track.attach() as HTMLAudioElement;
             el.autoplay = true;
-            el.playsInline = true;
+            el.setAttribute("playsinline", "true");
             el.muted = !speakerOn;
             el.style.display = "none";
             document.body.appendChild(el);
