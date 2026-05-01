@@ -13,6 +13,7 @@ import {
   serverTimestamp,
   updateDoc,
   onSnapshot,
+  runTransaction,
   type DocumentData,
   type QueryConstraint,
   type Unsubscribe,
@@ -284,34 +285,56 @@ export async function joinVoiceRoom(
   data: { name: string; initials: string; photoURL?: string | null; role?: "host" | "speaker" | "listener" },
 ) {
   const db = getDb();
-  const role = data.role ?? (isAdminEmail(undefined) ? "host" : "listener");
-  await setDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), {
+  const participantRef = doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId);
+  const existingSnap = await getDoc(participantRef);
+  const existing = existingSnap.exists() ? (existingSnap.data() as VoiceParticipant) : null;
+  const role = data.role ?? existing?.role ?? "listener";
+  await setDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC), {
+    room_name: "Hiren Voice Room",
+    max_seats: 12,
+    free_join: true,
+    is_private: false,
+    locked_seats: [],
+    is_active: true,
+    updated_at: serverTimestamp(),
+  }, { merge: true });
+  await setDoc(participantRef, {
     name: data.name,
     initials: data.initials,
     photoURL: data.photoURL ?? null,
     role,
-    isMuted: true,
-    isSpeaking: false,
-    seatIndex: null,
-    handRaised: false,
-    reaction: null,
-    joinedAt: serverTimestamp(),
-  });
+    isMuted: existing?.isMuted ?? true,
+    isSpeaking: existing?.isSpeaking ?? false,
+    seatIndex: existing?.seatIndex ?? null,
+    handRaised: existing?.handRaised ?? false,
+    reaction: existing?.reaction ?? null,
+    joinedAt: existing?.joinedAt ?? serverTimestamp(),
+    lastSeenAt: serverTimestamp(),
+  }, { merge: true });
   console.log("[firestore] joinVoiceRoom write OK", userId);
 }
 
 // Seat allocation — returns true on success, false if seat taken/locked.
 export async function takeSeat(userId: string, seatIndex: number): Promise<boolean> {
   const db = getDb();
-  // Check room locked seats
-  const roomSnap = await getDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC));
-  const locked: number[] = (roomSnap.data()?.locked_seats as number[] | undefined) ?? [];
-  if (locked.includes(seatIndex)) return false;
-  // Check no other participant has this seat
-  const partsSnap = await getDocs(collection(db, "voice_rooms", VOICE_ROOM_DOC, "participants"));
-  const taken = partsSnap.docs.some((d) => d.id !== userId && (d.data() as VoiceParticipant).seatIndex === seatIndex);
-  if (taken) return false;
-  await updateDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), { seatIndex });
+  const ok = await runTransaction(db, async (transaction) => {
+    const roomRef = doc(db, "voice_rooms", VOICE_ROOM_DOC);
+    const roomSnap = await transaction.get(roomRef);
+    const locked: number[] = (roomSnap.data()?.locked_seats as number[] | undefined) ?? [];
+    if (locked.includes(seatIndex)) return false;
+
+    const partsSnap = await getDocs(collection(db, "voice_rooms", VOICE_ROOM_DOC, "participants"));
+    const taken = partsSnap.docs.some((d) => d.id !== userId && (d.data() as VoiceParticipant).seatIndex === seatIndex);
+    if (taken) return false;
+
+    transaction.set(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), {
+      seatIndex,
+      isMuted: true,
+      lastSeatAt: serverTimestamp(),
+    }, { merge: true });
+    return true;
+  });
+  if (!ok) return false;
   console.log("[firestore] takeSeat OK", userId, seatIndex);
   return true;
 }
