@@ -163,30 +163,54 @@ function VoiceRoomPage() {
           setErr(tokenRes.error);
           return;
         }
-        const lkRoom = new Room({ adaptiveStream: true, dynacast: true });
+        const lkRoom = new Room({
+          adaptiveStream: true,
+          dynacast: true,
+          publishDefaults: { audioPreset: "speech" },
+          audioCaptureDefaults: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
+        });
         lkRoomRef.current = lkRoom;
+        setConnectionState(lkRoom.state);
 
         lkRoom.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
           const ids = new Set(speakers.map((s) => s.identity));
           setMySpeakingState(user.uid, ids.has(user.uid)).catch(() => {});
         });
+        lkRoom.on(RoomEvent.ConnectionStateChanged, (state) => {
+          console.log("[livekit] connection state", state);
+          setConnectionState(state);
+        });
+        lkRoom.on(RoomEvent.SignalReconnecting, () => setInfo("Reconnecting audio…"));
+        lkRoom.on(RoomEvent.SignalReconnected, () => setInfo("Audio reconnected."));
         lkRoom.on(RoomEvent.TrackSubscribed, (track, _pub: RemoteTrackPublication, _p: RemoteParticipant) => {
           if (track.kind === Track.Kind.Audio) {
             const el = track.attach() as HTMLAudioElement;
             el.autoplay = true;
+            el.playsInline = true;
+            el.muted = !speakerOn;
             el.style.display = "none";
             document.body.appendChild(el);
+            audioElsRef.current.push(el);
           }
         });
         lkRoom.on(RoomEvent.TrackUnsubscribed, (track) => {
-          track.detach().forEach((el) => el.remove());
+          track.detach().forEach((el) => {
+            audioElsRef.current = audioElsRef.current.filter((node) => node !== el);
+            el.remove();
+          });
         });
         lkRoom.on(RoomEvent.Disconnected, () => {
           console.log("[livekit] disconnected — attempt rejoin");
+          setConnectionState(ConnectionState.Disconnected);
         });
 
         await lkRoom.connect(tokenRes.url, tokenRes.token);
         console.log("[livekit] connected");
+        setConnectionState(lkRoom.state);
       } catch (e) {
         console.error("[voice-room] join failed", e);
         setErr(e instanceof Error ? e.message : "Failed to join the room.");
