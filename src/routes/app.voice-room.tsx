@@ -266,25 +266,76 @@ function VoiceRoomPage() {
     setText("");
   }
 
+  async function ensureAudioUnlocked() {
+    setAudioReady(true);
+    await lkRoomRef.current?.startAudio().catch((e) => {
+      console.warn("[livekit] startAudio failed", e);
+    });
+    audioElsRef.current.forEach((el) => {
+      void el.play().catch(() => {});
+    });
+  }
+
+  async function requestMicAccess() {
+    await ensureAudioUnlocked();
+    if (!navigator.mediaDevices?.getUserMedia) throw new Error("Microphone is not supported in this browser.");
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      video: false,
+    });
+    stream.getTracks().forEach((track) => track.stop());
+  }
+
   async function toggleMute() {
     if (!user || !lkRoomRef.current) return;
     if (mySeat == null) {
-      setInfo("Take a seat first to speak.");
+      const firstFree = Array.from({ length: TOTAL_SEATS }).find((_, idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
+      if (firstFree == null) {
+        setInfo("All seats are full right now.");
+        return;
+      }
+      const seated = await takeSeat(user.uid, firstFree);
+      if (!seated) {
+        setInfo("Take a seat first to speak.");
+        return;
+      }
+      setInfo(`Seat ${firstFree + 1} joined. Tap mic again if needed.`);
       return;
     }
+    if (micBusy) return;
+    setMicBusy(true);
+    setErr(null);
     const lp = lkRoomRef.current.localParticipant;
     try {
-      if (isMuted) {
-        await lp.setMicrophoneEnabled(true);
-        await setMyMuteState(user.uid, false);
-      } else {
-        await lp.setMicrophoneEnabled(false);
-        await setMyMuteState(user.uid, true);
-      }
+      await requestMicAccess();
+      const nextMuted = !isMuted;
+      await lp.setMicrophoneEnabled(!nextMuted);
+      await setMyMuteState(user.uid, nextMuted);
+      console.log("[livekit] mic state", nextMuted ? "muted" : "unmuted");
     } catch (e) {
       console.warn("[livekit] mic toggle failed", e);
-      setErr("Microphone permission denied. Allow mic access in your browser.");
+      setErr(e instanceof Error ? e.message : "Microphone permission denied. Allow mic access in your browser.");
+    } finally {
+      setMicBusy(false);
     }
+  }
+
+  async function speakNow() {
+    if (!user) return;
+    if (mySeat == null) {
+      const firstFree = Array.from({ length: TOTAL_SEATS }).find((_, idx) => !seatMap.has(idx) && !lockedSeats.has(idx));
+      if (firstFree == null) {
+        setInfo("All seats are full right now.");
+        return;
+      }
+      const ok = await takeSeat(user.uid, firstFree);
+      if (!ok) {
+        setInfo("Seat just got taken — try another.");
+        return;
+      }
+    }
+    if (isMuted) await toggleMute();
+    else await ensureAudioUnlocked();
   }
 
   async function leave() {
