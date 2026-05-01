@@ -405,10 +405,12 @@ function VoiceRoomPage() {
 
   const roomTitle = room?.room_name || "Voice Chat Room";
   const roomShortId = ROOM_ID.slice(0, 6).toUpperCase();
+  const connected = connectionState === ConnectionState.Connected;
+  const audioStatus = connected ? (audioReady ? "Audio ready" : "Tap mic") : "Connecting";
 
   return (
     <CosmicShell>
-      <section className="hk-container relative pb-44 pt-4 md:pt-8">
+      <section className="hk-container relative pb-48 pt-4 md:pt-8">
         {/* Top bar */}
         <header className="flex items-center justify-between gap-2 rounded-3xl border border-primary/20 bg-card/40 px-3 py-2.5 backdrop-blur-xl md:px-5 md:py-3">
           <div className="flex min-w-0 items-center gap-3">
@@ -428,6 +430,8 @@ function VoiceRoomPage() {
                 <span>ID {roomShortId}</span>
                 <span className="opacity-50">·</span>
                 <Users className="h-3 w-3" /> {participants.length}
+                <span className="opacity-50">·</span>
+                <Wifi className="h-3 w-3" /> {audioStatus}
               </p>
             </div>
           </div>
@@ -463,6 +467,14 @@ function VoiceRoomPage() {
           <p className="mt-3 rounded-xl border border-primary/30 bg-primary/10 p-2.5 text-center text-xs text-primary">
             {info}
           </p>
+        )}
+        {!audioReady && connected && (
+          <button
+            onClick={speakNow}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-3xl border border-primary/35 bg-primary/15 px-4 py-3 text-sm font-semibold text-primary shadow-luxury backdrop-blur-xl hover:bg-primary/25"
+          >
+            <Zap className="h-4 w-4" /> Join audio and speak
+          </button>
         )}
 
         {/* Seat grid */}
@@ -528,7 +540,7 @@ function VoiceRoomPage() {
         {/* Floating control bar */}
         <div className="fixed inset-x-0 bottom-3 z-30 flex justify-center px-3 md:left-64">
           <div className="relative flex items-center gap-1.5 rounded-full border border-primary/25 bg-background/80 px-2.5 py-2 shadow-[0_20px_60px_-20px] shadow-primary/40 backdrop-blur-xl">
-            <ControlButton onClick={toggleMute} active={!isMuted} label={isMuted ? "Unmute" : "Mute"} disabled={mySeat == null}>
+            <ControlButton onClick={toggleMute} active={!isMuted} label={isMuted ? "Unmute" : "Mute"} disabled={micBusy || !connected}>
               {isMuted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
             </ControlButton>
             <ControlButton onClick={toggleSpeaker} active={speakerOn} label={speakerOn ? "Speaker on" : "Speaker off"}>
