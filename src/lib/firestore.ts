@@ -391,6 +391,8 @@ export async function joinVoiceRoom(
 // Seat allocation — returns true on success, false if seat taken/locked.
 export async function takeSeat(userId: string, seatIndex: number, roomId = VOICE_ROOM_DOC): Promise<boolean> {
   const db = getDb();
+  const legacySeatCheck = await getDocs(query(collection(db, "voice_rooms", roomId, "participants"), where("seatIndex", "==", seatIndex)));
+  if (legacySeatCheck.docs.some((d) => d.id !== userId)) return false;
   const ok = await runTransaction(db, async (transaction) => {
     const roomRef = doc(db, "voice_rooms", roomId);
     const seatRef = doc(db, "voice_rooms", roomId, "seats", String(seatIndex));
