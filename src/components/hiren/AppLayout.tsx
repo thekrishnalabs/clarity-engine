@@ -42,6 +42,7 @@ function AppLayoutInner() {
     ...baseItems,
     { to: myUid ? `/app/uid/${myUid}` : "/app", label: "My UID", icon: Hash, dynamic: true },
   ];
+  const isVoiceRoom = pathname.startsWith("/app/voice-room");
 
   const handleSignOut = async () => {
     await signOut();
@@ -102,7 +103,7 @@ function AppLayoutInner() {
       </aside>
 
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/80 px-4 py-3 backdrop-blur-xl md:hidden">
+      <header className={`sticky top-0 z-30 items-center justify-between border-b bg-background/80 px-4 py-3 backdrop-blur-xl md:hidden ${isVoiceRoom ? "hidden" : "flex"}`}>
         <Link to="/" className="flex items-center gap-2">
           <img src={logoUrl} alt="Hiren Kundli" className="h-8 w-8 rounded-full object-cover ring-1 ring-primary/40" />
           <span className="hk-gold-text font-serif text-sm font-bold">Hiren Kundli</span>
@@ -113,12 +114,12 @@ function AppLayoutInner() {
       </header>
 
       {/* Main */}
-      <main className="md:pl-64 pb-20 md:pb-0">
+      <main className={`md:pl-64 ${isVoiceRoom ? "pb-0" : "pb-20 md:pb-0"}`}>
         <Outlet />
       </main>
 
       {/* Mobile bottom tab bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t bg-background/95 backdrop-blur-xl md:hidden">
+      <nav className={`fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 backdrop-blur-xl md:hidden ${isVoiceRoom ? "hidden" : "flex"}`}>
         {items.map((it) => {
           const active = isActive(it.to);
           const Icon = it.icon;
