@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import cosmicBg from "@/assets/cosmic-bg.png";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -131,6 +131,8 @@ function VoiceRoomPage() {
   const audioElsRef = useRef<HTMLAudioElement[]>([]);
   const localMicStreamRef = useRef<MediaStream | null>(null);
   const analyserStopRef = useRef<(() => void) | null>(null);
+  const speakerOnRef = useRef(true);
+  const deafenedRef = useRef(false);
 
   const initials = useMemo(() => {
     const src = (user?.displayName || user?.email || "U").trim();
@@ -154,6 +156,11 @@ function VoiceRoomPage() {
   }, [participants]);
   const lobby = participants.filter((p) => p.seatIndex == null && p.id !== user?.uid);
   const topGifted = [...participants].sort((a, b) => (b.gifted ?? 0) - (a.gifted ?? 0)).slice(0, 3);
+
+  useEffect(() => {
+    speakerOnRef.current = speakerOn;
+    deafenedRef.current = deafened;
+  }, [speakerOn, deafened]);
 
   useEffect(() => subscribeVoiceRooms(setRooms), []);
 
@@ -218,12 +225,12 @@ function VoiceRoomPage() {
     const el = track.attach() as HTMLAudioElement;
     el.autoplay = true;
     el.setAttribute("playsinline", "true");
-    el.muted = !speakerOn || deafened;
+    el.muted = !speakerOnRef.current || deafenedRef.current;
     el.style.display = "none";
     document.body.appendChild(el);
     audioElsRef.current.push(el);
     void el.play().catch(() => setInfo("Tap speaker/audio once to hear everyone."));
-  }, [deafened, speakerOn]);
+  }, []);
 
   const createClientRoom = useCallback(() => {
     const lkRoom = new Room({
