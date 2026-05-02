@@ -68,6 +68,7 @@ export interface AdminPost extends DocumentData {
 }
 
 export interface VoiceRoom extends DocumentData {
+  id?: string;
   room_name: string;
   room_password: string;
   max_seats: number;
@@ -75,6 +76,12 @@ export interface VoiceRoom extends DocumentData {
   free_join?: boolean; // when true, anyone can take an unlocked seat
   is_private?: boolean;
   locked_seats?: number[]; // seat indices locked by host
+  ownerId?: string | null;
+  ownerName?: string | null;
+  category?: string | null;
+  announcement?: string | null;
+  coverTheme?: string | null;
+  listenerCount?: number;
   created_at?: unknown;
 }
 
@@ -83,11 +90,14 @@ export interface VoiceParticipant extends DocumentData {
   initials: string;
   isMuted: boolean;
   isSpeaking?: boolean;
+  isDeafened?: boolean;
   role?: "host" | "speaker" | "listener";
   photoURL?: string | null;
   seatIndex?: number | null; // 0..max_seats-1, null = no seat (lobby)
   handRaised?: boolean;
   reaction?: { emoji: string; at: number } | null;
+  coins?: number;
+  gifted?: number;
   joinedAt?: { toDate?: () => Date } | unknown;
 }
 
@@ -104,6 +114,18 @@ export interface VoiceMessage extends DocumentData {
   initials: string;
   text: string;
   userId?: string;
+  createdAt?: { toDate?: () => Date } | unknown;
+}
+
+export interface VoiceGift extends DocumentData {
+  giftId: string;
+  giftName: string;
+  emoji: string;
+  amount: number;
+  fromUserId: string;
+  fromName: string;
+  toUserId?: string | null;
+  toName?: string | null;
   createdAt?: { toDate?: () => Date } | unknown;
 }
 
