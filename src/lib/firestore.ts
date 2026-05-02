@@ -269,36 +269,83 @@ export async function setSplApplicationStatus(id: string, status: SplApplication
 }
 
 // ---- Voice Room ----
-const VOICE_ROOM_DOC = "main_room";
+export const DEFAULT_VOICE_ROOM_ID = "main_room";
+const VOICE_ROOM_DOC = DEFAULT_VOICE_ROOM_ID;
 
-export async function getVoiceRoom(): Promise<VoiceRoom | null> {
-  const db = getDb();
-  const snap = await getDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC));
-  if (!snap.exists()) return null;
-  return snap.data() as VoiceRoom;
+function roomDoc(roomId = VOICE_ROOM_DOC) {
+  return doc(getDb(), "voice_rooms", roomId);
 }
 
-export function subscribeVoiceRoom(cb: (room: VoiceRoom | null) => void): Unsubscribe {
+function roomCollection(roomId = VOICE_ROOM_DOC, name: "participants" | "messages" | "gifts") {
+  return collection(getDb(), "voice_rooms", roomId, name);
+}
+
+export async function getVoiceRoom(roomId = VOICE_ROOM_DOC): Promise<VoiceRoom | null> {
   const db = getDb();
-  return onSnapshot(doc(db, "voice_rooms", VOICE_ROOM_DOC), (snap) => {
-    cb(snap.exists() ? (snap.data() as VoiceRoom) : null);
+  const snap = await getDoc(doc(db, "voice_rooms", roomId));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...(snap.data() as VoiceRoom) };
+}
+
+export function subscribeVoiceRoom(cb: (room: VoiceRoom | null) => void, roomId = VOICE_ROOM_DOC): Unsubscribe {
+  const db = getDb();
+  return onSnapshot(doc(db, "voice_rooms", roomId), (snap) => {
+    cb(snap.exists() ? ({ id: snap.id, ...(snap.data() as VoiceRoom) }) : null);
   });
 }
 
-export async function setVoiceRoom(data: Partial<Omit<VoiceRoom, "created_at">>, adminEmail?: string | null) {
+export function subscribeVoiceRooms(cb: (rooms: (VoiceRoom & { id: string })[]) => void): Unsubscribe {
+  const db = getDb();
+  const q = query(collection(db, "voice_rooms"), orderBy("updated_at", "desc"), limit(24));
+  return onSnapshot(q, (snap) => {
+    const rooms = snap.docs.map((d) => ({ id: d.id, ...(d.data() as VoiceRoom) }));
+    cb(rooms);
+  });
+}
+
+export async function createVoiceRoom(data: {
+  roomId: string;
+  room_name: string;
+  ownerId: string;
+  ownerName: string;
+  max_seats?: number;
+  category?: string;
+  announcement?: string;
+}) {
+  const db = getDb();
+  await setDoc(doc(db, "voice_rooms", data.roomId), {
+    room_name: data.room_name,
+    room_password: "",
+    max_seats: data.max_seats ?? 12,
+    free_join: true,
+    is_private: false,
+    locked_seats: [],
+    is_active: true,
+    ownerId: data.ownerId,
+    ownerName: data.ownerName,
+    category: data.category ?? "Open Talk",
+    announcement: data.announcement ?? "",
+    coverTheme: "cosmic-gold",
+    listenerCount: 0,
+    created_at: serverTimestamp(),
+    updated_at: serverTimestamp(),
+  }, { merge: true });
+}
+
+export async function setVoiceRoom(data: Partial<Omit<VoiceRoom, "created_at">>, adminEmail?: string | null, roomId = VOICE_ROOM_DOC) {
   requireAdminEmail(adminEmail);
   const db = getDb();
   await setDoc(
-    doc(db, "voice_rooms", VOICE_ROOM_DOC),
+    doc(db, "voice_rooms", roomId),
     { ...data, created_at: serverTimestamp() },
     { merge: true },
   );
 }
 
-export async function setVoiceRoomActive(is_active: boolean, adminEmail?: string | null) {
+export async function setVoiceRoomActive(is_active: boolean, adminEmail?: string | null, roomId = VOICE_ROOM_DOC) {
   requireAdminEmail(adminEmail);
   const db = getDb();
-  await setDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC), { is_active }, { merge: true });
+  await setDoc(doc(db, "voice_rooms", roomId), { is_active, updated_at: serverTimestamp() }, { merge: true });
 }
 
 // Participants
