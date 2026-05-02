@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode, type RefObject } from "react";
 import cosmicBg from "@/assets/cosmic-bg.png";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -931,7 +931,7 @@ function GiftFeed({ gifts }: { gifts: (VoiceGift & { id: string })[] }) {
   return <div className="space-y-2">{gifts.map((g) => <div key={g.id} className="rounded-2xl border border-primary/10 bg-background/35 p-2 text-xs"><span className="mr-1 text-lg">{g.emoji}</span><span className="font-semibold text-primary">{g.fromName}</span> sent {g.giftName}</div>)}{gifts.length === 0 && <p className="text-xs text-muted-foreground">No gifts yet.</p>}</div>;
 }
 
-function ChatPanel({ messages, chatScrollRef, text, setText, onSend, onClose }: { messages: (VoiceMessage & { id: string })[]; chatScrollRef: React.RefObject<HTMLUListElement | null>; text: string; setText: (v: string) => void; onSend: (e: FormEvent) => void; onClose: () => void }) {
+function ChatPanel({ messages, chatScrollRef, text, setText, onSend, onClose }: { messages: (VoiceMessage & { id: string })[]; chatScrollRef: RefObject<HTMLUListElement | null>; text: string; setText: (v: string) => void; onSend: (e: FormEvent) => void; onClose: () => void }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[72vh] w-full max-w-xl flex-col rounded-t-3xl border border-primary/25 bg-background/96 shadow-luxury backdrop-blur-xl md:left-64 md:right-4 md:bottom-24 md:max-w-md md:rounded-3xl" role="dialog" aria-label="Live chat">
       <div className="flex items-center justify-between border-b border-primary/15 px-4 py-3"><h2 className="hk-gold-text font-serif text-base">Live Chat</h2><button onClick={onClose} aria-label="Close chat" className="grid h-8 w-8 place-items-center rounded-full hover:bg-primary/10"><X className="h-4 w-4" /></button></div>
