@@ -464,38 +464,44 @@ export async function toggleSeatLock(seatIndex: number, lock: boolean, adminEmai
   }
 }
 
-export async function setRoomFreeJoin(free: boolean, adminEmail?: string | null) {
+export async function setRoomFreeJoin(free: boolean, adminEmail?: string | null, roomId = VOICE_ROOM_DOC) {
   requireAdminEmail(adminEmail);
   const db = getDb();
-  await setDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC), { free_join: free }, { merge: true });
+  await setDoc(doc(db, "voice_rooms", roomId), { free_join: free, updated_at: serverTimestamp() }, { merge: true });
 }
 
-export async function setRoomPrivacy(is_private: boolean, adminEmail?: string | null) {
+export async function setRoomPrivacy(is_private: boolean, adminEmail?: string | null, roomId = VOICE_ROOM_DOC) {
   requireAdminEmail(adminEmail);
   const db = getDb();
-  await setDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC), { is_private }, { merge: true });
+  await setDoc(doc(db, "voice_rooms", roomId), { is_private, updated_at: serverTimestamp() }, { merge: true });
 }
 
-export async function leaveVoiceRoom(userId: string) {
+export async function leaveVoiceRoom(userId: string, roomId = VOICE_ROOM_DOC) {
   const db = getDb();
-  await deleteDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId));
+  await leaveSeat(userId, roomId).catch(() => {});
+  await deleteDoc(doc(db, "voice_rooms", roomId, "participants", userId));
   console.log("[firestore] leaveVoiceRoom write OK", userId);
 }
 
-export async function setMyMuteState(userId: string, isMuted: boolean) {
+export async function setMyMuteState(userId: string, isMuted: boolean, roomId = VOICE_ROOM_DOC) {
   const db = getDb();
-  await updateDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), { isMuted });
+  await updateDoc(doc(db, "voice_rooms", roomId, "participants", userId), { isMuted });
   console.log("[firestore] mute state →", isMuted);
 }
 
-export async function setMySpeakingState(userId: string, isSpeaking: boolean) {
+export async function setMySpeakingState(userId: string, isSpeaking: boolean, roomId = VOICE_ROOM_DOC) {
   const db = getDb();
-  await updateDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId), { isSpeaking });
+  await updateDoc(doc(db, "voice_rooms", roomId, "participants", userId), { isSpeaking });
 }
 
-export function subscribeParticipants(cb: (list: (VoiceParticipant & { id: string })[]) => void): Unsubscribe {
+export async function setMyDeafenState(userId: string, isDeafened: boolean, roomId = VOICE_ROOM_DOC) {
   const db = getDb();
-  return onSnapshot(collection(db, "voice_rooms", VOICE_ROOM_DOC, "participants"), (snap) => {
+  await updateDoc(doc(db, "voice_rooms", roomId, "participants", userId), { isDeafened });
+}
+
+export function subscribeParticipants(cb: (list: (VoiceParticipant & { id: string })[]) => void, roomId = VOICE_ROOM_DOC): Unsubscribe {
+  const db = getDb();
+  return onSnapshot(collection(db, "voice_rooms", roomId, "participants"), (snap) => {
     const list = snap.docs.map((d) => ({ id: d.id, ...(d.data() as VoiceParticipant) }));
     console.log("[firestore] participants snapshot", list.length);
     cb(list);
@@ -503,9 +509,9 @@ export function subscribeParticipants(cb: (list: (VoiceParticipant & { id: strin
 }
 
 // Messages
-export async function sendVoiceMessage(data: { name: string; initials: string; text: string; userId: string; photoURL?: string | null }) {
+export async function sendVoiceMessage(data: { name: string; initials: string; text: string; userId: string; photoURL?: string | null }, roomId = VOICE_ROOM_DOC) {
   const db = getDb();
-  await addDoc(collection(db, "voice_rooms", VOICE_ROOM_DOC, "messages"), {
+  await addDoc(collection(db, "voice_rooms", roomId, "messages"), {
     ...data,
     photoURL: data.photoURL ?? null,
     createdAt: serverTimestamp(),
@@ -513,9 +519,9 @@ export async function sendVoiceMessage(data: { name: string; initials: string; t
   console.log("[firestore] sendVoiceMessage write OK");
 }
 
-export function subscribeMessages(cb: (list: (VoiceMessage & { id: string })[]) => void, max = 50): Unsubscribe {
+export function subscribeMessages(cb: (list: (VoiceMessage & { id: string })[]) => void, max = 50, roomId = VOICE_ROOM_DOC): Unsubscribe {
   const db = getDb();
-  const q = query(collection(db, "voice_rooms", VOICE_ROOM_DOC, "messages"), orderBy("createdAt", "desc"), limit(max));
+  const q = query(collection(db, "voice_rooms", roomId, "messages"), orderBy("createdAt", "desc"), limit(max));
   return onSnapshot(q, (snap) => {
     const list = snap.docs.map((d) => ({ id: d.id, ...(d.data() as VoiceMessage) }));
     console.log("[firestore] messages snapshot", list.length);
@@ -523,16 +529,42 @@ export function subscribeMessages(cb: (list: (VoiceMessage & { id: string })[]) 
   });
 }
 
-export async function deleteVoiceMessage(id: string, adminEmail?: string | null) {
+export async function deleteVoiceMessage(id: string, adminEmail?: string | null, roomId = VOICE_ROOM_DOC) {
   requireAdminEmail(adminEmail);
   const db = getDb();
-  await deleteDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "messages", id));
+  await deleteDoc(doc(db, "voice_rooms", roomId, "messages", id));
 }
 
-export async function kickParticipant(userId: string, adminEmail?: string | null) {
+export async function kickParticipant(userId: string, adminEmail?: string | null, roomId = VOICE_ROOM_DOC) {
   requireAdminEmail(adminEmail);
   const db = getDb();
-  await deleteDoc(doc(db, "voice_rooms", VOICE_ROOM_DOC, "participants", userId));
+  await leaveSeat(userId, roomId).catch(() => {});
+  await deleteDoc(doc(db, "voice_rooms", roomId, "participants", userId));
+}
+
+export async function sendVoiceGift(data: {
+  giftId: string;
+  giftName: string;
+  emoji: string;
+  amount: number;
+  fromUserId: string;
+  fromName: string;
+  toUserId?: string | null;
+  toName?: string | null;
+}, roomId = VOICE_ROOM_DOC) {
+  const db = getDb();
+  await addDoc(collection(db, "voice_rooms", roomId, "gifts"), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export function subscribeGifts(cb: (list: (VoiceGift & { id: string })[]) => void, max = 30, roomId = VOICE_ROOM_DOC): Unsubscribe {
+  const db = getDb();
+  const q = query(collection(db, "voice_rooms", roomId, "gifts"), orderBy("createdAt", "desc"), limit(max));
+  return onSnapshot(q, (snap) => {
+    cb(snap.docs.map((d) => ({ id: d.id, ...(d.data() as VoiceGift) })));
+  });
 }
 
 // ---- Users ----
