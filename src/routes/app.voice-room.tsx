@@ -270,7 +270,7 @@ function VoiceRoomPage() {
     return lkRoom;
   }, [activeRoomId, attachRemoteTrack, user]);
 
-  const connectToAudio = useCallback(async () => {
+  const connectToAudio = useCallback(async (hostOverride?: boolean) => {
     if (!user) throw new Error("Please sign in first.");
     if (lkRoomRef.current?.state === ConnectionState.Connected && joinedRoomRef.current === activeRoomId) return lkRoomRef.current;
     if (connectPromiseRef.current && joinedRoomRef.current === activeRoomId) return connectPromiseRef.current;
@@ -279,7 +279,7 @@ function VoiceRoomPage() {
     setErr(null);
     const promise = (async () => {
       if (joinedRoomRef.current && joinedRoomRef.current !== activeRoomId) await cleanupAudioRoom();
-      const role: "host" | "listener" = isHost ? "host" : "listener";
+      const role: "host" | "listener" = hostOverride ? "host" : "listener";
       await joinVoiceRoom(user.uid, { name: myName, initials, photoURL: user.photoURL, role }, activeRoomId);
       const tokenRes = await createLiveKitToken({
         data: {
@@ -309,11 +309,11 @@ function VoiceRoomPage() {
       setConnecting(false);
       connectPromiseRef.current = null;
     }
-  }, [activeRoomId, cleanupAudioRoom, createClientRoom, initials, isHost, myName, user]);
+  }, [activeRoomId, cleanupAudioRoom, createClientRoom, initials, myName, user]);
 
   useEffect(() => {
     if (!user) return;
-    void connectToAudio().catch(() => {});
+    void connectToAudio(isHost).catch(() => {});
     const cleanup = () => {
       void cleanupAudioRoom();
     };
@@ -322,7 +322,7 @@ function VoiceRoomPage() {
       window.removeEventListener("beforeunload", cleanup);
       cleanup();
     };
-  }, [activeRoomId, cleanupAudioRoom, connectToAudio, user]);
+  }, [activeRoomId, cleanupAudioRoom, connectToAudio, isHost, user]);
 
   useEffect(() => {
     if (!chatScrollRef.current) return;
