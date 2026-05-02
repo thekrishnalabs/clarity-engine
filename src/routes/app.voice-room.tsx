@@ -757,7 +757,7 @@ function VoiceRoomPage() {
   );
 }
 
-function CosmicShell({ children }: { children: React.ReactNode }) {
+function CosmicShell({ children }: { children: ReactNode }) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat opacity-85" style={{ backgroundImage: `url(${cosmicBg})` }} aria-hidden />
@@ -830,11 +830,11 @@ function SeatTile({ index, occupant, locked, isMe, isHost, onClick, onKick, onTo
   );
 }
 
-function IconBtn({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
+function IconBtn({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   return <button onClick={onClick} aria-label={label} title={label} className="grid h-10 w-10 place-items-center rounded-full border border-primary/20 bg-background/45 text-foreground hover:bg-primary/10">{children}</button>;
 }
 
-function ControlButton({ onClick, active, label, disabled, children }: { onClick: () => void; active: boolean; label: string; disabled?: boolean; children: React.ReactNode }) {
+function ControlButton({ onClick, active, label, disabled, children }: { onClick: () => void; active: boolean; label: string; disabled?: boolean; children: ReactNode }) {
   return (
     <button onClick={onClick} aria-label={label} title={label} disabled={disabled} className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition disabled:opacity-45 ${active ? "bg-primary text-primary-foreground shadow-[0_0_26px_-4px] shadow-primary/70" : "bg-card/90 text-foreground hover:bg-card"}`}>
       {children}
@@ -908,7 +908,7 @@ function RoomDock({ rooms, activeRoomId, onSelect, onCreate }: { rooms: (VoiceRo
   );
 }
 
-function RoomMetric({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+function RoomMetric({ icon, label, value }: { icon: ReactNode; label: string; value: number }) {
   return <div className="flex items-center gap-3 rounded-2xl border border-primary/10 bg-card/35 p-3 backdrop-blur"><span className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-primary">{icon}</span><div><p className="text-lg font-semibold">{value}</p><p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p></div></div>;
 }
 
@@ -923,7 +923,7 @@ function LobbyStrip({ lobby }: { lobby: (VoiceParticipant & { id: string })[] })
   );
 }
 
-function SidePanel({ title, children }: { title: string; children: React.ReactNode }) {
+function SidePanel({ title, children }: { title: string; children: ReactNode }) {
   return <section className="rounded-3xl border border-primary/15 bg-card/35 p-4 shadow-luxury backdrop-blur-xl"><h2 className="hk-gold-text mb-3 font-serif text-base">{title}</h2>{children}</section>;
 }
 
